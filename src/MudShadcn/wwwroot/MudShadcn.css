@@ -1,0 +1,1377 @@
+/*
+ * MudShadcn.css — shadcn/ui look for MudBlazor.
+ * Load AFTER _content/MudBlazor/MudBlazor.min.css. Written against MudBlazor 9.10.0.
+ *
+ * How the pieces fit:
+ *   - MudThemeProvider writes every --mud-palette-*, --mud-typography-*, --mud-elevation-* and
+ *     --mud-default-borderradius variable into an inline <style> in the page body. That block
+ *     comes later than any stylesheet, so those variables are set from C# (MudShadcnTheme),
+ *     not here — a stylesheet cannot reliably win against it.
+ *   - This file holds what a MudTheme cannot express: the shadcn tokens MudBlazor has no slot
+ *     for (ring, input, radius scale, shadows), and the structural overrides (borders instead of
+ *     elevation, focus rings, control heights, hard-coded Material shadows).
+ *   - Colours reference --mud-palette-* wherever a mapping exists, so dark mode and your own
+ *     palette changes flow through. --shadcn-* is used only where MudBlazor has no equivalent.
+ *
+ * Values are shadcn/ui's Default Theme CSS and Tailwind v4's theme scale, not approximations.
+ */
+
+/* ---------------------------------------------------------------------------------------------
+   1. Tokens
+   Light values; MudShadcnProvider re-emits this set for the active mode (light or dark).
+   --------------------------------------------------------------------------------------------- */
+:root {
+    --shadcn-radius: 0.625rem;
+    --shadcn-radius-sm: calc(var(--shadcn-radius) * 0.6);
+    --shadcn-radius-md: calc(var(--shadcn-radius) * 0.8);
+    --shadcn-radius-lg: var(--shadcn-radius);
+    --shadcn-radius-xl: calc(var(--shadcn-radius) * 1.4);
+    --shadcn-radius-2xl: calc(var(--shadcn-radius) * 1.8);
+    --shadcn-radius-3xl: calc(var(--shadcn-radius) * 2.2);
+    --shadcn-radius-4xl: calc(var(--shadcn-radius) * 2.6);
+
+    --shadcn-background: oklch(1 0 0);
+    --shadcn-foreground: oklch(0.145 0 0);
+    --shadcn-card: oklch(1 0 0);
+    --shadcn-card-foreground: oklch(0.145 0 0);
+    --shadcn-popover: oklch(1 0 0);
+    --shadcn-popover-foreground: oklch(0.145 0 0);
+    --shadcn-primary: oklch(0.205 0 0);
+    --shadcn-primary-foreground: oklch(0.985 0 0);
+    --shadcn-secondary: oklch(0.97 0 0);
+    --shadcn-secondary-foreground: oklch(0.205 0 0);
+    --shadcn-muted: oklch(0.97 0 0);
+    --shadcn-muted-foreground: oklch(0.556 0 0);
+    --shadcn-accent: oklch(0.97 0 0);
+    --shadcn-accent-foreground: oklch(0.205 0 0);
+    --shadcn-destructive: oklch(0.577 0.245 27.325);
+    --shadcn-border: oklch(0.922 0 0);
+    --shadcn-input: oklch(0.922 0 0);
+    --shadcn-ring: oklch(0.708 0 0);
+    --shadcn-chart-1: oklch(0.646 0.222 41.116);
+    --shadcn-chart-2: oklch(0.6 0.118 184.704);
+    --shadcn-chart-3: oklch(0.398 0.07 227.392);
+    --shadcn-chart-4: oklch(0.828 0.189 84.429);
+    --shadcn-chart-5: oklch(0.769 0.188 70.08);
+    --shadcn-sidebar: oklch(0.985 0 0);
+    --shadcn-sidebar-foreground: oklch(0.145 0 0);
+    --shadcn-sidebar-primary: oklch(0.205 0 0);
+    --shadcn-sidebar-primary-foreground: oklch(0.985 0 0);
+    --shadcn-sidebar-accent: oklch(0.97 0 0);
+    --shadcn-sidebar-accent-foreground: oklch(0.205 0 0);
+    --shadcn-sidebar-border: oklch(0.922 0 0);
+    --shadcn-sidebar-ring: oklch(0.708 0 0);
+    --shadcn-input-background: transparent;
+    --shadcn-destructive-background: oklch(0.577 0.245 27.325);
+
+    /* Tailwind v4 shadow scale (shadcn uses xs, sm, md, lg). */
+    --shadcn-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadcn-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadcn-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadcn-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+    /* focus-visible:ring-[3px] ring-ring/50 (Tailwind v4 mixes alpha in oklab) */
+    --shadcn-focus-ring: 0 0 0 3px color-mix(in oklab, var(--shadcn-ring) 50%, transparent);
+    --shadcn-focus-ring-destructive: 0 0 0 3px color-mix(in oklab, var(--shadcn-destructive) 20%, transparent);
+
+    /* hover:bg-accent, the hover surface for ghost buttons, menu items and nav links */
+    --shadcn-hover: var(--shadcn-accent);
+
+    --shadcn-transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+    background-color: var(--mud-palette-primary);
+    color: var(--mud-palette-primary-text);
+}
+
+/* ---------------------------------------------------------------------------------------------
+   2. Surfaces: border + shadow-sm instead of Material elevation
+   --------------------------------------------------------------------------------------------- */
+.mud-paper:not(.mud-paper-outlined):not(.mud-elevation-0):not(.mud-paper-square) {
+    border: 1px solid var(--mud-palette-lines-default);
+}
+
+.mud-card {
+    border-radius: var(--shadcn-radius-xl);          /* rounded-xl */
+}
+
+.mud-card-header,
+.mud-card-header.mud-card-header-padding {
+    padding: 24px 24px 0;                             /* py-6 px-6 */
+}
+
+.mud-card-header .mud-card-header-content .mud-typography-h6 {
+    line-height: 1;                                   /* leading-none font-semibold */
+}
+
+.mud-card-content,
+.mud-card-content.mud-card-content-padding {
+    padding: 24px;
+}
+
+.mud-card-header + .mud-card-content,
+.mud-card-header + .mud-card-content.mud-card-content-padding {
+    padding-top: 16px;
+}
+
+.mud-card-actions,
+.mud-card-actions.mud-card-actions-padding {
+    padding: 0 24px 24px;
+    gap: 8px;
+}
+
+.mud-appbar {
+    box-shadow: none !important;
+    border-bottom: 1px solid var(--mud-palette-lines-default);
+}
+
+.mud-appbar.mud-appbar-fixed-bottom {
+    border-bottom: 0;
+    border-top: 1px solid var(--mud-palette-lines-default);
+}
+
+.mud-drawer {
+    box-shadow: none !important;
+}
+
+.mud-drawer.mud-drawer-pos-left {
+    border-right: 1px solid var(--mud-palette-lines-default);
+}
+
+.mud-drawer.mud-drawer-pos-right {
+    border-left: 1px solid var(--mud-palette-lines-default);
+}
+
+.mud-drawer.mud-drawer-temporary {
+    box-shadow: var(--shadcn-shadow-lg) !important;  /* sheet: shadow-lg */
+}
+
+.mud-expansion-panels .mud-expand-panel {
+    box-shadow: none !important;
+    border: 0;
+    border-bottom: 1px solid var(--mud-palette-lines-default);
+    border-radius: 0 !important;
+    background-color: transparent;
+    margin: 0 !important;
+}
+
+.mud-expand-panel .mud-expand-panel-header,
+.mud-expand-panel .mud-expand-panel-header.mud-expand-panel-header-gutters {
+    font-weight: 500;
+    padding: 16px 0;
+    min-height: 0;
+}
+
+.mud-expand-panel .mud-expand-panel-content,
+.mud-expand-panel .mud-expand-panel-content.mud-expand-panel-gutters {
+    padding: 0 0 16px;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   3. Buttons — h-9 px-4, rounded-md, no shadow, no uppercase, ring on focus
+   --------------------------------------------------------------------------------------------- */
+.mud-button-root {
+    transition: color var(--shadcn-transition), background-color var(--shadcn-transition),
+                border-color var(--shadcn-transition), box-shadow var(--shadcn-transition);
+}
+
+.mud-button-root:focus-visible {
+    box-shadow: var(--shadcn-focus-ring) !important;
+}
+
+.mud-button-root.mud-disabled,
+.mud-button-root:disabled {
+    opacity: 0.5;                                     /* disabled:opacity-50 */
+}
+
+.mud-button {
+    min-width: 0;
+    height: 36px;                                     /* h-9 */
+    padding: 8px 16px;                                /* px-4 py-2 */
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.mud-button-filled-size-small,
+.mud-button-outlined-size-small,
+.mud-button-text-size-small {
+    height: 32px;                                     /* h-8 px-3 */
+    padding: 0 12px;
+    font-size: 0.875rem;
+}
+
+.mud-button-filled-size-large,
+.mud-button-outlined-size-large,
+.mud-button-text-size-large {
+    height: 40px;                                     /* h-10 px-6 */
+    padding: 0 24px;
+    font-size: 0.875rem;
+}
+
+.mud-button .mud-button-label {
+    gap: 8px;                                         /* gap-2 */
+}
+
+.mud-button .mud-button-icon-start,
+.mud-button .mud-button-icon-end {
+    margin: 0;
+}
+
+.mud-button .mud-button-icon-start .mud-icon-root,
+.mud-button .mud-button-icon-end .mud-icon-root {
+    font-size: 1rem;                                  /* [&_svg]:size-4 */
+}
+
+/* default / secondary / destructive */
+.mud-button-filled,
+.mud-button-filled:hover,
+.mud-button-filled:active,
+.mud-button-filled:focus-visible,
+.mud-fab,
+.mud-fab:hover,
+.mud-fab:active {
+    box-shadow: none;
+}
+
+.mud-button-filled {
+    background-color: var(--mud-palette-secondary);   /* Color.Default → shadcn "secondary" */
+    color: var(--mud-palette-secondary-text);
+}
+
+.mud-button-filled:hover,
+.mud-button-filled:focus-visible,
+.mud-button-filled:active {
+    background-color: color-mix(in oklab, var(--mud-palette-secondary) 80%, transparent);
+}
+
+.mud-button-filled.mud-button-filled-primary:hover,
+.mud-button-filled.mud-button-filled-primary:focus-visible,
+.mud-button-filled.mud-button-filled-primary:active {
+    background-color: color-mix(in oklab, var(--mud-palette-primary) 90%, transparent);
+}
+
+.mud-button-filled.mud-button-filled-secondary:hover,
+.mud-button-filled.mud-button-filled-secondary:focus-visible,
+.mud-button-filled.mud-button-filled-secondary:active {
+    background-color: color-mix(in oklab, var(--mud-palette-secondary) 80%, transparent);
+}
+
+.mud-button-filled.mud-button-filled-error {
+    background-color: var(--shadcn-destructive-background);
+    color: #fff;
+}
+
+.mud-button-filled.mud-button-filled-error:hover,
+.mud-button-filled.mud-button-filled-error:focus-visible,
+.mud-button-filled.mud-button-filled-error:active {
+    background-color: color-mix(in oklab, var(--shadcn-destructive-background) 90%, transparent);
+}
+
+.mud-button-filled.mud-button-filled-error:focus-visible {
+    box-shadow: var(--shadcn-focus-ring-destructive) !important;
+}
+
+/* outline: border bg-background shadow-xs hover:bg-accent */
+.mud-button-outlined,
+.mud-button-outlined[class*="mud-button-outlined-"] {
+    padding: 8px 16px;
+    border: 1px solid var(--mud-palette-lines-inputs);
+    background-color: var(--shadcn-input-background);
+    box-shadow: var(--shadcn-shadow-xs);
+}
+
+.mud-button-outlined.mud-button-outlined-size-small { padding: 0 12px; }
+.mud-button-outlined.mud-button-outlined-size-large { padding: 0 24px; }
+
+.mud-button-outlined:hover,
+.mud-button-outlined[class*="mud-button-outlined-"]:hover {
+    background-color: var(--shadcn-hover);
+    border-color: var(--mud-palette-lines-inputs);
+}
+
+.mud-button-outlined:focus-visible {
+    border-color: var(--shadcn-ring);
+}
+
+/* ghost: hover:bg-accent */
+.mud-button-text:hover,
+.mud-button-text:focus-visible,
+.mud-icon-button:hover,
+.mud-icon-button:focus-visible {
+    background-color: var(--shadcn-hover);
+}
+
+/* Secondary is a light grey surface in shadcn; as a text/outline colour it takes its foreground. */
+.mud-button-text.mud-button-text-secondary,
+.mud-button-outlined.mud-button-outlined-secondary,
+.mud-icon-button.mud-secondary-text,
+.mud-secondary-text {
+    color: var(--mud-palette-secondary-text) !important;
+}
+
+/* icon: size-9 */
+.mud-icon-button {
+    border-radius: var(--mud-default-borderradius);
+    padding: 8px;
+}
+
+.mud-icon-button.mud-icon-button-size-small,
+.mud-icon-button-size-small {
+    padding: 6px;
+}
+
+.mud-icon-button .mud-icon-root {
+    font-size: 1.25rem;
+}
+
+.mud-icon-button-size-small .mud-icon-root.mud-icon-size-small {
+    font-size: 1rem;
+}
+
+.mud-fab {
+    border: 1px solid transparent;
+}
+
+.mud-button-group-root {
+    box-shadow: none !important;
+    border-radius: var(--mud-default-borderradius);
+}
+
+.mud-button-group-root.mud-button-group-filled .mud-button-root:not(:last-child) {
+    border-color: color-mix(in oklab, currentColor 20%, transparent);
+}
+
+.mud-button-group-outlined.mud-button-group-override-styles .mud-button-root {
+    padding: 8px 16px;
+    border-color: var(--mud-palette-lines-inputs);
+    box-shadow: none;
+}
+
+.mud-button-group-root.mud-button-group-outlined {
+    box-shadow: var(--shadcn-shadow-xs) !important;
+}
+
+.mud-toggle-group.mud-toggle-group-outlined,
+.mud-toggle-group.mud-toggle-group-outlined[class*="mud-toggle-group-"] {
+    border-color: var(--mud-palette-lines-inputs);
+    box-shadow: var(--shadcn-shadow-xs);
+}
+
+.mud-toggle-group > .mud-toggle-item {
+    padding: 7px 10px;
+}
+
+/* data-[state=on]:bg-accent */
+.mud-toggle-group > .mud-toggle-item.mud-toggle-item-selected {
+    background-color: var(--shadcn-hover);
+    color: var(--mud-palette-text-primary);
+}
+
+/* ---------------------------------------------------------------------------------------------
+   4. Inputs — h-9, px-3, 1px border-input, shadow-xs, 3px ring on focus
+   --------------------------------------------------------------------------------------------- */
+.mud-input {
+    font-size: 0.875rem;                              /* md:text-sm */
+    line-height: 1.25rem;
+}
+
+.mud-input > input.mud-input-root,
+div.mud-input-slot.mud-input-root,
+.mud-input > textarea.mud-input-root {
+    font-size: inherit;
+    line-height: 1.25rem;
+    height: auto;
+}
+
+.mud-input > input.mud-input-root::placeholder,
+.mud-input > textarea.mud-input-root::placeholder {
+    color: var(--mud-palette-text-secondary);         /* placeholder:text-muted-foreground */
+    opacity: 1 !important;
+}
+
+/* Outlined (the shadcn-looking variant) */
+.mud-input.mud-input-outlined {
+    background-color: var(--shadcn-input-background);
+    border-radius: var(--mud-default-borderradius);
+}
+
+.mud-input.mud-input-outlined .mud-input-outlined-border {
+    border-width: 1px;
+    border-color: var(--mud-palette-lines-inputs);
+    box-shadow: var(--shadcn-shadow-xs);
+    transition: border-color var(--shadcn-transition), box-shadow var(--shadcn-transition);
+}
+
+.mud-input.mud-input-outlined:not(.mud-disabled):not(:focus-within):hover .mud-input-outlined-border {
+    border-color: var(--mud-palette-lines-inputs);
+}
+
+.mud-input.mud-input-outlined:focus-within > .mud-input-outlined-border,
+.mud-input.mud-input-outlined:focus-within .mud-shrink > .mud-input-outlined-border {
+    border-width: 1px;
+    border-color: var(--shadcn-ring);
+    box-shadow: var(--shadcn-focus-ring);
+}
+
+.mud-input.mud-input-outlined.mud-disabled {
+    opacity: 0.5;                                     /* disabled:opacity-50 */
+    cursor: not-allowed;
+}
+
+.mud-input.mud-input-outlined.mud-disabled .mud-input-outlined-border {
+    border-color: var(--mud-palette-lines-inputs);
+}
+
+.mud-input.mud-input-outlined.mud-input-error .mud-input-outlined-border,
+.mud-input-error.mud-input.mud-input-outlined .mud-input-outlined-border {
+    border-color: var(--mud-palette-error) !important;
+}
+
+.mud-input.mud-input-outlined.mud-input-error:focus-within > .mud-input-outlined-border {
+    box-shadow: var(--shadcn-focus-ring-destructive);
+}
+
+.mud-input > input.mud-input-root-outlined,
+div.mud-input-slot.mud-input-root-outlined,
+.mud-input > textarea.mud-input-root-outlined {
+    padding: 8px 12px;                                /* 36px tall: h-9 px-3 */
+}
+
+.mud-input > textarea.mud-input-root-outlined,
+.mud-input > textarea.mud-input-root-outlined.mud-input-root-margin-dense {
+    margin-top: 0;                                    /* MudBlazor offsets textareas for its notch */
+}
+
+.mud-input > input.mud-input-root-outlined.mud-input-root-margin-dense,
+div.mud-input-slot.mud-input-root-outlined.mud-input-root-margin-dense,
+.mud-input > textarea.mud-input-root-outlined.mud-input-root-margin-dense {
+    padding-top: 6px;                                 /* 32px tall: h-8 */
+    padding-bottom: 6px;
+}
+
+.mud-input.mud-input-outlined.mud-input-adorned-start { padding-left: 12px; padding-inline-start: 12px; }
+.mud-input.mud-input-outlined.mud-input-adorned-end { padding-right: 12px; padding-inline-end: 12px; }
+
+.mud-input > input.mud-input-root-outlined.mud-input-root-adorned-end,
+div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-end {
+    padding-inline-start: 12px;
+}
+
+.mud-input > input.mud-input-root-outlined.mud-input-root-adorned-start,
+div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-start {
+    padding-inline-end: 12px;
+}
+
+.mud-input-adornment .mud-icon-root,
+.mud-input-adornment .mud-icon-button .mud-icon-root {
+    font-size: 1rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+.mud-input-adornment .mud-icon-button {
+    padding: 4px;
+}
+
+/*
+ * Label. shadcn has no floating/notched label: a <Label> sits above the control
+ * (text-sm font-medium leading-none, gap-2). MudBlazor's outlined label is re-seated
+ * there permanently, the legend notch is closed, and the placeholder is always visible.
+ */
+.mud-input-label {
+    font-size: 0.875rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+.mud-input-control.mud-input-outlined-with-label,
+.mud-input-control.mud-input-control-margin-dense.mud-input-outlined-with-label,
+.mud-input-control.mud-input-control-margin-normal.mud-input-outlined-with-label {
+    margin-top: 22px;                                 /* 14px label + gap-2 */
+    margin-bottom: 0;
+}
+
+.mud-input-control label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined,
+.mud-input-control .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined,
+.mud-input-control .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined,
+.mud-application-layout-rtl .mud-input-control label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined {
+    transform: translate(0, -22px) scale(1);
+    max-width: 100%;
+    padding: 0 !important;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 14px;
+    color: var(--mud-palette-text-primary);
+    pointer-events: auto;
+    transition: none;
+}
+
+.mud-input.mud-input-outlined > .mud-input-outlined-border legend {
+    display: none !important;
+}
+
+.mud-input-control.mud-disabled label.mud-input-label,
+.mud-input-control label.mud-input-label.mud-disabled {
+    opacity: 0.5;
+}
+
+.mud-input-control.mud-input-error > label.mud-input-label,
+label.mud-input-label.mud-input-error {
+    color: var(--mud-palette-error) !important;
+}
+
+/* Text (underline) and Filled variants: keep MudBlazor's structure, neutralise the accent */
+.mud-input.mud-input-underline:before {
+    border-bottom-color: var(--mud-palette-lines-inputs);
+}
+
+.mud-input.mud-input-underline:hover:not(.mud-disabled):before {
+    border-bottom-color: var(--shadcn-ring);
+}
+
+.mud-input.mud-input-underline:after {
+    border-bottom: 1px solid var(--mud-palette-text-primary);
+}
+
+.mud-input.mud-input-filled {
+    background-color: var(--mud-palette-background-gray);
+    border-radius: var(--mud-default-borderradius) var(--mud-default-borderradius) 0 0;
+}
+
+.mud-input-control > .mud-input-control-helper-container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.mud-input-control.mud-input-number-control .mud-input-numeric-spin button .mud-icon-root {
+    font-size: 0.875rem;
+}
+
+.mud-input-helper-text {
+    font-size: 0.8125rem;
+    color: var(--mud-palette-text-secondary);
+    margin-top: 6px;
+}
+
+.mud-input-control > .mud-input-control-input-container > .mud-input-label-inputcontrol ~ .mud-input-control > .mud-input-control-helper-container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.mud-input-control.mud-input-number-control .mud-input-numeric-spin button .mud-icon-root {
+    font-size: 0.875rem;
+}
+
+.mud-input-helper-text {
+    margin-top: 6px;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   5. Checkbox, radio, switch, slider
+   --------------------------------------------------------------------------------------------- */
+.mud-checkbox .mud-icon-button,
+.mud-radio .mud-icon-button {
+    padding: 6px;
+    border-radius: var(--shadcn-radius-sm);
+}
+
+.mud-checkbox .mud-icon-button:hover,
+.mud-radio .mud-icon-button:hover {
+    background-color: transparent;
+}
+
+.mud-checkbox .mud-icon-root,
+.mud-radio .mud-icon-root {
+    font-size: 1.25rem;
+}
+
+.mud-checkbox:has(:focus-visible) .mud-icon-button,
+.mud-radio:has(:focus-visible) .mud-icon-button {
+    background-color: transparent;
+}
+
+.mud-checkbox:has(:focus-visible) .mud-icon-root,
+.mud-radio:has(:focus-visible) .mud-icon-root {
+    border-radius: 4px;
+    box-shadow: var(--shadcn-focus-ring);
+}
+
+.mud-radio:has(:focus-visible) .mud-icon-root {
+    border-radius: 9999px;
+}
+
+/* Switch: h-[1.15rem] w-8 track, size-4 thumb */
+.mud-switch-span.mud-switch-span-medium,
+.mud-switch-span {
+    width: 32px;
+    height: 18.4px;
+    padding: 0;
+    margin: 6px 8px 6px 0;
+    overflow: visible;
+    border-radius: 9999px;
+}
+
+.mud-switch-base.mud-switch-base-medium,
+.mud-switch-base {
+    padding: 0;
+    top: 1.2px;
+    left: 1px;
+    color: var(--mud-palette-background);
+}
+
+.mud-switch-base:hover,
+.mud-switch-base.mud-checked:hover {
+    background-color: transparent !important;
+}
+
+.mud-switch-base.mud-checked {
+    transform: translateX(14px);
+}
+
+.mud-switch-thumb-medium,
+.mud-switch-button .mud-switch-thumb-medium {
+    width: 16px;
+    height: 16px;
+    box-shadow: none;
+    background-color: var(--mud-palette-background);
+}
+
+.mud-switch-base.mud-checked .mud-switch-thumb-medium {
+    background-color: var(--mud-palette-primary-text);
+}
+
+.mud-switch-track {
+    border-radius: 9999px;
+    opacity: 1 !important;
+    background-color: var(--mud-palette-lines-inputs);
+    box-shadow: var(--shadcn-shadow-xs);
+}
+
+.mud-switch-base.mud-checked + .mud-switch-track {
+    opacity: 1;
+}
+
+.mud-switch-span:has(:focus-visible) .mud-switch-track {
+    box-shadow: var(--shadcn-focus-ring);
+}
+
+/* Slider: h-1.5 bg-muted track, size-4 thumb with border-primary bg-white shadow-sm */
+.mud-slider[class*="mud-slider-"] .mud-slider-input::-webkit-slider-runnable-track {
+    height: 6px;
+    margin: 8px 0;
+    border-radius: 9999px;
+    background-color: var(--mud-palette-background-gray);
+}
+
+.mud-slider[class*="mud-slider-"] .mud-slider-input::-moz-range-track {
+    height: 6px;
+    margin: 8px 0;
+    border-radius: 9999px;
+    background-color: var(--mud-palette-background-gray);
+}
+
+.mud-slider[class*="mud-slider-"] .mud-slider-filled {
+    height: 6px;
+    border-radius: 9999px;
+}
+
+.mud-slider[class*="mud-slider-"] .mud-slider-input::-webkit-slider-thumb {
+    width: 16px;
+    height: 16px;
+    margin-top: -5px;
+    transform: none;
+    background-color: #fff;
+    border: 1px solid var(--mud-palette-primary);
+    box-shadow: var(--shadcn-shadow-sm);
+}
+
+.mud-slider[class*="mud-slider-"] .mud-slider-input::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    transform: none;
+    box-sizing: border-box;
+    background-color: #fff;
+    border: 1px solid var(--mud-palette-primary);
+    box-shadow: var(--shadcn-shadow-sm);
+}
+
+.mud-slider[class*="mud-slider-"] .mud-slider-input:focus-visible::-webkit-slider-thumb,
+.mud-slider[class*="mud-slider-"] .mud-slider-input:active::-webkit-slider-thumb,
+.mud-slider[class*="mud-slider-"] .mud-slider-input:hover::-webkit-slider-thumb {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--shadcn-ring) 50%, transparent) !important;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   6. Popovers, menus, lists, select items — rounded-md border shadow-md p-1
+   --------------------------------------------------------------------------------------------- */
+.mud-popover.mud-paper,
+.mud-popover {
+    border-radius: var(--mud-default-borderradius);
+}
+
+.mud-popover.mud-popover-open:not(.mud-tooltip) {
+    border: 1px solid var(--mud-palette-lines-default);
+    box-shadow: var(--shadcn-shadow-md) !important;
+}
+
+.mud-list.mud-list-padding,
+.mud-popover .mud-list,
+.mud-popover .mud-menu-list {
+    padding: 4px;
+}
+
+.mud-list-item,
+.mud-menu-item {
+    border-radius: var(--shadcn-radius-sm);           /* rounded-sm */
+    padding: 6px 8px;                                 /* px-2 py-1.5 */
+    min-height: 32px;
+    gap: 8px;
+}
+
+.mud-menu-item .mud-menu-item-text,
+.mud-list-item .mud-list-item-text {
+    margin: 0;
+}
+
+.mud-menu-item .mud-menu-item-icon {
+    margin-inline-end: 0;
+    min-width: 0;
+}
+
+.mud-menu-item .mud-menu-item-icon,
+.mud-menu-item .mud-menu-item-icon .mud-icon-root,
+.mud-menu-item > .mud-icon-root,
+.mud-menu-item .mud-menu-submenu-icon,
+.mud-list-item-icon .mud-icon-root {
+    font-size: 1rem;                                  /* [&_svg]:size-4 */
+}
+
+/* MudBlazor indents icon-less items by its 24px icon + 12px gap; ours is 16px + 8px. */
+.mud-menu-list:has(.mud-menu-item-icon) .mud-menu-item:not(:has(.mud-menu-item-icon)) .mud-menu-item-text {
+    margin-inline-start: 24px;
+}
+
+.mud-menu-list:has(.mud-menu-submenu-icon) .mud-menu-item:not(:has(.mud-menu-submenu-icon)) .mud-menu-item-text {
+    margin-inline-end: 24px;
+}
+
+.mud-menu-list > .mud-divider {
+    margin: 4px -4px;                                 /* -mx-1 my-1 */
+}
+
+.mud-list-item-icon {
+    min-width: 28px;
+}
+
+.mud-list-item-clickable:hover,
+.mud-list-item-clickable:focus:not(.mud-selected-item),
+.mud-list-item-clickable:active,
+.mud-menu-item:hover,
+.mud-menu-item:focus-visible {
+    background-color: var(--shadcn-hover);
+}
+
+.mud-list-item.mud-selected-item,
+.mud-list-item.mud-selected-item:hover,
+.mud-selected-item.mud-list-item-clickable {
+    color: var(--mud-palette-text-primary) !important;
+    background-color: var(--shadcn-hover) !important;
+}
+
+.mud-list-subheader {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--mud-palette-text-primary);
+    padding: 6px 8px;
+    line-height: 1.25rem;
+}
+
+.mud-list-item-text .mud-typography {
+    font-size: 0.875rem;
+}
+
+/* Tooltip: bg-foreground text-background rounded-md px-3 py-1.5 text-xs */
+.mud-tooltip {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1rem;
+}
+
+.mud-tooltip.mud-tooltip-default {
+    color: var(--mud-palette-background);
+    background-color: var(--mud-palette-text-primary);
+}
+
+.mud-tooltip.mud-tooltip-default.mud-tooltip-arrow::after {
+    border-top-color: var(--mud-palette-text-primary);
+}
+
+/* ---------------------------------------------------------------------------------------------
+   7. Dialog — rounded-lg border p-6 shadow-lg, bg-black/50 overlay
+   --------------------------------------------------------------------------------------------- */
+.mud-dialog {
+    border-radius: var(--shadcn-radius-lg);
+    border: 1px solid var(--mud-palette-lines-default);
+    box-shadow: var(--shadcn-shadow-lg);
+    background-color: var(--mud-palette-background);
+}
+
+.mud-dialog .mud-dialog-title {
+    padding: 24px 24px 0;
+    border-radius: 0;
+}
+
+.mud-dialog .mud-dialog-title .mud-typography {
+    font-size: 1.125rem;                              /* text-lg leading-none font-semibold */
+    font-weight: 600;
+    line-height: 1;
+}
+
+.mud-dialog .mud-dialog-content {
+    padding: 8px 24px 0;
+    color: var(--mud-palette-text-secondary);
+    border-radius: 0;
+}
+
+.mud-dialog .mud-dialog-actions {
+    padding: 16px 24px 24px;
+    gap: 8px;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   8. Tabs — segmented control: bg-muted rounded-lg p-[3px], active tab bg-background shadow-sm
+   --------------------------------------------------------------------------------------------- */
+.mud-tabs-tabbar {
+    background-color: transparent;
+    box-shadow: none !important;
+}
+
+.mud-tabs-tabbar .mud-tabs-tabbar-inner {
+    min-height: 36px;
+}
+
+.mud-tabs-tabbar-content .mud-tabs-tabbar-wrapper {
+    background-color: var(--mud-palette-background-gray);
+    border-radius: var(--shadcn-radius-lg);
+    padding: 3px;
+    gap: 0;
+}
+
+.mud-tab {
+    min-height: 30px;
+    min-width: 0;
+    padding: 4px 12px;
+    border-radius: var(--shadcn-radius-md);
+    border: 1px solid transparent;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    letter-spacing: normal;
+    text-transform: none;
+    color: color-mix(in oklab, var(--mud-palette-text-primary) 60%, transparent);
+    transition: color var(--shadcn-transition), background-color var(--shadcn-transition), box-shadow var(--shadcn-transition);
+    z-index: 1;
+}
+
+.mud-tab:hover {
+    background-color: transparent;
+    color: var(--mud-palette-text-primary);
+}
+
+.mud-tab:focus-visible {
+    box-shadow: var(--shadcn-focus-ring);
+    border-color: var(--shadcn-ring);
+}
+
+.mud-tab.mud-tab-active {
+    color: var(--mud-palette-text-primary);
+    background-color: var(--mud-palette-background);
+    box-shadow: var(--shadcn-shadow-sm);
+}
+
+.mud-tab .mud-icon-root {
+    font-size: 1rem;
+}
+
+.mud-tab.mud-disabled {
+    opacity: 0.5;
+}
+
+/*
+ * MudTabs sets min-width inline from its MinimumTabWidth parameter (default 160px), which a
+ * stylesheet should not fight. For shadcn's content-width tabs set MinimumTabWidth="0px".
+ */
+.mud-tab-slider {
+    display: none;
+}
+
+.mud-tabs-panels {
+    padding-top: 8px;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   9. Tables and data grid — text-sm, h-10 head, p-2 cells, hover:bg-muted/50
+   --------------------------------------------------------------------------------------------- */
+.mud-table {
+    border-radius: var(--shadcn-radius-lg);
+    overflow: hidden;
+}
+
+.mud-table.mud-elevation-0:not(.mud-table-outlined),
+.mud-table.mud-paper {
+    box-shadow: none;
+}
+
+.mud-table-cell {
+    padding: 8px 12px;
+    font-size: 0.875rem;
+}
+
+.mud-table-root .mud-table-head .mud-table-cell {
+    height: 40px;                                     /* h-10 */
+    padding: 0 12px;
+    font-weight: 500;
+    color: var(--mud-palette-text-secondary);
+    white-space: nowrap;
+}
+
+.mud-table-root .mud-table-body .mud-table-row:last-child .mud-table-cell {
+    border-bottom: 0;
+}
+
+.mud-table-dense * .mud-table-row .mud-table-cell {
+    padding: 4px 12px;
+}
+
+.mud-table-dense * .mud-table-row .mud-table-cell:last-child {
+    padding-inline-end: 12px;
+}
+
+.mud-table-toolbar {
+    padding: 12px 16px;
+    height: auto;
+    min-height: 56px;
+}
+
+.mud-table-pagination {
+    border-top: 1px solid var(--mud-palette-table-lines);
+}
+
+.mud-table-pagination-toolbar {
+    min-height: 48px;
+    height: 48px;
+    padding-inline: 12px !important;
+}
+
+.mud-table-pagination .mud-table-pagination-caption,
+.mud-table-pagination .mud-typography {
+    font-size: 0.875rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+.mud-table-pagination-select .mud-input-slot {
+    font-size: 0.875rem;
+}
+
+.mud-table-sort-label:hover {
+    color: var(--mud-palette-text-primary);
+}
+
+.mud-table-row.mud-selected {
+    background-color: var(--mud-palette-background-gray);  /* data-[state=selected]:bg-muted */
+}
+
+/* ---------------------------------------------------------------------------------------------
+   10. Chips (shadcn Badge) — rounded-full px-2 py-0.5 text-xs font-medium
+   --------------------------------------------------------------------------------------------- */
+.mud-chip,
+.mud-chip.mud-chip-size-small,
+.mud-chip.mud-chip-size-medium,
+.mud-chip.mud-chip-size-large {
+    border-radius: 9999px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    transition: color var(--shadcn-transition), background-color var(--shadcn-transition), box-shadow var(--shadcn-transition);
+}
+
+.mud-chip.mud-chip-size-small { height: 22px; font-size: 0.75rem; padding: 0 8px; }
+.mud-chip.mud-chip-size-medium { height: 26px; font-size: 0.75rem; padding: 0 10px; }
+.mud-chip.mud-chip-size-large { height: 32px; font-size: 0.875rem; padding: 0 12px; }
+
+.mud-chip.mud-chip-filled.mud-chip-color-default {
+    background-color: var(--mud-palette-secondary);
+    color: var(--mud-palette-secondary-text);
+}
+
+.mud-chip.mud-chip-outlined {
+    border-color: var(--mud-palette-lines-default);
+}
+
+.mud-chip.mud-chip-outlined.mud-chip-color-default,
+.mud-chip.mud-chip-outlined.mud-chip-color-secondary,
+.mud-chip.mud-chip-text.mud-chip-color-secondary {
+    color: var(--mud-palette-text-primary);
+}
+
+.mud-chip.mud-chip-filled.mud-chip-color-error {
+    background-color: var(--shadcn-destructive-background);
+    color: #fff;
+}
+
+.mud-chip:focus-visible {
+    box-shadow: var(--shadcn-focus-ring);
+}
+
+.mud-chip .mud-chip-close-button {
+    font-size: 0.875rem;
+    width: 14px;
+    height: 14px;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   11. Navigation — sidebar menu button: h-8 rounded-md p-2 text-sm, hover/active bg-sidebar-accent
+   --------------------------------------------------------------------------------------------- */
+.mud-navmenu {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mud-nav-item {
+    width: 100%;
+}
+
+.mud-nav-link {
+    min-height: 32px;
+    padding: 6px 8px;
+    border-radius: var(--shadcn-radius-md);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    align-items: center;
+}
+
+.mud-nav-link:hover:not(.mud-nav-link-disabled),
+.mud-nav-link:focus-visible:not(.mud-nav-link-disabled) {
+    background-color: var(--shadcn-sidebar-accent);
+}
+
+.mud-nav-link:focus-visible:not(.mud-nav-link-disabled) {
+    box-shadow: 0 0 0 2px var(--shadcn-sidebar-ring);
+}
+
+.mud-navmenu.mud-navmenu-default .mud-nav-link.active:not(.mud-nav-link-disabled),
+.mud-navmenu .mud-nav-link.active:not(.mud-nav-link-disabled) {
+    color: var(--shadcn-sidebar-accent-foreground);
+    background-color: var(--shadcn-sidebar-accent);
+}
+
+.mud-navmenu.mud-navmenu-default .mud-nav-link.active:not(.mud-nav-link-disabled) .mud-nav-link-icon,
+.mud-nav-link .mud-nav-link-icon,
+.mud-nav-link .mud-nav-link-icon.mud-nav-link-icon-default {
+    color: inherit;
+    font-size: 1rem;
+}
+
+.mud-nav-link .mud-nav-link-text {
+    margin-inline-start: 8px;
+}
+
+.mud-nav-group > .mud-nav-link {
+    font-weight: 400;
+}
+
+.mud-navmenu .mud-nav-group .mud-collapse-container .mud-navmenu {
+    padding: 2px 0 2px 10px;
+    margin-inline-start: 14px;
+    border-inline-start: 1px solid var(--shadcn-sidebar-border);
+}
+
+.mud-navmenu .mud-nav-group .mud-collapse-container .mud-nav-link {
+    padding-inline-start: 8px !important;
+}
+
+.mud-drawer-header {
+    padding: 12px 16px;
+    align-items: center;
+}
+
+/* Breadcrumbs, links, pagination */
+.mud-breadcrumbs {
+    font-size: 0.875rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+.mud-breadcrumb-item > a {
+    color: var(--mud-palette-text-secondary);
+}
+
+.mud-breadcrumb-item > a:hover,
+.mud-breadcrumb-item.mud-disabled > a {
+    color: var(--mud-palette-text-primary);
+    text-decoration: none;
+}
+
+.mud-link.mud-link-underline-hover:hover,
+.mud-link.mud-link-underline-always {
+    text-underline-offset: 4px;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   12. Feedback — alert, snackbar (sonner), progress, skeleton
+   --------------------------------------------------------------------------------------------- */
+.mud-alert {
+    padding: 12px 16px;                               /* px-4 py-3 */
+    border-radius: var(--shadcn-radius-lg);
+    font-size: 0.875rem;
+    box-shadow: none !important;
+}
+
+.mud-alert .mud-alert-icon {
+    padding: 2px 0;
+    margin-inline-end: 12px;
+    font-size: 1rem;
+}
+
+.mud-alert .mud-alert-icon .mud-icon-root {
+    font-size: 1rem;
+}
+
+.mud-alert .mud-alert-message {
+    padding: 0;
+}
+
+.mud-alert[class*="mud-alert-outlined-"] {
+    background-color: var(--mud-palette-surface);
+    border-color: var(--mud-palette-lines-default);
+}
+
+.mud-alert.mud-alert-outlined-normal,
+.mud-alert.mud-alert-text-normal {
+    color: var(--mud-palette-text-primary);
+}
+
+.mud-alert.mud-alert-text-normal {
+    background-color: var(--mud-palette-background-gray);
+}
+
+.mud-alert.mud-alert-outlined-error {
+    color: var(--mud-palette-error);
+}
+
+.mud-snackbar {
+    padding: 14px 16px;
+    min-width: 356px;                                 /* sonner toast width */
+    border-radius: var(--shadcn-radius-lg);
+    box-shadow: var(--shadcn-shadow-lg);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.mud-snackbar[class*="mud-alert-outlined-"] {
+    background-color: var(--mud-palette-surface);
+    border: 1px solid var(--mud-palette-lines-default);
+    color: var(--mud-palette-text-primary);
+}
+
+.mud-snackbar .mud-snackbar-content-message {
+    padding: 0;
+    font-size: inherit;
+}
+
+/* sonner action: h-6 px-2 text-xs rounded, bg-primary text-primary-foreground */
+.mud-snackbar .mud-snackbar-action-button.mud-button {
+    height: 24px;
+    padding: 0 8px;
+    font-size: 0.75rem;
+    border-radius: var(--shadcn-radius-sm);
+    border: 0;
+    box-shadow: none;
+    background-color: var(--mud-palette-primary);
+    color: var(--mud-palette-primary-text);
+}
+
+.mud-snackbar .mud-snackbar-content-action .mud-icon-button .mud-icon-root {
+    font-size: 1rem;
+}
+
+.mud-snackbar .mud-snackbar-icon {
+    padding: 0;
+    margin-inline-end: 8px;
+}
+
+.mud-snackbar .mud-snackbar-icon .mud-icon-root {
+    font-size: 1.125rem;
+}
+
+.mud-progress-linear {
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.mud-progress-linear.mud-progress-linear-medium {
+    height: 8px;                                      /* h-2 */
+}
+
+.mud-progress-linear .mud-progress-linear-bars,
+.mud-progress-linear .mud-progress-linear-bar {
+    border-radius: 9999px;
+}
+
+.mud-skeleton {
+    border-radius: var(--shadcn-radius-md);
+}
+
+.mud-skeleton.mud-skeleton-circle {
+    border-radius: 50%;
+}
+
+.mud-skeleton.mud-skeleton-text {
+    transform: scale(1, 0.7);
+}
+
+/* ---------------------------------------------------------------------------------------------
+   13. Pickers — calendar: size-8 days, rounded-md, selected = primary, today = accent
+   --------------------------------------------------------------------------------------------- */
+.mud-picker .mud-picker-content,
+.mud-picker-paper {
+    border-radius: var(--mud-default-borderradius);
+}
+
+.mud-picker-toolbar {
+    height: auto;
+    padding: 16px 16px 12px;
+    background-color: transparent !important;
+    color: var(--mud-palette-text-primary) !important;
+    border-bottom: 1px solid var(--mud-palette-lines-default);
+    border-radius: 0 !important;
+}
+
+.mud-picker-toolbar .mud-button-root {
+    color: inherit !important;
+    height: auto;
+    padding: 0 4px;
+}
+
+.mud-picker-toolbar .mud-button-year,
+.mud-picker-toolbar .mud-button-year .mud-typography {
+    font-size: 0.875rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+.mud-picker-toolbar .mud-button-date,
+.mud-picker-toolbar .mud-button-date .mud-typography {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 2rem;
+    text-transform: none;
+}
+
+.mud-picker-toolbar .mud-timepicker-hourminute .mud-button-root,
+.mud-picker-toolbar .mud-timepicker-hourminute .mud-typography,
+.mud-picker-toolbar .mud-timepicker-separator {
+    font-size: 2.25rem;
+    font-weight: 600;
+    line-height: 2.5rem;
+    letter-spacing: -0.025em;
+}
+
+.mud-picker-toolbar .mud-timepicker-toolbar-text {
+    opacity: 0.45;
+}
+
+.mud-picker-calendar-header-switch .mud-button-month {
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.mud-picker-calendar-header-day .mud-day-label {
+    font-size: 0.8rem;
+    font-weight: 400;
+    width: 32px;
+    margin: 0 4px;
+}
+
+/*
+ * MudBlazor's calendar is a wrapping flex row that relies on a 40px cell pitch to break after
+ * seven days. Keep the pitch (32px --cell-size + 4px margins) or the weeks misalign.
+ */
+.mud-picker-calendar .mud-day {
+    width: 32px;
+    height: 32px;
+    margin: 2px 4px;
+    border-radius: var(--shadcn-radius-md);
+    font-size: 0.875rem;
+    font-weight: 400;
+}
+
+.mud-picker-calendar .mud-day:hover:not(.mud-selected) {
+    background-color: var(--shadcn-hover);
+}
+
+.mud-picker-calendar .mud-day.mud-current:not(.mud-selected) {
+    background-color: var(--shadcn-hover);
+    color: var(--mud-palette-text-primary) !important;
+    border-color: transparent !important;
+    font-weight: 400;
+}
+
+.mud-picker-calendar .mud-day.mud-selected {
+    font-weight: 400;
+}
+
+.mud-picker-calendar .mud-day .mud-typography {
+    margin-top: 0;
+    font-size: inherit;
+}
+
+.mud-picker-year-container .mud-picker-year .mud-typography,
+.mud-picker-month-container .mud-picker-month .mud-typography {
+    font-size: 0.875rem;
+}
+
+.mud-picker-month-container .mud-picker-month,
+.mud-picker-year-container .mud-picker-year {
+    border-radius: var(--shadcn-radius-md);
+}
+
+.mud-picker-time-container .mud-picker-time-clock {
+    background-color: var(--mud-palette-background-gray);   /* MudBlazor hard-codes black at 7% */
+}
+
+/* ---------------------------------------------------------------------------------------------
+   14. Misc
+   --------------------------------------------------------------------------------------------- */
+.mud-avatar {
+    font-weight: 500;
+}
+
+.mud-avatar.mud-avatar-filled.mud-avatar-filled-default {
+    background-color: var(--mud-palette-background-gray);
+    color: var(--mud-palette-text-primary);
+}
+
+.mud-badge {
+    font-weight: 500;
+}
+
+.mud-divider {
+    border-color: var(--mud-palette-lines-default);
+}
+
+.mud-pagination .mud-pagination-item .mud-button {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 8px;
+    box-shadow: none;
+}
+
+.mud-stepper .mud-step-label-icon {
+    font-weight: 500;
+}
