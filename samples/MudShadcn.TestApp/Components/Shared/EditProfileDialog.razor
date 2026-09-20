@@ -1,0 +1,23 @@
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h5">Edit profile</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Class="mb-5">Make changes to your profile here. Click save when you're done.</MudText>
+        <MudStack Spacing="4">
+            <MudTextField @bind-Value="Name" Label="Name" Variant="Variant.Outlined" AutoFocus="true" />
+            <MudTextField @bind-Value="Username" Label="Username" Variant="Variant.Outlined" />
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Outlined" OnClick="@(() => MudDialog.Cancel())">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => MudDialog.Close(DialogResult.Ok(Name)))">Save changes</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public string Name { get; set; } = "Pedro Duarte";
+    [Parameter] public string Username { get; set; } = "@peduarte";
+}

@@ -1,0 +1,37 @@
+/* Test app only. Everything that makes MudBlazor look like shadcn lives in MudShadcn.css. */
+
+h1:focus {
+    outline: none;
+}
+
+.demo-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.demo-swatch {
+    height: 40px;
+    border-radius: var(--shadcn-radius-md);
+    border: 1px solid var(--mud-palette-lines-default);
+}
+
+#blazor-error-ui {
+    background: var(--mud-palette-surface);
+    border-top: 1px solid var(--mud-palette-lines-default);
+    bottom: 0;
+    display: none;
+    left: 0;
+    padding: 0.75rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 2000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}

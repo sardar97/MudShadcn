@@ -1,0 +1,52 @@
+@inherits LayoutComponentBase
+
+<MudShadcnProvider @bind-IsDarkMode="_isDarkMode" />
+
+<MudLayout>
+    <MudAppBar Elevation="0" Dense="true">
+        <MudIconButton Icon="@Icons.Material.Outlined.ViewSidebar" Color="Color.Inherit" Edge="Edge.Start"
+                       OnClick="@(() => _drawerOpen = !_drawerOpen)" aria-label="Toggle sidebar" />
+        <MudText Typo="Typo.subtitle2" Class="ml-2">MudShadcn</MudText>
+        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Class="ml-2">MudBlazor @MudBlazorVersion</MudChip>
+        <MudSpacer />
+        <MudTooltip Text="@(_isDarkMode ? "Switch to light" : "Switch to dark")">
+            <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Outlined.LightMode : Icons.Material.Outlined.DarkMode)"
+                           Color="Color.Inherit" OnClick="@(() => _isDarkMode = !_isDarkMode)" aria-label="Toggle dark mode" />
+        </MudTooltip>
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="0">
+        <MudNavMenu>
+            <MudText Typo="Typo.caption" Color="Color.Tertiary" Class="px-2 pt-2 pb-1">Components</MudText>
+            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.SmartButton">Buttons &amp; chips</MudNavLink>
+            <MudNavLink Href="/forms" Icon="@Icons.Material.Outlined.EditNote">Inputs &amp; forms</MudNavLink>
+            <MudNavLink Href="/pickers" Icon="@Icons.Material.Outlined.CalendarMonth">Date &amp; time</MudNavLink>
+            <MudNavLink Href="/data" Icon="@Icons.Material.Outlined.TableRows">Table &amp; data grid</MudNavLink>
+            <MudNavLink Href="/surfaces" Icon="@Icons.Material.Outlined.Dashboard">Cards &amp; tabs</MudNavLink>
+            <MudNavLink Href="/overlays" Icon="@Icons.Material.Outlined.Layers">Dialog, menu, snackbar</MudNavLink>
+            <MudNavGroup Title="Reference" Icon="@Icons.Material.Outlined.Palette" Expanded="true">
+                <MudNavLink Href="/tokens">Theme tokens</MudNavLink>
+            </MudNavGroup>
+        </MudNavMenu>
+    </MudDrawer>
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="py-8">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+    private static readonly string MudBlazorVersion =
+        typeof(MudButton).Assembly.GetName().Version?.ToString(3) ?? "";
+
+    private bool _drawerOpen = true;
+    private bool _isDarkMode;
+}

@@ -1,0 +1,135 @@
+@page "/surfaces"
+
+<PageTitle>Cards &amp; tabs · MudShadcn</PageTitle>
+
+<PageHeader Title="Cards & tabs" Description="Flat surfaces: a 1px border and shadow-sm stand in for Material elevation." />
+
+<DemoSection Title="Cards">
+    <MudGrid Spacing="4">
+        @foreach (var stat in Stats)
+        {
+            <MudItem xs="12" sm="6" md="3">
+                <MudCard>
+                    <MudCardContent>
+                        <div class="d-flex align-center justify-space-between">
+                            <MudText Typo="Typo.subtitle2">@stat.Label</MudText>
+                            <MudIcon Icon="@stat.Icon" Size="Size.Small" Color="Color.Tertiary" />
+                        </div>
+                        <MudText Typo="Typo.h3" Class="mt-2">@stat.Value</MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Tertiary">@stat.Delta</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+        <MudItem xs="12" md="6">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Notifications</MudText>
+                        <MudText Color="Color.Tertiary" Class="mt-2">You have 3 unread messages.</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIconButton Icon="@Icons.Material.Outlined.MoreHoriz" Size="Size.Small" aria-label="More" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudPaper Outlined="true" Class="pa-4 d-flex align-center gap-4">
+                        <MudIcon Icon="@Icons.Material.Outlined.NotificationsActive" />
+                        <div class="flex-grow-1">
+                            <MudText Typo="Typo.subtitle2">Push notifications</MudText>
+                            <MudText Color="Color.Tertiary">Send notifications to device.</MudText>
+                        </div>
+                        <MudSwitch T="bool" Value="true" Color="Color.Primary" />
+                    </MudPaper>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" StartIcon="@Icons.Material.Outlined.Check">Mark all as read</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-6">
+                <MudText Typo="Typo.h6">MudPaper, Elevation 1</MudText>
+                <MudText Color="Color.Tertiary" Class="mt-2 mb-4">Every elevation collapses onto Tailwind's sm / md / lg shadow scale.</MudText>
+                <div class="demo-row">
+                    @foreach (var e in new[] { 0, 1, 4, 8, 16, 24 })
+                    {
+                        <MudPaper Elevation="@e" Class="pa-3" Style="min-width:72px;text-align:center">@e</MudPaper>
+                    }
+                </div>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</DemoSection>
+
+<DemoSection Title="Tabs" Description="MudTabs restyled as shadcn's segmented tabs list.">
+    <MudTabs Elevation="0" MinimumTabWidth="0px" TabPanelsClass="pt-4">
+        <MudTabPanel Text="Account">
+            <MudCard Style="max-width:480px">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Account</MudText>
+                        <MudText Color="Color.Tertiary" Class="mt-2">Make changes to your account here.</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudStack Spacing="4">
+                        <MudTextField T="string" Label="Name" Value="@("Pedro Duarte")" Variant="Variant.Outlined" />
+                        <MudTextField T="string" Label="Username" Value="@("@peduarte")" Variant="Variant.Outlined" />
+                    </MudStack>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary">Save changes</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudTabPanel>
+        <MudTabPanel Text="Password">
+            <MudText Color="Color.Tertiary">Change your password here. After saving, you'll be logged out.</MudText>
+        </MudTabPanel>
+        <MudTabPanel Text="Team" Icon="@Icons.Material.Outlined.Group">
+            <MudText Color="Color.Tertiary">Invite your team members to collaborate.</MudText>
+        </MudTabPanel>
+        <MudTabPanel Text="Disabled" Disabled="true" />
+    </MudTabs>
+</DemoSection>
+
+<DemoSection Title="Expansion panels" Description="shadcn's Accordion.">
+    <MudExpansionPanels MultiExpansion="true" Elevation="0" Style="max-width:640px">
+        <MudExpansionPanel Text="Is it accessible?" Expanded="true">It keeps MudBlazor's markup, keyboard handling and ARIA attributes untouched.</MudExpansionPanel>
+        <MudExpansionPanel Text="Is it styled?">Yes. It picks up the shadcn tokens through the theme and MudShadcn.css.</MudExpansionPanel>
+        <MudExpansionPanel Text="Is it animated?">Yes, with MudBlazor's own collapse transition.</MudExpansionPanel>
+    </MudExpansionPanels>
+</DemoSection>
+
+<DemoSection Title="Breadcrumbs and list">
+    <MudBreadcrumbs Items="_breadcrumbs" Class="pa-0 mb-4" />
+    <MudPaper Style="max-width:320px">
+        <MudList T="string" @bind-SelectedValue="_selectedItem" Color="Color.Primary">
+            <MudListSubheader>My account</MudListSubheader>
+            <MudListItem Value="@("Profile")" Icon="@Icons.Material.Outlined.Person" Text="Profile" />
+            <MudListItem Value="@("Billing")" Icon="@Icons.Material.Outlined.CreditCard" Text="Billing" />
+            <MudListItem Value="@("Settings")" Icon="@Icons.Material.Outlined.Settings" Text="Settings" />
+            <MudDivider Class="my-1" />
+            <MudListItem Value="@("Log out")" Icon="@Icons.Material.Outlined.Logout" Text="Log out" />
+        </MudList>
+    </MudPaper>
+</DemoSection>
+
+@code {
+    private string? _selectedItem = "Profile";
+
+    private readonly List<BreadcrumbItem> _breadcrumbs =
+    [
+        new("Home", "/"),
+        new("Components", "/surfaces"),
+        new("Breadcrumb", null, disabled: true),
+    ];
+
+    private static readonly (string Label, string Value, string Delta, string Icon)[] Stats =
+    [
+        ("Total revenue", "$45,231.89", "+20.1% from last month", Icons.Material.Outlined.AttachMoney),
+        ("Subscriptions", "+2,350", "+180.1% from last month", Icons.Material.Outlined.Group),
+        ("Sales", "+12,234", "+19% from last month", Icons.Material.Outlined.CreditCard),
+        ("Active now", "+573", "+201 since last hour", Icons.Material.Outlined.ShowChart),
+    ];
+}

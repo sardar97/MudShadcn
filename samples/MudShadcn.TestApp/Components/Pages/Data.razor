@@ -1,0 +1,85 @@
+@page "/data"
+
+<PageTitle>Table &amp; data grid · MudShadcn</PageTitle>
+
+<PageHeader Title="Table & data grid" Description="Bordered, flat, text-sm, 40px header row, muted hover — shadcn's Table and Data Table." />
+
+<DemoSection Title="MudDataGrid" Description="Sorting, filtering, multi-selection, quick filter and paging.">
+    <MudDataGrid T="Payment" Items="@Payment.Sample" MultiSelection="true" @bind-SelectedItems="_selected"
+                 SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@QuickFilter" Hover="true"
+                 Elevation="0" Outlined="true" Dense="false">
+        <ToolBarContent>
+            <MudTextField @bind-Value="_search" Placeholder="Filter payments…" Variant="Variant.Outlined" Margin="Margin.Dense"
+                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Outlined.Search"
+                          Immediate="true" Clearable="true" Style="max-width:320px" />
+            <MudSpacer />
+            <MudText Color="Color.Tertiary">@_selected.Count of @Payment.Sample.Count row(s) selected</MudText>
+        </ToolBarContent>
+        <Columns>
+            <SelectColumn T="Payment" />
+            <PropertyColumn Property="x => x.Id" Title="Invoice" />
+            <PropertyColumn Property="x => x.Customer" />
+            <PropertyColumn Property="x => x.Email" />
+            <TemplateColumn Title="Status" SortBy="@(x => x.Status)">
+                <CellTemplate>
+                    <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@Payment.StatusColor(context.Item.Status)">
+                        @context.Item.Status
+                    </MudChip>
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="x => x.Date" Format="d MMM yyyy" />
+            <PropertyColumn Property="x => x.Amount" Format="C2" CellStyle="text-align:right" HeaderStyle="text-align:right" />
+            <TemplateColumn Sortable="false" Filterable="false" CellStyle="width:48px">
+                <CellTemplate>
+                    <MudMenu Icon="@Icons.Material.Outlined.MoreHoriz" Size="Size.Small" AnchorOrigin="Origin.BottomRight"
+                             TransformOrigin="Origin.TopRight" aria-label="Row actions">
+                        <MudMenuItem>Copy payment ID</MudMenuItem>
+                        <MudMenuItem>View customer</MudMenuItem>
+                        <MudMenuItem>View payment details</MudMenuItem>
+                    </MudMenu>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="Payment" PageSizeOptions="@(new[] { 5, 10, 25 })" />
+        </PagerContent>
+    </MudDataGrid>
+</DemoSection>
+
+<DemoSection Title="MudTable" Description="The simple table, dense, with a footer total.">
+    <MudTable Items="@Payment.Sample.Take(6)" Hover="true" Dense="true" Elevation="0" Outlined="true">
+        <HeaderContent>
+            <MudTh>Invoice</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Method</MudTh>
+            <MudTh Style="text-align:right">Amount</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Invoice"><b>@context.Id</b></MudTd>
+            <MudTd DataLabel="Status">@context.Status</MudTd>
+            <MudTd DataLabel="Method">@context.Method</MudTd>
+            <MudTd DataLabel="Amount" Style="text-align:right">@context.Amount.ToString("C2")</MudTd>
+        </RowTemplate>
+        <FooterContent>
+            <MudTd colspan="3"><b>Total</b></MudTd>
+            <MudTd Style="text-align:right"><b>@Payment.Sample.Take(6).Sum(p => p.Amount).ToString("C2")</b></MudTd>
+        </FooterContent>
+    </MudTable>
+</DemoSection>
+
+<DemoSection Title="Pagination">
+    <MudPagination Count="12" @bind-Selected="_page" Variant="Variant.Outlined" Color="Color.Primary" />
+</DemoSection>
+
+@code {
+    private string? _search;
+    private int _page = 2;
+    private HashSet<Payment> _selected = [];
+
+    private Func<Payment, bool> QuickFilter => p =>
+        string.IsNullOrWhiteSpace(_search)
+        || p.Customer.Contains(_search, StringComparison.OrdinalIgnoreCase)
+        || p.Email.Contains(_search, StringComparison.OrdinalIgnoreCase)
+        || p.Id.Contains(_search, StringComparison.OrdinalIgnoreCase)
+        || p.Status.Contains(_search, StringComparison.OrdinalIgnoreCase);
+}

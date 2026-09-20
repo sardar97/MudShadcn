@@ -1,0 +1,128 @@
+@page "/overlays"
+
+<PageTitle>Dialog, menu, snackbar · MudShadcn</PageTitle>
+
+<PageHeader Title="Dialog, menu, snackbar" Description="Everything that renders through MudPopoverProvider, MudDialogProvider and MudSnackbarProvider." />
+
+<DemoSection Title="Dialog" Description="rounded-lg, 1px border, shadow-lg, over a 50% black overlay.">
+    <div class="demo-row">
+        <MudButton Variant="Variant.Outlined" OnClick="OpenEditDialogAsync">Edit profile</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="OpenDeleteDialogAsync">Delete account</MudButton>
+        <MudButton Variant="Variant.Text" OnClick="OpenMessageBoxAsync">Message box</MudButton>
+    </div>
+    @if (_dialogResult is not null)
+    {
+        <MudText Color="Color.Tertiary" Class="mt-3">Last result: @_dialogResult</MudText>
+    }
+</DemoSection>
+
+<DemoSection Title="Menu" Description="shadcn's Dropdown Menu: 4px padded list, rounded-sm items, accent hover.">
+    <div class="demo-row">
+        <MudMenu Label="Open menu" Variant="Variant.Outlined" EndIcon="@Icons.Material.Outlined.ExpandMore">
+            <MudMenuItem Icon="@Icons.Material.Outlined.Person">Profile</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Outlined.CreditCard">Billing</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Outlined.Settings">Settings</MudMenuItem>
+            <MudMenu Label="Invite users" StartIcon="@Icons.Material.Outlined.PersonAdd">
+                <MudMenuItem>Email</MudMenuItem>
+                <MudMenuItem>Message</MudMenuItem>
+            </MudMenu>
+            <MudDivider Class="my-1" />
+            <MudMenuItem Icon="@Icons.Material.Outlined.Logout">Log out</MudMenuItem>
+            <MudMenuItem Disabled="true">API (disabled)</MudMenuItem>
+        </MudMenu>
+        <MudMenu Icon="@Icons.Material.Outlined.MoreVert" aria-label="More" Dense="true">
+            <MudMenuItem>Edit</MudMenuItem>
+            <MudMenuItem>Duplicate</MudMenuItem>
+            <MudMenuItem>Archive</MudMenuItem>
+        </MudMenu>
+    </div>
+</DemoSection>
+
+<DemoSection Title="Snackbar" Description="Configured by AddMudShadcn() to behave like sonner: bottom-right, bordered, neutral surface.">
+    <div class="demo-row">
+        <MudButton Variant="Variant.Outlined" OnClick="@(() => Snackbar.Add("Event has been created.", Severity.Normal))">Default</MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="@(() => Snackbar.Add("Changes saved.", Severity.Success))">Success</MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="@(() => Snackbar.Add("Your session expires in 5 minutes.", Severity.Warning))">Warning</MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="@(() => Snackbar.Add("Could not reach the server.", Severity.Error))">Error</MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="ShowActionSnackbar">With action</MudButton>
+    </div>
+</DemoSection>
+
+<DemoSection Title="Tooltip and popover">
+    <div class="demo-row">
+        <MudTooltip Text="Add to library" Arrow="true" Placement="Placement.Top">
+            <MudButton Variant="Variant.Outlined">Hover me</MudButton>
+        </MudTooltip>
+        <div>
+            <MudButton Variant="Variant.Outlined" OnClick="@(() => _popoverOpen = !_popoverOpen)">Open popover</MudButton>
+            <MudPopover Open="_popoverOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft" Class="pa-4 mt-1" Style="width:288px">
+                <MudText Typo="Typo.subtitle2">Dimensions</MudText>
+                <MudText Color="Color.Tertiary" Class="mb-3">Set the dimensions for the layer.</MudText>
+                <MudStack Spacing="2">
+                    <MudTextField T="string" Label="Width" Value="@("100%")" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                    <MudTextField T="string" Label="Height" Value="@("25px")" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                </MudStack>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Class="mt-3" OnClick="@(() => _popoverOpen = false)">Done</MudButton>
+            </MudPopover>
+        </div>
+    </div>
+</DemoSection>
+
+<DemoSection Title="Temporary drawer" Description="shadcn's Sheet. The persistent drawer on the left of this app is the Sidebar.">
+    <MudButton Variant="Variant.Outlined" OnClick="@(() => _sheetOpen = true)">Open sheet</MudButton>
+</DemoSection>
+
+<MudDrawer @bind-Open="_sheetOpen" Anchor="Anchor.Right" Variant="DrawerVariant.Temporary" Width="384px" OverlayAutoClose="true">
+    <MudDrawerHeader Class="d-flex flex-column align-start pa-6">
+        <MudText Typo="Typo.h5">Edit profile</MudText>
+        <MudText Color="Color.Tertiary">Make changes to your profile here.</MudText>
+    </MudDrawerHeader>
+    <MudStack Spacing="4" Class="px-6">
+        <MudTextField T="string" Label="Name" Value="@("Pedro Duarte")" Variant="Variant.Outlined" />
+        <MudTextField T="string" Label="Username" Value="@("@peduarte")" Variant="Variant.Outlined" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => _sheetOpen = false)">Save changes</MudButton>
+    </MudStack>
+</MudDrawer>
+
+@code {
+    [Inject] private IDialogService DialogService { get; set; } = default!;
+    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+
+    private bool _popoverOpen, _sheetOpen;
+    private string? _dialogResult;
+
+    private static readonly DialogOptions Options = new() { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true, CloseOnEscapeKey = true };
+
+    private async Task OpenEditDialogAsync()
+    {
+        var dialog = await DialogService.ShowAsync<EditProfileDialog>(Options);
+        var result = await dialog.Result;
+        _dialogResult = result is { Canceled: false } ? $"saved “{result.Data}”" : "cancelled";
+    }
+
+    private async Task OpenDeleteDialogAsync()
+    {
+        var parameters = new DialogParameters<ConfirmDialog>
+        {
+            { x => x.ContentText, "This action cannot be undone. This will permanently delete your account and remove your data from our servers." },
+            { x => x.ConfirmText, "Delete account" },
+            { x => x.Color, Color.Error },
+        };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(parameters, Options);
+        var result = await dialog.Result;
+        _dialogResult = result is { Canceled: false } ? "confirmed" : "cancelled";
+    }
+
+    private async Task OpenMessageBoxAsync()
+    {
+        var ok = await DialogService.ShowMessageBoxAsync("Discard draft?", "Your unsaved changes will be lost.", yesText: "Discard", cancelText: "Keep editing");
+        _dialogResult = ok == true ? "discarded" : "kept";
+    }
+
+    private void ShowActionSnackbar() =>
+        Snackbar.Add("Event has been created for Sunday at 9:00.", Severity.Normal, config =>
+        {
+            config.Action = "Undo";
+            config.OnClick = _ => { Snackbar.Add("Undone.", Severity.Normal); return Task.CompletedTask; };
+        });
+}

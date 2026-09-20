@@ -1,0 +1,9 @@
+<div class="mb-8">
+    <MudText Typo="Typo.h3">@Title</MudText>
+    <MudText Color="Color.Tertiary" Class="mt-1">@Description</MudText>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter] public string? Description { get; set; }
+}

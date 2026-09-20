@@ -1,0 +1,72 @@
+@namespace MudShadcn
+
+<MudThemeProvider @ref="_themeProvider"
+                  Theme="@(Theme ?? MudShadcnTheme.Default)"
+                  IsDarkMode="@IsDarkMode"
+                  IsDarkModeChanged="@SetDarkModeAsync"
+                  ObserveSystemDarkModeChange="@FollowSystemDarkMode"
+                  DefaultScrollbar="@DefaultScrollbar" />
+
+@* Rendered after MudThemeProvider's own <style>, so MudShadcn.css sees the tokens of the active mode. *@
+<style>@((MarkupString)ShadcnTokens.ToCss(IsDarkMode))</style>
+
+@if (IncludeProviders)
+{
+    <MudPopoverProvider />
+    <MudDialogProvider />
+    <MudSnackbarProvider />
+}
+
+@code {
+    private MudThemeProvider? _themeProvider;
+
+    /// <summary>The theme to apply. Defaults to <see cref="MudShadcnTheme.Default"/>.</summary>
+    [Parameter]
+    public MudTheme? Theme { get; set; }
+
+    /// <summary>Whether the dark palette is active. Supports <c>@bind-IsDarkMode</c>.</summary>
+    [Parameter]
+    public bool IsDarkMode { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsDarkModeChanged { get; set; }
+
+    /// <summary>
+    /// When <c>true</c> (the default, like shadcn's <c>defaultTheme="system"</c>), starts in the
+    /// operating system's colour scheme and follows it when it changes.
+    /// </summary>
+    [Parameter]
+    public bool FollowSystemDarkMode { get; set; } = true;
+
+    /// <summary>
+    /// When <c>true</c> (the default), also renders <see cref="MudPopoverProvider"/>,
+    /// <see cref="MudDialogProvider"/> and <see cref="MudSnackbarProvider"/>, so this is the only
+    /// provider a layout needs. Set to <c>false</c> if you place those yourself.
+    /// </summary>
+    [Parameter]
+    public bool IncludeProviders { get; set; } = true;
+
+    /// <summary>Passed through to <see cref="MudThemeProvider.DefaultScrollbar"/>.</summary>
+    [Parameter]
+    public bool DefaultScrollbar { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && FollowSystemDarkMode && _themeProvider is not null)
+        {
+            await SetDarkModeAsync(await _themeProvider.GetSystemDarkModeAsync());
+        }
+    }
+
+    private async Task SetDarkModeAsync(bool value)
+    {
+        if (IsDarkMode == value)
+        {
+            return;
+        }
+
+        IsDarkMode = value;
+        await IsDarkModeChanged.InvokeAsync(value);
+        StateHasChanged();
+    }
+}

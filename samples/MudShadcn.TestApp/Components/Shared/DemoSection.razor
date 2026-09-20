@@ -1,0 +1,18 @@
+<section class="mb-10">
+    <MudText Typo="Typo.h6">@Title</MudText>
+    @if (Description is not null)
+    {
+        <MudText Color="Color.Tertiary" Class="mb-4">@Description</MudText>
+    }
+    else
+    {
+        <div class="mb-4"></div>
+    }
+    @ChildContent
+</section>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter] public string? Description { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

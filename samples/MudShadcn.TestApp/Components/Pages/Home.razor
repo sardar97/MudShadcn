@@ -1,0 +1,122 @@
+@page "/"
+
+<PageTitle>Buttons &amp; chips · MudShadcn</PageTitle>
+
+<PageHeader Title="Buttons & chips"
+            Description="Stock MudBlazor components. The only thing this app references is the MudShadcn project." />
+
+<DemoSection Title="Button variants" Description="Filled primary, secondary, destructive, outline, ghost and link — shadcn's six.">
+    <div class="demo-row">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary">Primary</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary">Secondary</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error">Destructive</MudButton>
+        <MudButton Variant="Variant.Outlined">Outline</MudButton>
+        <MudButton Variant="Variant.Text">Ghost</MudButton>
+        <MudLink Href="#" Underline="Underline.Hover" Color="Color.Primary" Typo="Typo.button">Link</MudLink>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="true">Disabled</MudButton>
+    </div>
+</DemoSection>
+
+<DemoSection Title="Sizes and icons">
+    <div class="demo-row">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small">Small</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary">Default</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large">Large</MudButton>
+        <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Mail">Login with email</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Outlined.ArrowForward">Continue</MudButton>
+        <MudIconButton Icon="@Icons.Material.Outlined.ChevronRight" Variant="Variant.Outlined" aria-label="Next" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Settings" aria-label="Settings" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="true">
+            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" Style="width:16px;height:16px" />
+            Please wait
+        </MudButton>
+    </div>
+</DemoSection>
+
+<DemoSection Title="Semantic colours" Description="shadcn defines no info, success or warning. MudShadcn fills them from Tailwind's palette.">
+    <div class="demo-row">
+        <MudButton Variant="Variant.Filled" Color="Color.Info">Info</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Success">Success</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Warning">Warning</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Error">Delete</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Info">Learn more</MudButton>
+    </div>
+</DemoSection>
+
+<DemoSection Title="Button group and toggle group">
+    <div class="demo-row">
+        <MudButtonGroup Variant="Variant.Outlined">
+            <MudButton>Archive</MudButton>
+            <MudButton>Report</MudButton>
+            <MudButton>Snooze</MudButton>
+        </MudButtonGroup>
+        <MudToggleGroup T="string" @bind-Value="_alignment" Color="Color.Primary" Size="Size.Small">
+            <MudToggleItem Value="@("left")"><MudIcon Icon="@Icons.Material.Outlined.FormatAlignLeft" Size="Size.Small" /></MudToggleItem>
+            <MudToggleItem Value="@("center")"><MudIcon Icon="@Icons.Material.Outlined.FormatAlignCenter" Size="Size.Small" /></MudToggleItem>
+            <MudToggleItem Value="@("right")"><MudIcon Icon="@Icons.Material.Outlined.FormatAlignRight" Size="Size.Small" /></MudToggleItem>
+        </MudToggleGroup>
+    </div>
+</DemoSection>
+
+<DemoSection Title="Chips" Description="MudChip styled as shadcn's Badge.">
+    <div class="demo-row">
+        <MudChip T="string" Color="Color.Primary">Default</MudChip>
+        <MudChip T="string">Secondary</MudChip>
+        <MudChip T="string" Color="Color.Error">Destructive</MudChip>
+        <MudChip T="string" Variant="Variant.Outlined">Outline</MudChip>
+        <MudChip T="string" Color="Color.Success" Variant="Variant.Text" Icon="@Icons.Material.Outlined.CheckCircle">Verified</MudChip>
+        <MudChip T="string" Size="Size.Small" Color="Color.Primary">8</MudChip>
+        <MudChip T="string" Size="Size.Large" Variant="Variant.Outlined">Large</MudChip>
+    </div>
+    <MudChipSet T="string" @bind-SelectedValues="_frameworks" SelectionMode="SelectionMode.MultiSelection"
+                CheckMark="true" Variant="Variant.Outlined" Class="mt-3" AllClosable="false">
+        <MudChip Value="@("Blazor")" />
+        <MudChip Value="@("Next.js")" />
+        <MudChip Value="@("SvelteKit")" />
+        <MudChip Value="@("Astro")" />
+    </MudChipSet>
+</DemoSection>
+
+<DemoSection Title="Alerts, avatars, badges, progress">
+    <MudStack Spacing="3">
+        <MudAlert Severity="Severity.Normal" Variant="Variant.Outlined" Icon="@Icons.Material.Outlined.Terminal">
+            <b>Heads up!</b> You can add components to your app using the CLI.
+        </MudAlert>
+        <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">
+            <b>Unable to process your payment.</b> Please verify your billing information and try again.
+        </MudAlert>
+        <div class="demo-row">
+            <MudAvatar>SQ</MudAvatar>
+            <MudAvatar Color="Color.Primary">CN</MudAvatar>
+            <MudBadge Content="3" Color="Color.Error" Overlap="true">
+                <MudIconButton Icon="@Icons.Material.Outlined.Notifications" Variant="Variant.Outlined" aria-label="Notifications" />
+            </MudBadge>
+            <MudSkeleton Width="160px" Height="20px" SkeletonType="SkeletonType.Rectangle" />
+            <MudSkeleton SkeletonType="SkeletonType.Circle" Width="36px" Height="36px" />
+        </div>
+        <MudProgressLinear Color="Color.Primary" Value="66" Style="max-width:360px" />
+    </MudStack>
+</DemoSection>
+
+
+<DemoSection Title="Charts" Description="charts.">
+    <div class="demo-row">
+        <MudChart T="double" ChartType="ChartType.Bar" ChartSeries="@_series" ChartLabels="@_xAxisLabels"
+                  ChartOptions="@_options" Width="100%" Height="350px" />
+    </div>
+</DemoSection>
+
+@code {
+    private string _alignment = "left";
+    private IReadOnlyCollection<string> _frameworks = ["Blazor"];
+    
+    private readonly BarChartOptions _options = new() { ShowValues = true };
+
+    private readonly List<ChartSeries<double>> _series =
+    [
+        new() { Name = "United States", Data = new double[] { 40, 20, 25, 27, 46 } },
+        new() { Name = "Germany", Data = new double[] { 19, 24, 35, 13, 28 } },
+    ];
+
+    private readonly string[] _xAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May" };
+}

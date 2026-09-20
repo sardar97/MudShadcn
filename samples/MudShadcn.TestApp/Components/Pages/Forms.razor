@@ -1,0 +1,143 @@
+@page "/forms"
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>Inputs &amp; forms · MudShadcn</PageTitle>
+
+<PageHeader Title="Inputs & forms"
+            Description="Variant.Outlined is the shadcn-looking variant: 36px tall, 1px border, 3px ring on focus. Tab through to see the ring." />
+
+<MudGrid Spacing="6">
+    <MudItem xs="12" md="6">
+        <DemoSection Title="Text inputs">
+            <MudStack Spacing="4">
+                <MudTextField @bind-Value="_email" Label="Email" Placeholder="m@example.com" Variant="Variant.Outlined"
+                              HelperText="We'll never share your email." />
+                <MudTextField @bind-Value="_search" Placeholder="Search…" Variant="Variant.Outlined"
+                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Outlined.Search" />
+                <MudTextField @bind-Value="_password" Label="Password" Variant="Variant.Outlined"
+                              InputType="@(_showPassword ? InputType.Text : InputType.Password)"
+                              Adornment="Adornment.End" OnAdornmentClick="@(() => _showPassword = !_showPassword)"
+                              AdornmentIcon="@(_showPassword ? Icons.Material.Outlined.VisibilityOff : Icons.Material.Outlined.Visibility)"
+                              AdornmentAriaLabel="Show password" />
+                <MudTextField @bind-Value="_dense" Label="Dense (32px)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                <MudNumericField @bind-Value="_quantity" Label="Quantity" Variant="Variant.Outlined" Min="0" Max="99" />
+                <MudTextField @bind-Value="_bio" Label="Bio" Variant="Variant.Outlined" Lines="3" Placeholder="Tell us a little about yourself" />
+                <MudTextField T="string" Label="Disabled" Variant="Variant.Outlined" Disabled="true" Value="@("Read only value")" />
+                <MudTextField T="string" Label="Invalid" Variant="Variant.Outlined" Error="true" ErrorText="This field is required." />
+            </MudStack>
+        </DemoSection>
+    </MudItem>
+
+    <MudItem xs="12" md="6">
+        <DemoSection Title="Select and autocomplete">
+            <MudStack Spacing="4">
+                <MudSelect T="string" @bind-Value="_fruit" Label="Fruit" Placeholder="Select a fruit" Variant="Variant.Outlined">
+                    @foreach (var fruit in Fruits)
+                    {
+                        <MudSelectItem Value="@fruit">@fruit</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudSelect T="string" @bind-SelectedValues="_toppings" MultiSelection="true" Label="Toppings" Variant="Variant.Outlined">
+                    @foreach (var topping in Toppings)
+                    {
+                        <MudSelectItem Value="@topping">@topping</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudAutocomplete T="string" @bind-Value="_framework" Label="Framework" Variant="Variant.Outlined"
+                                 SearchFunc="@SearchFrameworks" ResetValueOnEmptyText="true" CoerceText="true" />
+            </MudStack>
+        </DemoSection>
+
+        <DemoSection Title="Checkbox, radio, switch, slider">
+            <MudStack Spacing="2">
+                <MudCheckBox @bind-Value="_terms" Color="Color.Primary" Label="Accept terms and conditions" />
+                <MudCheckBox T="bool" Color="Color.Primary" Label="Disabled" Disabled="true" />
+                <MudRadioGroup T="string" @bind-Value="_density">
+                    <MudRadio Value="@("default")" Color="Color.Primary">Default</MudRadio>
+                    <MudRadio Value="@("comfortable")" Color="Color.Primary">Comfortable</MudRadio>
+                    <MudRadio Value="@("compact")" Color="Color.Primary">Compact</MudRadio>
+                </MudRadioGroup>
+                <MudSwitch @bind-Value="_airplane" Color="Color.Primary" Label="Airplane mode" />
+                <MudSwitch T="bool" Color="Color.Primary" Label="Disabled" Disabled="true" />
+                <MudSlider @bind-Value="_volume" Min="0" Max="100" Color="Color.Primary">Volume: @_volume</MudSlider>
+            </MudStack>
+        </DemoSection>
+    </MudItem>
+
+    <MudItem xs="12" md="6">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Create an account</MudText>
+                    <MudText Color="Color.Tertiary" Class="mt-2">A validated EditForm using data annotations.</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <EditForm Model="_account" OnValidSubmit="OnValidSubmit" FormName="account">
+                <DataAnnotationsValidator />
+                <MudCardContent>
+                    <MudStack Spacing="4">
+                        <MudTextField @bind-Value="_account.Name" For="@(() => _account.Name)" Label="Name" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="_account.Email" For="@(() => _account.Email)" Label="Email" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="_account.Password" For="@(() => _account.Password)" Label="Password"
+                                      InputType="InputType.Password" Variant="Variant.Outlined" />
+                    </MudStack>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Create account</MudButton>
+                </MudCardActions>
+            </EditForm>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" md="6">
+        <DemoSection Title="Other variants" Description="Text and Filled keep MudBlazor's structure with neutral colours.">
+            <MudStack Spacing="4">
+                <MudTextField T="string" Label="Text variant" Variant="Variant.Text" />
+                <MudTextField T="string" Label="Filled variant" Variant="Variant.Filled" />
+                <MudFileUpload T="IBrowserFile" @bind-Files="_file">
+                    <CustomContent>
+                        <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.UploadFile"
+                                   OnClick="@context.OpenFilePickerAsync">
+                            Choose file
+                        </MudButton>
+                    </CustomContent>
+                </MudFileUpload>
+            </MudStack>
+        </DemoSection>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+
+    private static readonly string[] Fruits = ["Apple", "Banana", "Blueberry", "Grapes", "Pineapple"];
+    private static readonly string[] Toppings = ["Cheese", "Mushroom", "Olives", "Pepperoni", "Rocket"];
+    private static readonly string[] Frameworks = ["Blazor", "Next.js", "SvelteKit", "Nuxt", "Remix", "Astro"];
+
+    private string? _email, _search, _password, _dense, _bio, _fruit, _framework;
+    private IBrowserFile? _file;
+    private bool _showPassword, _terms = true, _airplane = true;
+    private int _quantity = 1, _volume = 50;
+    private string _density = "comfortable";
+    private IReadOnlyCollection<string> _toppings = ["Cheese"];
+    private readonly Account _account = new();
+
+    private static Task<IEnumerable<string>> SearchFrameworks(string? value, CancellationToken token) =>
+        Task.FromResult(string.IsNullOrWhiteSpace(value)
+            ? Frameworks.AsEnumerable()
+            : Frameworks.Where(f => f.Contains(value, StringComparison.OrdinalIgnoreCase)));
+
+    private void OnValidSubmit() => Snackbar.Add($"Account created for {_account.Name}.", Severity.Success);
+
+    private sealed class Account
+    {
+        [Required, StringLength(40, MinimumLength = 2)]
+        public string? Name { get; set; }
+
+        [Required, EmailAddress]
+        public string? Email { get; set; }
+
+        [Required, MinLength(8, ErrorMessage = "Password must be at least 8 characters.")]
+        public string? Password { get; set; }
+    }
+}

@@ -1,0 +1,31 @@
+@page "/pickers"
+
+<PageTitle>Date &amp; time · MudShadcn</PageTitle>
+
+<PageHeader Title="Date & time pickers" Description="MudBlazor's pickers with shadcn's calendar treatment: 32px rounded days, neutral toolbar." />
+
+<MudGrid Spacing="6">
+    <MudItem xs="12" md="6">
+        <DemoSection Title="In a popover">
+            <MudStack Spacing="4">
+                <MudDatePicker @bind-Date="_date" Label="Date of birth" Variant="Variant.Outlined" Editable="true" />
+                <MudDateRangePicker @bind-DateRange="_range" Label="Booking period" Variant="Variant.Outlined" />
+                <MudTimePicker @bind-Time="_time" Label="Meeting time" Variant="Variant.Outlined" />
+                <MudTimePicker @bind-Time="_time" Label="12 hour" AmPm="true" Variant="Variant.Outlined" />
+                <MudColorPicker @bind-Value="_color" Label="Accent colour" Variant="Variant.Outlined" />
+            </MudStack>
+        </DemoSection>
+    </MudItem>
+    <MudItem xs="12" md="6">
+        <DemoSection Title="Static">
+            <MudDatePicker @bind-Date="_date" PickerVariant="PickerVariant.Static" Elevation="1" />
+        </DemoSection>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private DateTime? _date = DateTime.Today;
+    private DateRange? _range = new(DateTime.Today, DateTime.Today.AddDays(6));
+    private TimeSpan? _time = new TimeSpan(9, 30, 0);
+    private MudBlazor.Utilities.MudColor _color = new("#155dfc");
+}
