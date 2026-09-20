@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>MudShadcn</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Sardar Qaslany</Authors>
+    <Description>A shadcn/ui look and feel for MudBlazor: neutral palette, flat surfaces, subtle borders, shadcn focus rings and radii. Ships the full MudBlazor component library, so MudShadcn is the only package you reference.</Description>
+    <PackageTags>blazor;mudblazor;shadcn;theme;components;ui</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      MudBlazor is a normal (non-private) dependency on purpose: it flows transitively to
+      consumers, including its static web assets (_content/MudBlazor/*), so a consuming app
+      only references MudShadcn. Do not add PrivateAssets here.
+    -->
+    <PackageReference Include="MudBlazor" Version="9.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>
