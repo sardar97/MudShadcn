@@ -95,8 +95,13 @@ inline. An override only wins at equal or higher specificity, because `MudShadcn
 
 - `src/MudShadcn/MudShadcn.csproj`: the `MudBlazor` `PackageReference` version.
 - The `Written against MudBlazor x.y.z` line at the top of `MudShadcn.css`.
-- The version table in `src/MudShadcn/README.md`, and `OLD=` in this file.
-- `<Version>` of MudShadcn itself. Use a major bump if MudBlazor's major changed.
+- The Versions table in `README.md`, and `OLD=` in this file.
+- The MudBlazor version in `samples/MudShadcn.Showcase/wwwroot/skill.md` (frontmatter and first
+  paragraph) and `wwwroot/llms.txt`.
+- An entry under `## [Unreleased]` in `CHANGELOG.md` naming the new MudBlazor version and anything
+  that changed for consumers. Do not set MudShadcn's own `<Version>` or tag a release: that is
+  `RELEASE.md`, and Sardar does it. Note in the report that a MudBlazor major change means a
+  MudShadcn major version.
 
 ### 5. Re-port the showcase
 
