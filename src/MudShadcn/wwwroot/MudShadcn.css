@@ -218,6 +218,28 @@ body {
     gap: 8px;                                         /* gap-2 */
 }
 
+.mud-button-filled-size-small .mud-button-label,
+.mud-button-outlined-size-small .mud-button-label,
+.mud-button-text-size-small .mud-button-label {
+    gap: 6px;                                         /* sm: gap-1.5 */
+}
+
+/* has-[>svg]:px-3 (sm: px-2.5, lg: px-4) */
+.mud-button:has(> .mud-button-label > :is(.mud-button-icon-start, .mud-button-icon-end)) {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+:is(.mud-button-filled-size-small, .mud-button-outlined-size-small, .mud-button-text-size-small):has(> .mud-button-label > :is(.mud-button-icon-start, .mud-button-icon-end)) {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+:is(.mud-button-filled-size-large, .mud-button-outlined-size-large, .mud-button-text-size-large):has(> .mud-button-label > :is(.mud-button-icon-start, .mud-button-icon-end)) {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
 .mud-button .mud-button-icon-start,
 .mud-button .mud-button-icon-end {
     margin: 0;
@@ -307,6 +329,16 @@ body {
     background-color: var(--shadcn-hover);
 }
 
+/* MudBlazor tints these with primary/secondary at 4%, which is invisible on the neutral palette. */
+.mud-button-text.mud-button-text-primary:hover,
+.mud-button-text.mud-button-text-primary:focus-visible,
+.mud-button-text.mud-button-text-primary:active,
+.mud-button-text.mud-button-text-secondary:hover,
+.mud-button-text.mud-button-text-secondary:focus-visible,
+.mud-button-text.mud-button-text-secondary:active {
+    background-color: var(--shadcn-hover);
+}
+
 /* Secondary is a light grey surface in shadcn; as a text/outline colour it takes its foreground. */
 .mud-button-text.mud-button-text-secondary,
 .mud-button-outlined.mud-button-outlined-secondary,
@@ -315,7 +347,54 @@ body {
     color: var(--mud-palette-secondary-text) !important;
 }
 
-/* icon: size-9 */
+/*
+ * disabled:opacity-50 keeps the variant's own colours. MudBlazor swaps them for the action-disabled
+ * greys with !important, which under the opacity leaves a button barely visible, so they are restored
+ * here (filled: bg + text; outlined, text, icon button: text).
+ */
+.mud-button-root:disabled.mud-button-filled,
+.mud-button-root:disabled.mud-button-filled.mud-button-filled-secondary,
+.mud-button-root:disabled.mud-fab,
+.mud-button-root:disabled.mud-fab.mud-fab-filled-secondary {
+    background-color: var(--mud-palette-secondary) !important;
+    color: var(--mud-palette-secondary-text) !important;
+}
+
+.mud-button-root:disabled:is(.mud-button-filled-primary, .mud-fab-filled-primary) { background-color: var(--mud-palette-primary) !important; color: var(--mud-palette-primary-text) !important; }
+.mud-button-root:disabled:is(.mud-button-filled-tertiary, .mud-fab-filled-tertiary) { background-color: var(--mud-palette-tertiary) !important; color: var(--mud-palette-tertiary-text) !important; }
+.mud-button-root:disabled:is(.mud-button-filled-info, .mud-fab-filled-info) { background-color: var(--mud-palette-info) !important; color: var(--mud-palette-info-text) !important; }
+.mud-button-root:disabled:is(.mud-button-filled-success, .mud-fab-filled-success) { background-color: var(--mud-palette-success) !important; color: var(--mud-palette-success-text) !important; }
+.mud-button-root:disabled:is(.mud-button-filled-warning, .mud-fab-filled-warning) { background-color: var(--mud-palette-warning) !important; color: var(--mud-palette-warning-text) !important; }
+.mud-button-root:disabled:is(.mud-button-filled-error, .mud-fab-filled-error) { background-color: var(--shadcn-destructive-background) !important; color: #fff !important; }
+.mud-button-root:disabled:is(.mud-button-filled-dark, .mud-fab-filled-dark) { background-color: var(--mud-palette-dark) !important; color: var(--mud-palette-dark-text) !important; }
+
+.mud-button-root:disabled:is(.mud-button-outlined, .mud-button-text, .mud-fab-outlined, .mud-fab-text) {
+    color: var(--mud-palette-text-primary) !important;
+}
+
+.mud-button-root:disabled.mud-fab-outlined { background-color: var(--mud-palette-background) !important; }
+.mud-button-root:disabled.mud-fab-text { background-color: transparent !important; }
+
+.mud-icon-button:disabled:not(.mud-button) {
+    color: var(--mud-palette-action-default) !important;
+}
+
+.mud-button-root:disabled:is(.mud-button-outlined-primary, .mud-button-text-primary, .mud-fab-outlined-primary, .mud-fab-text-primary, .mud-primary-text) { color: var(--mud-palette-primary) !important; }
+.mud-button-root:disabled:is(.mud-button-outlined-secondary, .mud-button-text-secondary, .mud-fab-outlined-secondary, .mud-fab-text-secondary, .mud-secondary-text) { color: var(--mud-palette-secondary-text) !important; }
+.mud-button-root:disabled:is(.mud-button-outlined-tertiary, .mud-button-text-tertiary, .mud-fab-outlined-tertiary, .mud-fab-text-tertiary, .mud-tertiary-text) { color: var(--mud-palette-tertiary) !important; }
+.mud-button-root:disabled:is(.mud-button-outlined-info, .mud-button-text-info, .mud-fab-outlined-info, .mud-fab-text-info, .mud-info-text) { color: var(--mud-palette-info) !important; }
+.mud-button-root:disabled:is(.mud-button-outlined-success, .mud-button-text-success, .mud-fab-outlined-success, .mud-fab-text-success, .mud-success-text) { color: var(--mud-palette-success) !important; }
+.mud-button-root:disabled:is(.mud-button-outlined-warning, .mud-button-text-warning, .mud-fab-outlined-warning, .mud-fab-text-warning, .mud-warning-text) { color: var(--mud-palette-warning) !important; }
+.mud-button-root:disabled:is(.mud-button-outlined-error, .mud-button-text-error, .mud-fab-outlined-error, .mud-fab-text-error, .mud-error-text) { color: var(--mud-palette-error) !important; }
+.mud-button-root:disabled:is(.mud-button-outlined-dark, .mud-button-text-dark, .mud-fab-outlined-dark, .mud-fab-text-dark, .mud-dark-text) { color: var(--mud-palette-dark) !important; }
+.mud-button-root:disabled:is(.mud-button-outlined-inherit, .mud-button-text-inherit, .mud-inherit-text) { color: inherit !important; }
+
+.mud-button-root.mud-button-outlined:disabled,
+.mud-button-root.mud-fab-outlined:disabled {
+    border-color: var(--mud-palette-lines-inputs);
+}
+
+/* icon: size-9; the text variant keeps MudBlazor's compact small size (28px) used inside other components */
 .mud-icon-button {
     border-radius: var(--mud-default-borderradius);
     padding: 8px;
@@ -326,12 +405,46 @@ body {
     padding: 6px;
 }
 
+.mud-icon-button.mud-icon-button-size-large {
+    padding: 10px;                                    /* icon-lg: size-10 */
+}
+
 .mud-icon-button .mud-icon-root {
     font-size: 1.25rem;
 }
 
 .mud-icon-button-size-small .mud-icon-root.mud-icon-size-small {
     font-size: 1rem;
+}
+
+/* Filled / outlined icon buttons are .mud-button too: square, not h-9 px-4. */
+.mud-icon-button.mud-button {
+    width: 36px;                                      /* size-9 */
+    height: 36px;
+    padding: 0;
+}
+
+.mud-icon-button.mud-button.mud-icon-button-size-small {
+    width: 32px;                                      /* icon-sm: size-8 */
+    height: 32px;
+}
+
+.mud-icon-button.mud-button.mud-icon-button-size-large {
+    width: 40px;                                      /* icon-lg: size-10 */
+    height: 40px;
+}
+
+.mud-icon-button.mud-button > .mud-icon-button-label > .mud-icon-root {
+    font-size: 1.25rem;
+}
+
+.mud-icon-button.mud-button.mud-icon-button-size-small > .mud-icon-button-label > .mud-icon-root {
+    font-size: 1rem;
+}
+
+/* MudToggleIconButton, toggled on: data-[state=on]:bg-accent */
+.mud-icon-button[aria-pressed="true"]:not(.mud-button-filled) {
+    background-color: var(--shadcn-hover);
 }
 
 .mud-fab {
@@ -343,34 +456,182 @@ body {
     border-radius: var(--mud-default-borderradius);
 }
 
-.mud-button-group-root.mud-button-group-filled .mud-button-root:not(:last-child) {
+/* Separators between grouped buttons: a faint line in the button's own text colour. */
+.mud-button-group-root.mud-button-group-filled.mud-button-group-override-styles.mud-button-group-horizontal[class*="mud-button-group-filled-"] .mud-button-root:not(:first-child),
+.mud-button-group-root.mud-button-group-filled.mud-button-group-override-styles.mud-button-group-horizontal[class*="mud-button-group-filled-"] > :not(:first-child) .mud-button-root,
+.mud-button-group-root.mud-button-group-filled.mud-button-group-override-styles.mud-button-group-vertical[class*="mud-button-group-filled-"] .mud-button-root:not(:first-child),
+.mud-button-group-root.mud-button-group-filled.mud-button-group-override-styles.mud-button-group-vertical[class*="mud-button-group-filled-"] > :not(:first-child) .mud-button-root {
     border-color: color-mix(in oklab, currentColor 20%, transparent);
 }
 
-.mud-button-group-outlined.mud-button-group-override-styles .mud-button-root {
-    padding: 8px 16px;
-    border-color: var(--mud-palette-lines-inputs);
+/* Ghost buttons in a group: the separators are border lines, not the group colour. */
+.mud-button-group-root.mud-button-group-text.mud-button-group-override-styles.mud-button-group-horizontal[class*="mud-button-group-text-"] .mud-button-root:not(:first-child),
+.mud-button-group-root.mud-button-group-text.mud-button-group-override-styles.mud-button-group-horizontal[class*="mud-button-group-text-"] > :not(:first-child) .mud-button-root,
+.mud-button-group-root.mud-button-group-text.mud-button-group-override-styles.mud-button-group-vertical[class*="mud-button-group-text-"] .mud-button-root:not(:last-child),
+.mud-button-group-root.mud-button-group-text.mud-button-group-override-styles.mud-button-group-vertical[class*="mud-button-group-text-"] > :not(:last-child) .mud-button-root {
+    border-color: var(--mud-palette-lines-default);
+}
+
+.mud-button-group-root.mud-button-group-override-styles .mud-button-root {
+    padding: 8px 16px;                                /* px-4 py-2 */
+}
+
+.mud-button-group-root.mud-button-group-outlined.mud-button-group-override-styles .mud-button-root {
+    border-color: var(--mud-palette-lines-inputs);    /* outline: border-input, whatever the group colour */
+    background-color: var(--shadcn-input-background);
     box-shadow: none;
+}
+
+.mud-button-group-root.mud-button-group-override-styles:is(.mud-button-group-outlined, .mud-button-group-text) .mud-button-root:hover,
+.mud-button-group-root.mud-button-group-override-styles:is(.mud-button-group-outlined, .mud-button-group-text) .mud-button-root:focus-visible,
+.mud-button-group-root.mud-button-group-override-styles:is(.mud-button-group-outlined, .mud-button-group-text) .mud-button-root:active {
+    background-color: var(--shadcn-hover);            /* hover:bg-accent */
+}
+
+.mud-button-group-root.mud-button-group-override-styles.mud-button-group-outlined-secondary .mud-button-root,
+.mud-button-group-root.mud-button-group-override-styles.mud-button-group-text-secondary .mud-button-root {
+    color: var(--mud-palette-secondary-text);
 }
 
 .mud-button-group-root.mud-button-group-outlined {
     box-shadow: var(--shadcn-shadow-xs) !important;
 }
 
+/* Group sizes: sm h-8 px-3, lg h-10 px-6, text-sm throughout */
+.mud-button-group-root:is(.mud-button-group-filled-size-small, .mud-button-group-outlined-size-small, .mud-button-group-text-size-small) .mud-button-root {
+    height: 32px;
+    padding: 0 12px;
+    font-size: 0.875rem;
+}
+
+.mud-button-group-root:is(.mud-button-group-filled-size-large, .mud-button-group-outlined-size-large, .mud-button-group-text-size-large) .mud-button-root {
+    height: 40px;
+    padding: 0 24px;
+    font-size: 0.875rem;
+}
+
+/* [&>*]:focus-visible:z-10, so the ring is not covered by the next button */
+.mud-button-group-root .mud-button-root:focus-visible {
+    z-index: 1;
+}
+
+/* Icon buttons in a group: size="icon" (size-9 / size-8 / size-10) */
+.mud-button-group-root .mud-button-root.mud-icon-button,
+.mud-button-group-root.mud-button-group-override-styles .mud-button-root.mud-icon-button {
+    box-sizing: border-box;
+    height: 36px;
+    min-width: 36px;
+    padding: 0;
+}
+
+.mud-button-group-root:is(.mud-button-group-filled-size-small, .mud-button-group-outlined-size-small, .mud-button-group-text-size-small) .mud-button-root.mud-icon-button {
+    height: 32px;
+    min-width: 32px;
+    padding: 0;
+}
+
+.mud-button-group-root:is(.mud-button-group-filled-size-large, .mud-button-group-outlined-size-large, .mud-button-group-text-size-large) .mud-button-root.mud-icon-button {
+    height: 40px;
+    min-width: 40px;
+    padding: 0;
+}
+
+.mud-button-group-root .mud-button-root.mud-icon-button > .mud-icon-button-label > .mud-icon-root {
+    font-size: 1.25rem;
+}
+
+/* Toggle group: rounded-md; items h-9 px-3 text-sm font-medium; outline adds border-input + shadow-xs */
 .mud-toggle-group.mud-toggle-group-outlined,
 .mud-toggle-group.mud-toggle-group-outlined[class*="mud-toggle-group-"] {
     border-color: var(--mud-palette-lines-inputs);
     box-shadow: var(--shadcn-shadow-xs);
 }
 
-.mud-toggle-group > .mud-toggle-item {
-    padding: 7px 10px;
+/* Not clipped, so an item's focus ring shows; the end items take the group's corners instead. */
+.mud-toggle-group {
+    overflow: visible;
 }
 
-/* data-[state=on]:bg-accent */
-.mud-toggle-group > .mud-toggle-item.mud-toggle-item-selected {
+.mud-toggle-group-horizontal > .mud-toggle-item:first-child {
+    border-start-start-radius: inherit;
+    border-end-start-radius: inherit;
+}
+
+.mud-toggle-group-horizontal > .mud-toggle-item:last-child {
+    border-start-end-radius: inherit;
+    border-end-end-radius: inherit;
+}
+
+.mud-toggle-group-vertical > .mud-toggle-item:first-child {
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+}
+
+.mud-toggle-group-vertical > .mud-toggle-item:last-child {
+    border-end-start-radius: inherit;
+    border-end-end-radius: inherit;
+}
+
+.mud-toggle-group > .mud-toggle-item.mud-button-root {
+    height: auto;
+    min-height: 36px;                                 /* h-9 */
+    padding: 6px 12px;                                /* px-3 */
+    box-shadow: none;                                 /* data-[spacing=0]:shadow-none */
+}
+
+.mud-toggle-group > .mud-toggle-item.mud-toggle-item-size-small {
+    min-height: 32px;                                 /* sm: h-8 */
+    padding: 4px 12px;
+}
+
+.mud-toggle-group > .mud-toggle-item.mud-toggle-item-size-large {
+    min-height: 40px;                                 /* lg: h-10 */
+    padding: 8px 12px;
+}
+
+.mud-toggle-group > .mud-toggle-item.mud-button-root:focus-visible {
+    z-index: 1;                                       /* focus-visible:z-10 */
+}
+
+/* Off: bg-transparent in the foreground colour, whatever the group colour */
+.mud-toggle-group > .mud-toggle-item:not(.mud-toggle-item-selected) {
+    background-color: transparent;
+    color: var(--mud-palette-text-primary);
+}
+
+/* hover:bg-muted hover:text-muted-foreground (outline: hover:bg-accent hover:text-accent-foreground) */
+.mud-toggle-group > .mud-toggle-item:not(.mud-toggle-item-selected):hover {
+    background-color: var(--shadcn-hover);
+}
+
+.mud-toggle-group:not(.mud-toggle-group-outlined) > .mud-toggle-item:not(.mud-toggle-item-selected):hover {
+    color: var(--mud-palette-text-secondary);
+}
+
+/* data-[state=on]:bg-accent text-accent-foreground. A semantic group colour (Tertiary, Info, Success,
+   Warning, Error, Dark) keeps MudBlazor's filled look for the selected item. */
+.mud-toggle-group > .mud-toggle-item.mud-toggle-item-selected:not(.mud-button-filled-tertiary, .mud-button-filled-info, .mud-button-filled-success, .mud-button-filled-warning, .mud-button-filled-error, .mud-button-filled-dark) {
     background-color: var(--shadcn-hover);
     color: var(--mud-palette-text-primary);
+}
+
+.mud-toggle-group > .mud-toggle-item:disabled:not(.mud-toggle-item-selected) {
+    background-color: transparent !important;
+    color: var(--mud-palette-text-primary) !important;
+}
+
+.mud-toggle-group > .mud-toggle-item.mud-toggle-item-selected:disabled:not(.mud-button-filled-tertiary, .mud-button-filled-info, .mud-button-filled-success, .mud-button-filled-warning, .mud-button-filled-error, .mud-button-filled-dark) {
+    background-color: var(--shadcn-hover) !important;
+    color: var(--mud-palette-text-primary) !important;
+}
+
+/* [&_svg]:size-4 for the check mark; an icon as the whole item reads like an icon button */
+.mud-toggle-item .mud-toggle-item-check-icon.mud-icon-root {
+    font-size: 1rem;
+}
+
+.mud-toggle-item .mud-toggle-item-content > .mud-icon-root {
+    font-size: 1.25rem;
 }
 
 /* ---------------------------------------------------------------------------------------------
@@ -1241,9 +1502,8 @@ label.mud-input-label.mud-input-error {
     text-decoration: none;
 }
 
-.mud-link.mud-link-underline-hover:hover,
-.mud-link.mud-link-underline-always {
-    text-underline-offset: 4px;
+.mud-link {
+    text-underline-offset: 4px;                       /* underline-offset-4 */
 }
 
 /* ---------------------------------------------------------------------------------------------
@@ -1847,6 +2107,124 @@ label.mud-input-label.mud-input-error {
 /* ---------------------------------------------------------------------------------------------
    16. Buttons: FAB, FAB menu, toggle icon button, links
    --------------------------------------------------------------------------------------------- */
+
+/*
+ * FAB (and the FAB menu's button and items). shadcn has no FAB, so it is a rounded-full button in
+ * the button variants: filled → default / secondary / destructive, outlined → outline, text → ghost.
+ * A filled FAB floats on shadow-md unless DropShadow="false". MudBlazor's sizes (40 / 48 / 56px,
+ * extended 34 / 40 / 48px) are kept; icons follow the icon button (20px), size-4 next to a label.
+ */
+.mud-fab:not(.mud-fab-text, .mud-fab-outlined, .mud-fab-disable-elevation, :disabled),
+.mud-fab:not(.mud-fab-text, .mud-fab-outlined, .mud-fab-disable-elevation, :disabled):hover,
+.mud-fab:not(.mud-fab-text, .mud-fab-outlined, .mud-fab-disable-elevation, :disabled):active {
+    box-shadow: var(--shadcn-shadow-md);
+}
+
+.mud-fab .mud-fab-label > .mud-icon-root {
+    font-size: 1.25rem;
+}
+
+.mud-fab.mud-fab-size-large .mud-fab-label > .mud-icon-root {
+    font-size: 1.5rem;
+}
+
+.mud-fab.mud-fab-extended .mud-fab-label > .mud-icon-root {
+    font-size: 1rem;                                  /* [&_svg]:size-4 */
+}
+
+/* Color.Default (markup-only class) → secondary, like MudButton */
+.mud-fab.mud-fab-filled-default {
+    background-color: var(--mud-palette-secondary);
+    color: var(--mud-palette-secondary-text);
+}
+
+.mud-fab.mud-fab-filled-default:hover,
+.mud-fab.mud-fab-filled-default:focus-visible,
+.mud-fab.mud-fab-filled-default:active,
+.mud-fab.mud-fab-filled-secondary:hover,
+.mud-fab.mud-fab-filled-secondary:focus-visible,
+.mud-fab.mud-fab-filled-secondary:active {
+    background-color: color-mix(in oklab, var(--mud-palette-secondary) 80%, transparent);  /* hover:bg-secondary/80 */
+}
+
+.mud-fab.mud-fab-filled-primary:hover,
+.mud-fab.mud-fab-filled-primary:focus-visible,
+.mud-fab.mud-fab-filled-primary:active {
+    background-color: color-mix(in oklab, var(--mud-palette-primary) 90%, transparent);    /* hover:bg-primary/90 */
+}
+
+.mud-fab.mud-fab-filled-error {
+    background-color: var(--shadcn-destructive-background);
+    color: #fff;
+}
+
+.mud-fab.mud-fab-filled-error:hover,
+.mud-fab.mud-fab-filled-error:focus-visible,
+.mud-fab.mud-fab-filled-error:active {
+    background-color: color-mix(in oklab, var(--shadcn-destructive-background) 90%, transparent);
+}
+
+.mud-fab.mud-fab-filled-error:focus-visible {
+    box-shadow: var(--shadcn-focus-ring-destructive) !important;
+}
+
+/* outline: border bg-background shadow-xs hover:bg-accent dark:bg-input/30. Opaque, because a FAB
+   (and an open FAB menu's items) floats over content. */
+.mud-fab-outlined,
+.mud-fab-outlined[class*="mud-fab-outlined-"] {
+    border: 1px solid var(--mud-palette-lines-inputs);
+    background-color: var(--mud-palette-background);
+    background-image: linear-gradient(var(--shadcn-input-background), var(--shadcn-input-background));
+    box-shadow: var(--shadcn-shadow-xs);
+}
+
+.mud-fab-outlined:hover,
+.mud-fab-outlined[class*="mud-fab-outlined-"]:hover,
+.mud-fab-outlined[class*="mud-fab-outlined-"]:active {
+    background-color: var(--shadcn-hover);
+    border-color: var(--mud-palette-lines-inputs);
+    box-shadow: var(--shadcn-shadow-xs);
+}
+
+.mud-fab-outlined[class*="mud-fab-outlined-"]:focus-visible {
+    background-color: var(--shadcn-hover);
+    border-color: var(--shadcn-ring);
+}
+
+/* ghost: hover:bg-accent (semantic colours keep MudBlazor's tinted hover, like MudButton) */
+.mud-fab-text:hover,
+.mud-fab-text:focus-visible,
+.mud-fab-text:active,
+.mud-fab-text.mud-fab-text-primary:hover,
+.mud-fab-text.mud-fab-text-primary:focus-visible,
+.mud-fab-text.mud-fab-text-primary:active,
+.mud-fab-text.mud-fab-text-secondary:hover,
+.mud-fab-text.mud-fab-text-secondary:focus-visible,
+.mud-fab-text.mud-fab-text-secondary:active {
+    background-color: var(--shadcn-hover);
+}
+
+/* Secondary as a text colour is its foreground, as for MudButton. */
+.mud-fab-outlined.mud-fab-outlined-secondary,
+.mud-fab-text.mud-fab-text-secondary {
+    color: var(--mud-palette-secondary-text);
+}
+
+/* FAB menu items: MudBlazor's "dampened" copy of the item background is a square; keep it round. */
+.mud-fab-menu-container .mud-fab-menu.mud-fab-menu-dampen .mud-fab-menu-item::before {
+    border-radius: inherit;
+}
+
+/* link: text-primary font-medium underline-offset-4 hover:underline, with the focus ring */
+.mud-link:not([class*="mud-typography-"]) {
+    font-weight: 500;
+}
+
+.mud-link:focus-visible {
+    outline: none;
+    border-radius: var(--shadcn-radius-sm);
+    box-shadow: var(--shadcn-focus-ring);
+}
 
 /* (end of section 16) */
 
