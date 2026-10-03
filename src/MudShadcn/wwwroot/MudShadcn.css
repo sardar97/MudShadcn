@@ -1627,6 +1627,23 @@ label.mud-input-label.mud-input-error {
     border-radius: var(--mud-default-borderradius);
 }
 
+/* Static: a standalone Calendar, rounded-md border shadow-sm (MudBlazor marks it square). */
+.mud-picker-static > .mud-picker-paper {
+    border: 1px solid var(--mud-palette-lines-default);
+}
+
+/* Inline: the popover already draws border + shadow-md, so the paper inside adds neither. */
+.mud-picker-popover .mud-paper.mud-picker-paper.mud-picker-popover-paper {
+    border: 0;
+    border-radius: calc(var(--mud-default-borderradius) - 1px);
+    box-shadow: none;
+}
+
+/* Dialog: a dialog surface, rounded-lg */
+.mud-picker-paper.mud-dialog {
+    border-radius: var(--shadcn-radius-lg);
+}
+
 .mud-picker-toolbar {
     height: auto;
     padding: 16px 16px 12px;
@@ -1634,6 +1651,12 @@ label.mud-input-label.mud-input-error {
     color: var(--mud-palette-text-primary) !important;
     border-bottom: 1px solid var(--mud-palette-lines-default);
     border-radius: 0 !important;
+}
+
+.mud-picker-toolbar.mud-picker-toolbar-landscape {
+    padding: 16px;
+    border-bottom: 0;
+    border-inline-end: 1px solid var(--mud-palette-lines-default);
 }
 
 .mud-picker-toolbar .mud-button-root {
@@ -1657,40 +1680,115 @@ label.mud-input-label.mud-input-error {
     text-transform: none;
 }
 
-.mud-picker-toolbar .mud-timepicker-hourminute .mud-button-root,
-.mud-picker-toolbar .mud-timepicker-hourminute .mud-typography,
-.mud-picker-toolbar .mud-timepicker-separator {
-    font-size: 2.25rem;
+.mud-picker-toolbar-landscape .mud-button-date,
+.mud-picker-toolbar-landscape .mud-button-date .mud-typography {
+    font-size: 1.25rem;                               /* text-xl: fits MudBlazor's 150px column */
+    line-height: 1.75rem;
+}
+
+.mud-picker-toolbar.mud-picker-timepicker-toolbar .mud-timepicker-hourminute .mud-button-root.mud-timepicker-button,
+.mud-picker-toolbar.mud-picker-timepicker-toolbar .mud-timepicker-hourminute .mud-typography,
+.mud-picker-toolbar.mud-picker-timepicker-toolbar .mud-timepicker-separator {
+    font-size: 2.25rem;                               /* text-4xl font-semibold tracking-tight */
     font-weight: 600;
     line-height: 2.5rem;
     letter-spacing: -0.025em;
 }
 
-.mud-picker-toolbar .mud-timepicker-toolbar-text {
-    opacity: 0.45;
+/* The segment not being edited: text-muted-foreground */
+.mud-picker-toolbar .mud-button-root.mud-timepicker-toolbar-text {
+    color: var(--mud-palette-text-secondary) !important;
 }
 
-.mud-picker-calendar-header-switch .mud-button-month {
+.mud-picker .mud-picker-actions {
+    padding: 0 12px 12px;                             /* p-3, buttons gap-2 */
+}
+
+/*
+ * Calendar header: [ghost size-8 button] caption [ghost size-8 button], p-3 from the top and
+ * gap-4 above the weekday row. The caption is MudBlazor's month/year switch button.
+ */
+.mud-picker-calendar-header-switch {
+    margin: 12px 19px 16px;                           /* in line with the first and last day */
+}
+
+.mud-picker-calendar-header-switch > .mud-icon-button {
+    margin: 0;
+    padding: 8px;
+    color: var(--mud-palette-text-primary);
+    background-color: transparent;
+}
+
+.mud-picker-calendar-header-switch > .mud-icon-button:hover {
+    background-color: var(--shadcn-hover);
+}
+
+.mud-picker-calendar-header-switch > .mud-icon-button .mud-icon-root {
+    font-size: 1rem;                                  /* size-4 */
+}
+
+.mud-picker-calendar-header-switch .mud-picker-calendar-header-transition {
+    height: 32px;
+    margin: 0 4px;
+    border-radius: var(--shadcn-radius-md);
+    transition: background-color var(--shadcn-transition);
+}
+
+.mud-picker-calendar-header-switch button.mud-picker-calendar-header-transition:hover {
+    background-color: var(--shadcn-hover);
+}
+
+.mud-picker-calendar-header-switch .mud-picker-calendar-header-transition .mud-typography,
+.mud-picker-calendar-header-switch .mud-picker-calendar-header-transition.mud-typography {
+    font-size: 0.875rem;                              /* text-sm font-medium */
     font-weight: 500;
-    font-size: 0.875rem;
+    line-height: 32px;
+}
+
+.mud-picker-calendar-header-day {
+    max-height: none;
 }
 
 .mud-picker-calendar-header-day .mud-day-label {
-    font-size: 0.8rem;
+    font-size: 0.8rem;                                /* text-[0.8rem] font-normal text-muted-foreground */
     font-weight: 400;
+    line-height: 1.2rem;
     width: 32px;
     margin: 0 4px;
 }
 
+.mud-picker-calendar-week .mud-typography.mud-picker-calendar-week-text {
+    margin-top: 0 !important;                         /* MudBlazor nudges it with !important */
+    font-size: 0.8rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+/*
+ * Six weeks of 40px rows; the rows are absolutely positioned, so the height is set here.
+ * A month that fits in five weeks hides the sixth row, and the calendar closes up like shadcn's.
+ */
+.mud-picker-calendar-transition {
+    margin-top: 4px;
+    min-height: 240px;
+}
+
+.mud-picker-calendar-transition:has(.mud-day:nth-child(36 of .mud-day).mud-hidden) {
+    min-height: 200px;
+}
+
 /*
  * MudBlazor's calendar is a wrapping flex row that relies on a 40px cell pitch to break after
- * seven days. Keep the pitch (32px --cell-size + 4px margins) or the weeks misalign.
+ * seven days. Keep the pitch (32px --cell-size + 4px margins) or the weeks misalign. The 4px
+ * vertical margins give shadcn's mt-2 between weeks.
  */
 .mud-picker-calendar .mud-day {
     width: 32px;
     height: 32px;
-    margin: 2px 4px;
+    margin: 4px;
+    padding: 0;
+    border-width: 0;
     border-radius: var(--shadcn-radius-md);
+    box-shadow: none;
     font-size: 0.875rem;
     font-weight: 400;
 }
@@ -1699,10 +1797,11 @@ label.mud-input-label.mud-input-error {
     background-color: var(--shadcn-hover);
 }
 
-.mud-picker-calendar .mud-day.mud-current:not(.mud-selected) {
+/* today: bg-accent text-accent-foreground (MudBlazor renders it as an outlined button) */
+.mud-picker-calendar .mud-day.mud-current:not(.mud-selected):where(:not(.mud-range-selection:hover)) {
     background-color: var(--shadcn-hover);
     color: var(--mud-palette-text-primary) !important;
-    border-color: transparent !important;
+    border-width: 0;
     font-weight: 400;
 }
 
@@ -1710,19 +1809,96 @@ label.mud-input-label.mud-input-error {
     font-weight: 400;
 }
 
+/* disabled: text-muted-foreground opacity-50 (the opacity comes from the button rule) */
+.mud-picker-calendar .mud-day:disabled {
+    color: var(--mud-palette-text-secondary) !important;
+}
+
 .mud-picker-calendar .mud-day .mud-typography {
     margin-top: 0;
     font-size: inherit;
+    line-height: 1;
+}
+
+/*
+ * Year and month views: ghost buttons; the selected one is filled like a selected day. Its
+ * colour class (.mud-primary-text, …) sets --mud-ripple-color to the picker's palette colour.
+ */
+.mud-picker-year-container {
+    padding: 4px 0;
+}
+
+.mud-picker-year-container .mud-picker-year {
+    height: 36px;
+    margin: 0 12px 4px;
+    border-radius: var(--shadcn-radius-md);
+}
+
+.mud-picker-month-container .mud-picker-month {
+    flex-basis: calc(33.33% - 8px);
+    height: 36px;
+    margin: 12px 4px;
+    border-radius: var(--shadcn-radius-md);
+}
+
+.mud-picker-year-container .mud-picker-year:hover,
+.mud-picker-month-container .mud-picker-month:hover {
+    background-color: var(--shadcn-hover);
 }
 
 .mud-picker-year-container .mud-picker-year .mud-typography,
 .mud-picker-month-container .mud-picker-month .mud-typography {
     font-size: 0.875rem;
+    font-weight: 400;
 }
 
-.mud-picker-month-container .mud-picker-month,
-.mud-picker-year-container .mud-picker-year {
-    border-radius: var(--shadcn-radius-md);
+.mud-picker-year-container .mud-picker-year .mud-picker-year-selected,
+.mud-picker-month-container .mud-picker-month .mud-picker-month-selected {
+    align-self: stretch;
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    border-radius: inherit;
+    font-weight: 500;
+    background-color: var(--mud-ripple-color);
+    color: var(--mud-palette-primary-text) !important;
+}
+
+.mud-picker-year .mud-picker-year-selected.mud-secondary-text,
+.mud-picker-month .mud-picker-month-selected.mud-secondary-text {
+    color: var(--mud-palette-secondary-text) !important;
+}
+
+.mud-picker-year .mud-picker-year-selected.mud-tertiary-text,
+.mud-picker-month .mud-picker-month-selected.mud-tertiary-text {
+    color: var(--mud-palette-tertiary-text) !important;
+}
+
+.mud-picker-year .mud-picker-year-selected.mud-info-text,
+.mud-picker-month .mud-picker-month-selected.mud-info-text {
+    color: var(--mud-palette-info-text) !important;
+}
+
+.mud-picker-year .mud-picker-year-selected.mud-success-text,
+.mud-picker-month .mud-picker-month-selected.mud-success-text {
+    color: var(--mud-palette-success-text) !important;
+}
+
+.mud-picker-year .mud-picker-year-selected.mud-warning-text,
+.mud-picker-month .mud-picker-month-selected.mud-warning-text {
+    color: var(--mud-palette-warning-text) !important;
+}
+
+.mud-picker-year .mud-picker-year-selected.mud-error-text,
+.mud-picker-month .mud-picker-month-selected.mud-error-text {
+    color: var(--mud-palette-error-text) !important;
+}
+
+.mud-picker-year .mud-picker-year-selected.mud-dark-text,
+.mud-picker-month .mud-picker-month-selected.mud-dark-text {
+    color: var(--mud-palette-dark-text) !important;
 }
 
 .mud-picker-time-container .mud-picker-time-clock {
@@ -2237,6 +2413,309 @@ label.mud-input-label.mud-input-error {
 /* ---------------------------------------------------------------------------------------------
    18. Pickers: date range, time, colour
    --------------------------------------------------------------------------------------------- */
+
+/*
+ * Date range: range_middle is a continuous bg-accent band (MudBlazor gives those days the full
+ * 40px pitch); range_start / range_end are bg-primary size-8 squares sitting on the band.
+ * Transparent 4px inline borders inset a day to the 32px square without changing its pitch.
+ */
+.mud-picker-calendar .mud-day.mud-range {
+    margin: 4px 0;
+    background-clip: padding-box;
+}
+
+.mud-picker-calendar .mud-day.mud-range.mud-range-between {
+    border-radius: 0;
+    background-color: var(--shadcn-hover);
+    color: var(--mud-palette-text-primary);
+}
+
+.mud-picker-calendar .mud-day.mud-range.mud-range-start-selected,
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection.mud-range-start-selected:hover {
+    border-inline-start: 4px solid transparent;
+    border-start-start-radius: calc(var(--shadcn-radius-md) + 4px) var(--shadcn-radius-md);  /* rounded-md inside the border */
+    border-end-start-radius: calc(var(--shadcn-radius-md) + 4px) var(--shadcn-radius-md);
+}
+
+.mud-picker-calendar .mud-day.mud-range.mud-range-end-selected,
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection:hover:not(.mud-range-start-selected) {
+    border-inline-end: 4px solid transparent;
+    border-start-end-radius: calc(var(--shadcn-radius-md) + 4px) var(--shadcn-radius-md);
+    border-end-end-radius: calc(var(--shadcn-radius-md) + 4px) var(--shadcn-radius-md);
+}
+
+/* The band also ends, rounded, at the edge of a week row and next to a hidden adjacent-month day. */
+.mud-picker-calendar .mud-day.mud-range.mud-range-between:nth-child(7n+1 of .mud-day),
+.mud-picker-calendar .mud-hidden + .mud-day.mud-range.mud-range-between,
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection:not(.mud-range-start-selected):nth-child(7n+1 of .mud-day),
+.mud-picker-calendar .mud-day.mud-range.mud-range-end-selected:nth-child(7n+1 of .mud-day),
+.mud-picker-calendar .mud-hidden + .mud-day.mud-range.mud-range-end-selected {
+    border-inline-start: 4px solid transparent;
+    border-start-start-radius: calc(var(--shadcn-radius-md) + 4px) var(--shadcn-radius-md);
+    border-end-start-radius: calc(var(--shadcn-radius-md) + 4px) var(--shadcn-radius-md);
+}
+
+.mud-picker-calendar .mud-day.mud-range.mud-range-between:nth-child(7n of .mud-day),
+.mud-picker-calendar .mud-day.mud-range.mud-range-between:has(+ .mud-hidden),
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection:not(.mud-range-start-selected):nth-child(7n of .mud-day),
+.mud-picker-calendar .mud-day.mud-range.mud-range-start-selected:nth-child(7n of .mud-day),
+.mud-picker-calendar .mud-day.mud-range.mud-range-start-selected:has(+ .mud-hidden) {
+    border-inline-end: 4px solid transparent;
+    border-start-end-radius: calc(var(--shadcn-radius-md) + 4px) var(--shadcn-radius-md);
+    border-end-end-radius: calc(var(--shadcn-radius-md) + 4px) var(--shadcn-radius-md);
+}
+
+.mud-picker-calendar .mud-day.mud-range.mud-range-start-selected,
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection.mud-range-start-selected:hover {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+}
+
+.mud-picker-calendar .mud-day.mud-range.mud-range-end-selected,
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection:hover:not(.mud-range-start-selected) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+}
+
+/* The band continues under the square's rounded corners on the side facing the range. */
+.mud-picker-calendar .mud-day.mud-range.mud-range-start-selected {
+    background-image:
+        radial-gradient(circle at 0 100%, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        radial-gradient(circle at 0 0, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        linear-gradient(var(--shadcn-hover), var(--shadcn-hover));
+    background-position: right 4px top, right 4px bottom, right;
+    background-size: var(--shadcn-radius-md) var(--shadcn-radius-md), var(--shadcn-radius-md) var(--shadcn-radius-md), 4px 100%;
+    background-repeat: no-repeat;
+}
+
+.mud-picker-calendar .mud-day.mud-range.mud-range-end-selected,
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection:hover:not(.mud-range-start-selected) {
+    background-image:
+        radial-gradient(circle at 100% 100%, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        radial-gradient(circle at 100% 0, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        linear-gradient(var(--shadcn-hover), var(--shadcn-hover));
+    background-position: left 4px top, left 4px bottom, left;
+    background-size: var(--shadcn-radius-md) var(--shadcn-radius-md), var(--shadcn-radius-md) var(--shadcn-radius-md), 4px 100%;
+    background-repeat: no-repeat;
+}
+
+/* Right to left: the band runs the other way. */
+.mud-picker-calendar .mud-day.mud-range.mud-range-start-selected:dir(rtl) {
+    background-image:
+        radial-gradient(circle at 100% 100%, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        radial-gradient(circle at 100% 0, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        linear-gradient(var(--shadcn-hover), var(--shadcn-hover));
+    background-position: left 4px top, left 4px bottom, left;
+}
+
+.mud-picker-calendar .mud-day.mud-range.mud-range-end-selected:dir(rtl),
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection:hover:not(.mud-range-start-selected):dir(rtl) {
+    background-image:
+        radial-gradient(circle at 0 100%, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        radial-gradient(circle at 0 0, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        linear-gradient(var(--shadcn-hover), var(--shadcn-hover));
+    background-position: right 4px top, right 4px bottom, right;
+}
+
+/* A start or end with no band beside it (row edge, hidden neighbour) is a plain square. */
+.mud-picker-calendar .mud-day.mud-range.mud-range-start-selected:nth-child(7n of .mud-day),
+.mud-picker-calendar .mud-day.mud-range.mud-range-start-selected:has(+ .mud-hidden),
+.mud-picker-calendar .mud-day.mud-range.mud-range-end-selected:nth-child(7n+1 of .mud-day),
+.mud-picker-calendar .mud-hidden + .mud-day.mud-range.mud-range-end-selected,
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection:hover:not(.mud-range-start-selected):nth-child(7n+1 of .mud-day) {
+    background-image: none;
+}
+
+/* Picking the second date: MudBlazor previews the range with a gradient; make it bg-accent. */
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection:not(:hover):not(.mud-range-start-selected) {
+    background-image: linear-gradient(var(--shadcn-hover), var(--shadcn-hover));
+    background-clip: padding-box;
+}
+
+/*
+ * Time picker — shadcn has no clock. Neutral bg-muted face (section 13), primary hand and
+ * selected numeral, AM/PM as a segmented control in the Tabs style.
+ */
+.mud-picker-time-container {
+    margin: 16px 0 12px;
+}
+
+.mud-picker-timepicker-toolbar .mud-timepicker-ampm,
+.mud-picker-timepicker-toolbar.mud-picker-timepicker-toolbar-landscape .mud-timepicker-ampm {
+    margin: 0;
+    margin-inline-start: 16px;
+    margin-inline-end: 0;
+    padding: 3px;                                     /* bg-muted rounded-lg p-[3px] */
+    border-radius: var(--shadcn-radius-lg);
+    background-color: var(--mud-palette-background-gray);
+}
+
+.mud-picker-toolbar.mud-picker-timepicker-toolbar .mud-timepicker-ampm .mud-button-root.mud-timepicker-button {
+    min-width: 0;
+    padding: 2px 8px;
+    border-radius: var(--shadcn-radius-md);
+    font-size: 0.875rem;                              /* text-sm font-medium */
+    font-weight: 500;
+    line-height: 1.25rem;
+    color: var(--mud-palette-text-primary) !important;
+    background-color: var(--mud-palette-background);  /* active: bg-background shadow-sm */
+    box-shadow: var(--shadcn-shadow-sm);
+}
+
+.mud-picker-toolbar.mud-picker-timepicker-toolbar .mud-timepicker-ampm .mud-button-root.mud-timepicker-button.mud-timepicker-toolbar-text {
+    color: var(--mud-palette-text-secondary) !important;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.mud-picker-toolbar.mud-picker-timepicker-toolbar .mud-timepicker-ampm .mud-button-root.mud-timepicker-button.mud-timepicker-toolbar-text:hover {
+    color: var(--mud-palette-text-primary) !important;
+}
+
+.mud-picker-timepicker-toolbar.mud-picker-timepicker-toolbar-landscape {
+    row-gap: 12px;                                    /* AM/PM wraps under the time */
+}
+
+/*
+ * Colour picker — popover content p-3: the colour field is inset and rounded-md, the toolbar is
+ * a row of ghost icon buttons (active view bg-accent), sliders take the Slider thumb, inputs h-8.
+ * MudBlazor maps pointer positions onto a fixed 312x250 field, so that size stays.
+ */
+.mud-picker-toolbar.mud-picker-color-toolbar {
+    padding: 6px 8px;
+    gap: 4px;
+}
+
+.mud-picker-color-toolbar .mud-icon-button {
+    width: 32px;                                      /* size-8 */
+    height: 32px;
+}
+
+.mud-picker-toolbar.mud-picker-color-toolbar .mud-icon-button.mud-inherit-text {
+    color: var(--mud-palette-text-secondary) !important;
+}
+
+.mud-picker-toolbar.mud-picker-color-toolbar .mud-icon-button.mud-inherit-text:hover {
+    color: var(--mud-palette-text-primary) !important;
+}
+
+.mud-picker-toolbar.mud-picker-color-toolbar .mud-icon-button.mud-primary-text {
+    background-color: var(--shadcn-hover);
+}
+
+.mud-picker-color-picker {
+    margin: 12px 12px 0;
+    border-radius: var(--shadcn-radius-md);
+}
+
+.mud-picker-color-controls {
+    width: 336px;
+    padding: 16px 12px 12px;
+}
+
+.mud-picker-color-controls .mud-picker-color-controls-row + .mud-picker-color-controls-row {
+    margin-top: 16px;
+}
+
+.mud-picker-color-controls .mud-picker-color-controls-row > .mud-picker-color-dot {
+    flex: 0 0 38px;                                   /* keep the preview square in the wider panel */
+}
+
+.mud-picker-color-view .mud-picker-color-view-collection {
+    max-width: 300px;                                 /* five swatches a row, as MudBlazor's palette is laid out */
+    margin: 0 auto;
+}
+
+/* Swatches: rounded-md with a hairline border instead of Material's glow */
+.mud-picker-color-dot {
+    box-shadow: 0 0 0 1px var(--mud-palette-lines-default);
+    transition: box-shadow var(--shadcn-transition);
+}
+
+.mud-picker-color-dot:hover,
+.mud-picker-color-view .mud-picker-color-view-collection .mud-picker-color-dot:hover {
+    box-shadow: 0 0 0 1px var(--mud-palette-lines-default), var(--shadcn-focus-ring);
+}
+
+.mud-picker-color-dot.selected,
+.mud-picker-color-view .mud-picker-color-view-collection .mud-picker-color-dot.selected {
+    border-radius: var(--mud-default-borderradius);
+    box-shadow: 0 0 0 2px var(--mud-palette-surface), 0 0 0 4px var(--mud-palette-text-primary);
+}
+
+.mud-picker-color-picker .mud-picker-color-grid .mud-picker-color-dot,
+.mud-picker-color-picker .mud-picker-color-grid .mud-picker-color-dot:hover {
+    box-shadow: none;
+}
+
+.mud-picker-color-picker .mud-picker-color-grid .mud-picker-color-dot.selected {
+    box-shadow: inset 0 0 0 2px var(--mud-palette-surface);
+}
+
+/* Hue and alpha bars: rounded-full, with shadcn's Slider thumb (size-4 bg-white border shadow-sm) */
+.mud-picker-color-controls .mud-picker-color-controls-row .mud-picker-color-sliders .mud-picker-color-slider,
+.mud-picker-color-controls .mud-picker-color-controls-row .mud-picker-color-sliders .mud-picker-color-slider .mud-slider-input {
+    border-radius: 9999px;
+}
+
+.mud-picker-color-controls .mud-picker-color-controls-row .mud-picker-color-sliders .mud-picker-color-slider .mud-slider-input::-webkit-slider-runnable-track {
+    height: 10px;
+    margin: 0;
+}
+
+.mud-picker-color-controls .mud-picker-color-controls-row .mud-picker-color-sliders .mud-picker-color-slider .mud-slider-input::-moz-range-track {
+    height: 10px;
+    margin: 0;
+}
+
+.mud-picker-color-controls .mud-picker-color-controls-row .mud-picker-color-sliders .mud-picker-color-slider .mud-slider-input::-webkit-slider-thumb {
+    width: 16px;
+    height: 16px;
+    margin-top: -3px;
+    background: #fff;
+    border: 1px solid var(--mud-palette-primary);
+    box-shadow: var(--shadcn-shadow-sm);
+}
+
+.mud-picker-color-controls .mud-picker-color-controls-row .mud-picker-color-sliders .mud-picker-color-slider .mud-slider-input::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid var(--mud-palette-primary);
+    box-shadow: var(--shadcn-shadow-sm);
+}
+
+.mud-picker-color-controls .mud-picker-color-controls-row .mud-picker-color-sliders .mud-picker-color-slider .mud-slider-input:hover::-webkit-slider-thumb,
+.mud-picker-color-controls .mud-picker-color-controls-row .mud-picker-color-sliders .mud-picker-color-slider .mud-slider-input:focus-visible::-webkit-slider-thumb,
+.mud-picker-color-controls .mud-picker-color-controls-row .mud-picker-color-sliders .mud-picker-color-slider .mud-slider-input:active::-webkit-slider-thumb {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--shadcn-ring) 50%, transparent) !important;
+}
+
+.mud-picker-color-controls .mud-picker-color-controls-row .mud-picker-color-sliders .mud-picker-color-slider .mud-slider-input:hover::-moz-range-thumb,
+.mud-picker-color-controls .mud-picker-color-controls-row .mud-picker-color-sliders .mud-picker-color-slider .mud-slider-input:focus-visible::-moz-range-thumb,
+.mud-picker-color-controls .mud-picker-color-controls-row .mud-picker-color-sliders .mud-picker-color-slider .mud-slider-input:active::-moz-range-thumb {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--shadcn-ring) 50%, transparent) !important;
+}
+
+/* Channel inputs: h-8 text-sm, the R/G/B/A caption text-xs text-muted-foreground */
+.mud-picker-color-controls .mud-picker-color-controls-row .mud-picker-color-inputs .mud-picker-color-inputfield .mud-input input {
+    height: 20px;
+    padding: 6px 4px;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+.mud-picker-color-controls .mud-picker-color-controls-row .mud-picker-color-inputs .mud-picker-color-inputfield .mud-input-helper-text {
+    margin-top: 6px;
+    font-size: 0.75rem;
+    line-height: 1rem;
+}
+
+/* MudBlazor means to centre the caption, but its .me-auto wrapper pins it left. */
+.mud-picker-color-controls .mud-picker-color-inputs .mud-picker-color-inputfield .mud-input-helper-text > div {
+    margin-inline-start: auto;
+}
 
 /* (end of section 18) */
 
