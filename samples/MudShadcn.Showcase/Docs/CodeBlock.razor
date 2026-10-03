@@ -1,0 +1,43 @@
+@using ColorCode
+
+@* A static, highlighted snippet (not a live example), styled like the example sources. *@
+<div class="docs-section-source docs-code-block outlined show-code">
+    <div class="docs-section-source-container">
+        <div class="mud-codeblock">@((MarkupString)_html)</div>
+    </div>
+</div>
+
+@code {
+    /// <summary>The snippet.</summary>
+    [Parameter, EditorRequired] public string Code { get; set; }
+
+    /// <summary><c>razor</c>/<c>html</c>, <c>csharp</c>, <c>css</c>, <c>json</c> or <c>shell</c> (plain).</summary>
+    [Parameter] public string Language { get; set; } = "razor";
+
+    private string _html = "";
+
+    protected override void OnParametersSet()
+    {
+        var code = Code.Trim('\r', '\n').Replace("\r\n", "\n");
+        ILanguage language = Language switch
+        {
+            "csharp" or "cs" => Languages.CSharp,
+            "css" => Languages.Css,
+            "json" => Languages.JavaScript,
+            "razor" or "html" => Languages.Html,
+            _ => null,
+        };
+
+        if (language is null)
+        {
+            _html = $"<pre>{System.Net.WebUtility.HtmlEncode(code)}</pre>";
+            return;
+        }
+
+        // Same '@' handling as ExampleSource: ColorCode's HTML grammar does not know Razor.
+        var source = language == Languages.Html ? code.Replace("@", "PlaceholdeR") : code;
+        _html = new HtmlClassFormatter().GetHtmlString(source, language)
+            .Replace("PlaceholdeR", "@")
+            .Replace("@", "<span class=\"atSign\">&#64;</span>");
+    }
+}

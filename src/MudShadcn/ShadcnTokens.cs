@@ -90,7 +90,9 @@ public static class ShadcnTokens
 
     internal static string ToCss(bool dark)
     {
-        var sb = new System.Text.StringBuilder(":root{");
+        // color-scheme as next-themes sets it for shadcn: native scrollbars and form controls, and
+        // CSS light-dark(), follow the active mode.
+        var sb = new System.Text.StringBuilder(":root{color-scheme:").Append(dark ? "dark" : "light").Append(';');
         foreach (var (name, value) in dark ? Dark : Light)
         {
             sb.Append("--shadcn-").Append(name).Append(':').Append(value).Append(';');

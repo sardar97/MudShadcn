@@ -43,6 +43,8 @@ public static class MudShadcnTheme
             AppbarHeight = "56px",
             DrawerWidthLeft = "256px",  // shadcn --sidebar-width: 16rem
             DrawerWidthRight = "256px",
+            DrawerMiniWidthLeft = "48px",   // shadcn --sidebar-width-icon: 3rem
+            DrawerMiniWidthRight = "48px",
         },
         Shadows = CreateShadows(),
     };

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MudShadcn - shadcn/ui for MudBlazor</title>
+    <meta name="description" content="MudShadcn gives every MudBlazor component the shadcn/ui look: a MudTheme and one stylesheet, no new components." />
+    <!-- When hosting under a sub-path (e.g. GitHub Pages at /MudShadcn/), change this to that path. -->
+    <base href="/" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="preload" id="webassembly" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Geist+Mono:wght@100..900&amp;display=swap" />
+    <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
+    <link rel="stylesheet" href="_content/MudShadcn/MudShadcn.css" />
+    <link rel="stylesheet" href="css/showcase.css" />
+    <script type="importmap"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="docs-loading" role="status" aria-label="Loading">
+            <svg viewBox="0 0 32 32" width="48" height="48" aria-hidden="true">
+                <rect width="32" height="32" rx="8" fill="currentColor" />
+                <path d="M19 9 11 23M24 9 16 23" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none" />
+            </svg>
+            <div class="docs-loading-bar"><div></div></div>
+        </div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
+</body>
+
+</html>

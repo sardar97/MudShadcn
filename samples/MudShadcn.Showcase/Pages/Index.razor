@@ -1,0 +1,86 @@
+@page "/"
+@inject MenuService MenuService
+
+<PageTitle>MudShadcn - shadcn/ui for MudBlazor</PageTitle>
+
+<MudMainContent Class="docs-main">
+    <MudContainer MaxWidth="MaxWidth.Large" Class="docs-container">
+        <section class="docs-hero">
+            <MudChip T="string" Variant="Variant.Outlined" Size="Size.Small" Href="https://www.nuget.org/packages/MudShadcn" Target="_blank">
+                MudBlazor @DocsPage.MudBlazorVersion · .NET 10
+            </MudChip>
+            <MudText Typo="Typo.h1" Class="docs-hero-title">The shadcn/ui look for every MudBlazor component.</MudText>
+            <MudText Typo="Typo.subtitle1" Class="docs-hero-lead">
+                A <code>MudTheme</code> and one stylesheet. No new components, no forks: you keep writing MudBlazor,
+                with its full API, and it looks like shadcn/ui, in light and dark mode.
+            </MudText>
+            <div class="docs-hero-actions">
+                <MudButton Href="getting-started/installation" Variant="Variant.Filled" Color="Color.Primary">Get started</MudButton>
+                <MudButton Href="docs/overview" Variant="Variant.Outlined">Browse @_componentCount components</MudButton>
+            </div>
+        </section>
+
+        <MudGrid Spacing="4" Class="docs-hero-demo">
+            <MudItem xs="12" md="6">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Create an account</MudText>
+                            <MudText Color="Color.Tertiary" Class="mt-2">Enter your email below to create your account.</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudStack Spacing="4">
+                            <MudTextField T="string" Label="Email" Placeholder="m@example.com" Variant="Variant.Outlined" />
+                            <MudTextField T="string" Label="Password" InputType="InputType.Password" Variant="Variant.Outlined" />
+                            <MudCheckBox T="bool" Value="true" Color="Color.Primary" Label="Remember me" />
+                        </MudStack>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Create account</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudStack Spacing="4">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudText Typo="Typo.subtitle2" Color="Color.Tertiary">Total revenue</MudText>
+                            <MudText Typo="Typo.h3" Class="mt-1">$15,231.89</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Tertiary">+20.1% from last month</MudText>
+                            <MudChart T="double" ChartType="ChartType.Line" ChartSeries="@_series" ChartLabels="@_labels" Height="140px" Width="100%"
+                                      ChartOptions="@_chartOptions" Class="mt-2" />
+                        </MudCardContent>
+                    </MudCard>
+                    <MudPaper Class="pa-4">
+                        <MudTabs Elevation="0" MinimumTabWidth="0px">
+                            <MudTabPanel Text="Overview" />
+                            <MudTabPanel Text="Analytics" />
+                            <MudTabPanel Text="Reports" />
+                        </MudTabs>
+                        <div class="d-flex flex-wrap gap-2 mt-4">
+                            <MudChip T="string" Color="Color.Primary">Badge</MudChip>
+                            <MudChip T="string">Secondary</MudChip>
+                            <MudChip T="string" Variant="Variant.Outlined">Outline</MudChip>
+                            <MudChip T="string" Color="Color.Error">Destructive</MudChip>
+                        </div>
+                        <div class="d-flex flex-wrap align-center gap-4 mt-4">
+                            <MudSwitch T="bool" Value="true" Color="Color.Primary" Label="Airplane mode" />
+                            <MudSlider T="int" Value="40" Color="Color.Primary" Style="max-width:200px" />
+                        </div>
+                    </MudPaper>
+                </MudStack>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+</MudMainContent>
+
+@code {
+    private int _componentCount;
+
+    private readonly string[] _labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+    private readonly List<ChartSeries<double>> _series = [new() { Name = "Revenue", Data = new double[] { 186, 305, 237, 273, 209, 314 } }];
+    private readonly LineChartOptions _chartOptions = new() { ShowLegend = false, YAxisTicks = 100, InterpolationOption = InterpolationOption.NaturalSpline };
+
+    protected override void OnInitialized() => _componentCount = MenuService.Pages.Count;
+}

@@ -1,0 +1,92 @@
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject ThemePreference ThemePreference
+@implements IDisposable
+
+@if (!_ready)
+{
+    return;
+}
+
+<MudShadcnProvider Theme="ShowcaseTheme.Theme" IsDarkMode="_isDarkMode" IsDarkModeChanged="OnDarkModeChanged" FollowSystemDarkMode="_followSystem" />
+
+<MudLayout Class="docs-layout">
+    <MudAppBar Elevation="0" Class="docs-appbar">
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" Class="d-flex d-md-none mr-1"
+                       OnClick="@(() => _drawerOpen = !_drawerOpen)" aria-label="Toggle navigation" />
+        <a href="" class="docs-brand" aria-label="MudShadcn home">
+            <Logo />
+            <span>MudShadcn</span>
+        </a>
+        <nav class="docs-topnav d-none d-md-flex" aria-label="Main">
+            <MudButton Href="getting-started/installation" Variant="Variant.Text" Class="@TopLinkClass("getting-started")">Get Started</MudButton>
+            <MudButton Href="docs/overview" Variant="Variant.Text" Class="@TopLinkClass("docs", "components")">Docs</MudButton>
+            <MudButton Href="customization/theme" Variant="Variant.Text" Class="@TopLinkClass("customization")">Theme</MudButton>
+        </nav>
+        <MudSpacer />
+        <DocsSearch />
+        <MudTooltip Text="@(_isDarkMode ? "Switch to light mode" : "Switch to dark mode")">
+            <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Outlined.LightMode : Icons.Material.Outlined.DarkMode)" Color="Color.Inherit"
+                           OnClick="ToggleDarkModeAsync" aria-label="Toggle dark mode" />
+        </MudTooltip>
+        <MudTooltip Text="GitHub">
+            <MudIconButton Href="https://github.com/sardar97/MudShadcn" Target="_blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit"
+                           Edge="Edge.End" aria-label="Open the GitHub repository" />
+        </MudTooltip>
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Docked" Breakpoint="Breakpoint.Md" Elevation="0" Class="docs-nav-drawer"
+               aria-label="Navigation">
+        <NavMenu />
+    </MudDrawer>
+
+    @Body
+
+    <MudScrollToTop TopOffset="400" Style="z-index:2000">
+        <MudFab StartIcon="@Icons.Material.Filled.KeyboardArrowUp" Color="Color.Primary" Size="Size.Small" aria-label="Scroll to top" />
+    </MudScrollToTop>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+    private bool _ready;
+    private bool _isDarkMode;
+    private bool _followSystem = true;
+    private string _section = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+        _section = Section();
+
+        // An explicit choice wins over the OS setting (MudShadcnProvider follows the OS by default).
+        if (await ThemePreference.GetAsync() is { } dark)
+        {
+            _isDarkMode = dark;
+            _followSystem = false;
+        }
+
+        _ready = true;
+    }
+
+    private void OnDarkModeChanged(bool dark) => _isDarkMode = dark;
+
+    private async Task ToggleDarkModeAsync()
+    {
+        _isDarkMode = !_isDarkMode;
+        _followSystem = false;
+        await ThemePreference.SetAsync(_isDarkMode);
+    }
+
+    private string Section() => NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split('/', '#', '?')[0];
+
+    private string TopLinkClass(params string[] sections) => sections.Contains(_section) ? "docs-topnav-link active" : "docs-topnav-link";
+
+    private void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        _section = Section();
+        StateHasChanged();
+    }
+
+    public void Dispose() => NavigationManager.LocationChanged -= OnLocationChanged;
+}

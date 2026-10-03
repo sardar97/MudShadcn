@@ -1,0 +1,24 @@
+@inherits LayoutComponentBase
+@inject ThemePreference ThemePreference
+
+@* For the examples mudblazor.com shows in an iframe (a whole MudLayout of their own). *@
+@if (_ready)
+{
+    <MudShadcnProvider Theme="ShowcaseTheme.Theme" IsDarkMode="_isDarkMode" FollowSystemDarkMode="_followSystem" />
+    @Body
+}
+
+@code {
+    private bool _ready, _isDarkMode, _followSystem = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (await ThemePreference.GetAsync() is { } dark)
+        {
+            _isDarkMode = dark;
+            _followSystem = false;
+        }
+
+        _ready = true;
+    }
+}

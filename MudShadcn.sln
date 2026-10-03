@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{5D20
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MudShadcn.TestApp", "samples\MudShadcn.TestApp\MudShadcn.TestApp.csproj", "{8A8F478D-D32D-4C00-A1A4-A356066BF229}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MudShadcn.Showcase", "samples\MudShadcn.Showcase\MudShadcn.Showcase.csproj", "{054246FA-4F33-4FB8-9B97-46052DF16917}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,18 @@ Global
 		{8A8F478D-D32D-4C00-A1A4-A356066BF229}.Release|x64.Build.0 = Release|Any CPU
 		{8A8F478D-D32D-4C00-A1A4-A356066BF229}.Release|x86.ActiveCfg = Release|Any CPU
 		{8A8F478D-D32D-4C00-A1A4-A356066BF229}.Release|x86.Build.0 = Release|Any CPU
+		{054246FA-4F33-4FB8-9B97-46052DF16917}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{054246FA-4F33-4FB8-9B97-46052DF16917}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{054246FA-4F33-4FB8-9B97-46052DF16917}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{054246FA-4F33-4FB8-9B97-46052DF16917}.Debug|x64.Build.0 = Debug|Any CPU
+		{054246FA-4F33-4FB8-9B97-46052DF16917}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{054246FA-4F33-4FB8-9B97-46052DF16917}.Debug|x86.Build.0 = Debug|Any CPU
+		{054246FA-4F33-4FB8-9B97-46052DF16917}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{054246FA-4F33-4FB8-9B97-46052DF16917}.Release|Any CPU.Build.0 = Release|Any CPU
+		{054246FA-4F33-4FB8-9B97-46052DF16917}.Release|x64.ActiveCfg = Release|Any CPU
+		{054246FA-4F33-4FB8-9B97-46052DF16917}.Release|x64.Build.0 = Release|Any CPU
+		{054246FA-4F33-4FB8-9B97-46052DF16917}.Release|x86.ActiveCfg = Release|Any CPU
+		{054246FA-4F33-4FB8-9B97-46052DF16917}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,5 +66,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{31EC4CC1-33A8-4EB5-BCFA-ED103A30DABD} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{8A8F478D-D32D-4C00-A1A4-A356066BF229} = {5D20AA90-6969-D8BD-9DCD-8634F4692FDA}
+		{054246FA-4F33-4FB8-9B97-46052DF16917} = {5D20AA90-6969-D8BD-9DCD-8634F4692FDA}
 	EndGlobalSection
 EndGlobal

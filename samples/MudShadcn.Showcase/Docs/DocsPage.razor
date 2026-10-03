@@ -1,0 +1,21 @@
+<MudMainContent Class="docs-main">
+    <MudContainer MaxWidth="MaxWidth.Large" Class="docs-container">
+        <div id="docspage" class="docs-page">
+            <CascadingValue Value="this" IsFixed="true">
+                @ChildContent
+            </CascadingValue>
+        </div>
+        <NavigationFooter />
+        <footer class="docs-footer">
+            <MudText Typo="Typo.body2" Color="Color.Tertiary">
+                Every component on this site is stock MudBlazor @MudBlazorVersion, styled by MudShadcn.
+                Examples adapted from <MudLink Href="https://mudblazor.com" Target="_blank" Typo="Typo.body2">mudblazor.com</MudLink> (MIT).
+            </MudText>
+        </footer>
+    </MudContainer>
+    <MudDrawer Class="docs-toc" @bind-Open="_tocOpen" Breakpoint="Breakpoint.Lg" Anchor="Anchor.End"
+               ClipMode="DrawerClipMode.Always" Elevation="0" Color="Color.Transparent" aria-label="On this page">
+        <MudPageContentNavigation @ref="_contentNavigation" Headline="On this page" SectionClassSelector="docs-section-anchor"
+                                  ActivateFirstSectionAsDefault="true" />
+    </MudDrawer>
+</MudMainContent>

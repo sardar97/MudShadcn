@@ -1,0 +1,115 @@
+@using MudBlazor.Utilities
+@inject IJSRuntime JS
+@inject ISnackbar Snackbar
+
+@if (Codes is not null || ChildContent is not null)
+{
+    <div class="@Classname">
+        @if (Codes is not null || (_hasCode && ChildContent is not null))
+        {
+            <div class="docs-section-content-toolbar">
+                @if (Codes is not null)
+                {
+                    <div class="docs-section-files" role="tablist">
+                        @foreach (var codeFile in Codes)
+                        {
+                            <button type="button" role="tab" aria-selected="@(codeFile.Code == _activeCode ? "true" : "false")"
+                                    class="@(codeFile.Code == _activeCode ? "docs-file-button active" : "docs-file-button")"
+                                    @onclick="@(() => _activeCode = codeFile.Code)">@codeFile.Title</button>
+                        }
+                    </div>
+                }
+                <MudSpacer />
+                @if (_hasCode && ChildContent is not null)
+                {
+                    <MudButton OnClick="@(() => _showCode = !_showCode)" Variant="Variant.Text" Size="Size.Small"
+                               StartIcon="@(_showCode ? Icons.Material.Outlined.CodeOff : Icons.Material.Outlined.Code)">
+                        @(_showCode ? "Hide code" : "Show code")
+                    </MudButton>
+                }
+            </div>
+        }
+        @if (ChildContent is not null)
+        {
+            <div class="@InnerClassname">
+                @ChildContent
+            </div>
+        }
+    </div>
+}
+@if (_hasCode)
+{
+    <div class="@SourceClassname">
+        <div class="docs-section-source-container">
+            @if (_showCode || ChildContent is null)
+            {
+                @((MarkupString)(ExampleSource.GetHtml(_activeCode) ?? $"<div class=\"mud-codeblock\">Example '{_activeCode}' not found.</div>"))
+            }
+        </div>
+        <MudIconButton Icon="@Icons.Material.Outlined.ContentCopy" Size="Size.Small" Class="docs-copy-code-button"
+                       OnClick="CopyAsync" aria-label="Copy code to clipboard" />
+    </div>
+}
+
+@code {
+    [Parameter] public string Class { get; set; }
+    [Parameter] public bool DarkenBackground { get; set; }
+    [Parameter] public bool Outlined { get; set; } = true;
+    [Parameter] public bool ShowCode { get; set; } = true;
+    [Parameter] public bool Block { get; set; }
+    [Parameter] public bool FullWidth { get; set; }
+    [Parameter] public string Code { get; set; }
+    [Parameter] public IReadOnlyList<CodeFile> Codes { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public bool IsApiSection { get; set; }
+
+    // Accepted for source compatibility; mudblazor.com marks these words up inside the code sample.
+    [Parameter] public string HighLight { get; set; }
+
+    private bool _hasCode;
+    private bool _showCode;
+    private string _activeCode;
+
+    private string Classname => new CssBuilder("docs-section-content")
+        .AddClass("outlined", Outlined && ChildContent is not null)
+        .AddClass("darken", DarkenBackground)
+        .AddClass("show-code", _hasCode && (_showCode || ChildContent is null))
+        .AddClass(Class)
+        .Build();
+
+    private string InnerClassname => new CssBuilder("docs-section-content-inner")
+        .AddClass("relative d-flex flex-grow-1 flex-wrap justify-center align-center", !Block)
+        .AddClass("d-block mx-auto", Block)
+        .AddClass("mud-width-full", Block && FullWidth)
+        .AddClass("pa-8", !_hasCode && !IsApiSection)
+        .AddClass("px-8 pb-8 pt-2", _hasCode && !IsApiSection)
+        .AddClass("pa-2", IsApiSection)
+        .Build();
+
+    private string SourceClassname => new CssBuilder("docs-section-source")
+        .AddClass("outlined", Outlined && ChildContent is not null)
+        .AddClass("show-code", _hasCode && (_showCode || ChildContent is null))
+        .Build();
+
+    protected override void OnInitialized() => _showCode = ShowCode;
+
+    protected override void OnParametersSet()
+    {
+        if (Codes is not null)
+        {
+            _hasCode = true;
+            _activeCode ??= Codes.FirstOrDefault()?.Code;
+        }
+        else if (!string.IsNullOrWhiteSpace(Code))
+        {
+            _hasCode = true;
+            _activeCode = Code;
+        }
+    }
+
+    private async Task CopyAsync()
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", ExampleSource.GetRaw(_activeCode) ?? "");
+        Snackbar.Add("Copied to clipboard");
+    }
+}

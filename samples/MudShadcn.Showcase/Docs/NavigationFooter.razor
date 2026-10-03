@@ -1,0 +1,46 @@
+@inject MenuService MenuService
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+@if (_previous is not null || _next is not null)
+{
+    <nav class="docs-navigation-footer" aria-label="Previous and next page">
+        @if (_previous is not null)
+        {
+            <MudButton Href="@_previous.Href" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.ChevronLeft">@_previous.Name</MudButton>
+        }
+        <MudSpacer />
+        @if (_next is not null)
+        {
+            <MudButton Href="@_next.Href" Variant="Variant.Outlined" EndIcon="@Icons.Material.Filled.ChevronRight">@_next.Name</MudButton>
+        }
+    </nav>
+}
+
+@code {
+    private DocsComponent _previous;
+    private DocsComponent _next;
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+        Update();
+    }
+
+    private void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        Update();
+        StateHasChanged();
+    }
+
+    private void Update()
+    {
+        var path = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split('#', '?')[0];
+        var link = path.StartsWith("components/", StringComparison.OrdinalIgnoreCase) ? path["components/".Length..] : null;
+        var index = MenuService.Pages.ToList().FindIndex(p => string.Equals(p.Link, link, StringComparison.OrdinalIgnoreCase));
+        _previous = index > 0 ? MenuService.Pages[index - 1] : null;
+        _next = index >= 0 && index < MenuService.Pages.Count - 1 ? MenuService.Pages[index + 1] : null;
+    }
+
+    public void Dispose() => NavigationManager.LocationChanged -= OnLocationChanged;
+}

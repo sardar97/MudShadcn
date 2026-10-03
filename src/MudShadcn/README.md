@@ -67,7 +67,10 @@ second. You do not need MudBlazor's Roboto font link.
 }
 ```
 
-The provider has to be rendered interactively, like MudBlazor's own providers.
+The provider has to be rendered interactively, like MudBlazor's own providers. Besides the theme it
+emits the `--shadcn-*` tokens for the active mode and sets `color-scheme` on the root element, as
+shadcn's `next-themes` does, so native scrollbars, form controls and CSS `light-dark()` follow the
+mode too.
 
 | Parameter | Default | |
 |---|---|---|
@@ -106,10 +109,22 @@ Write ordinary MudBlazor. The mapping to shadcn's vocabulary:
 | Sheet / Sidebar | `MudDrawer` temporary / persistent |
 | Sonner | `ISnackbar` |
 | Accordion | `MudExpansionPanels` |
+| Chart | `MudChart` / the chart components, with the default palette |
 | muted text | `Color.Tertiary` on `MudText`, or `Typo.body2` with `Color.Tertiary` |
 
-`Variant.Outlined` is the variant that gets the full shadcn treatment for inputs. `Text` and
-`Filled` keep MudBlazor's structure and only pick up the neutral colours.
+`Variant.Outlined` is the shadcn input: a bordered 36px box with its label above it. `Filled` is
+a borderless `bg-muted` box and `Text` a single underline; both keep MudBlazor's floating label,
+since shadcn has no such variants. Checkboxes, radios, switches, sliders and the select's dropdown
+arrow are redrawn as shadcn's controls, whatever the variant.
+
+### Charts
+
+Charts need no options. MudBlazor's default chart palette is replaced with shadcn's `chart-1` to
+`chart-5` (each with its own light and dark value), followed by tints and shades of them for series
+6 to 20; heat maps get a ramp of the primary colour. Axis labels are muted, grid lines take the
+border colour, tooltips and Sankey labels look like shadcn's chart tooltip, and legend markers are
+small squares. If you set `ChartPalette` yourself, your colours are used as given. The colours
+series receive are available to your CSS as `--shadcn-chart-series-1` to `--shadcn-chart-series-20`.
 
 ### Customising
 
@@ -153,13 +168,80 @@ legible. shadcn has no info, success or warning; those come from Tailwind's blue
 
 ## Where it differs from shadcn
 
-- **Floating labels are gone.** MudBlazor's outlined label is pinned above the field and the
-  notch is closed. A labelled outlined input therefore takes 22px more vertical space than in
-  stock MudBlazor.
-- Icons are MudBlazor's Material icons, not Lucide. The select arrow and checkbox glyphs are
-  Material shapes.
-- `MudSlider` has no filled-range element to style, so the track is a single muted colour.
+MudShadcn restyles MudBlazor; it does not change what MudBlazor renders. Where the markup, an
+inline style or a component parameter decides something, MudBlazor's version stays.
+
+**General**
+
+- Icons are MudBlazor's Material icons, not Lucide. The exceptions are the default checkbox,
+  radio and select-arrow glyphs, which are recognised and redrawn as shadcn's controls; custom
+  `CheckedIcon`/`UncheckedIcon` render as given. Other Material shapes you can swap with
+  parameters: the nav group arrow (`ExpandIcon`), the breadcrumb ellipsis (`ExpanderIcon`) and
+  separator (`Separator`).
+- `Color.Secondary` is shadcn's light grey surface, not an accent. Where it would be a foreground
+  (text, icons, a checked control) the stylesheet uses `secondary-foreground` instead.
+- `Color.Dark` is a dark grey in both modes, so as a text or icon colour it is barely visible on a
+  dark background. Use `Color.Default` (or no colour) for text that should follow the mode.
+- shadcn defines no info, success or warning; they come from Tailwind's blue, green and amber, and
+  components with a semantic colour keep it (a ghost button with `Color.Info` has blue text).
+- `<mark>` (what `MudHighlighter` renders) gets a soft warning tint everywhere on the page.
 - The destructive reds are just outside sRGB; the `MudTheme` holds the gamut-clipped hex
   (`#e7000b`, `#ff6467`), which is what an sRGB display shows for the OKLCH original anyway.
 - The default font is the system UI stack. To use Geist or Inter, load the font yourself and pass
   it to `MudShadcnTheme.Create(...)`.
+
+**Inputs and pickers**
+
+- **Floating labels are gone** from `Variant.Outlined`: the label is pinned above the field and
+  the notch is closed, so a labelled outlined input takes 22px more vertical space than in stock
+  MudBlazor. `Text` and `Filled` keep a floating label; shadcn has no such variants.
+- `MudSlider` draws a range only with `Variant.Filled`. Its track uses `input` rather than
+  `muted` so it stays visible on cards.
+- `UncheckedColor` on checkboxes and radios is not shown: unchecked is always the input border.
+- The calendar keeps MudBlazor's 40px cell pitch, so days are 32px squares with gaps rather than
+  touching cells, and the panel is about 310px wide (shadcn's is about 250px). It always shows six
+  weeks unless adjacent-month days are hidden. The toolbar above it has no shadcn counterpart
+  (`ShowToolbar="false"` gives the bare calendar), and the month caption opens month and year
+  grids rather than dropdowns. Static pickers are always rounded.
+- The time picker and colour picker have no shadcn counterpart; they are dressed in its style.
+  The clock face and colour field keep MudBlazor's fixed sizes.
+
+**Buttons**
+
+- Icons inside a `MudButton` are always `size-4`; `IconSize` has no visible effect.
+- FABs have no shadcn counterpart: they get the button variants on a round button and keep
+  MudBlazor's sizes.
+- In a toggle group with a semantic colour, the selected item is filled with that colour rather
+  than `bg-accent`.
+- A disabled `MudLink` keeps MudBlazor's disabled colour (set with `!important`), not 50% opacity.
+
+**Data**
+
+- Row selection is highlighted from the selection checkbox; single-select tables without one need
+  `RowClassFunc` to show the selected row.
+- The data grid's group header text is bold (an inline style), and its loading bar takes
+  `LoadingProgressColor` (default `Color.Info`).
+- Pagination previous/next are icon-only buttons, and `Rectangular` looks like the default, since
+  both are `rounded-md`.
+
+**Layout, navigation and feedback**
+
+- `MudTabs`' `Color` tints only the active label; the tab list stays neutral.
+- Expansion panels are always flat: `Elevation` and `Square` have no visible effect.
+- The carousel's arrows sit inside the slide at the 75% opacity MudBlazor sets inline. Only the
+  default bullet icons become dots.
+- `MudAlert`'s default `Variant.Text` is a tinted alert; `Variant.Outlined` is shadcn's plain
+  Alert. Alerts and snackbars have no separate title and description.
+- `MudAvatarGroup`'s overlap comes from its `Spacing` parameter, and its ring from `OutlineColor`.
+- A selected `MudChip` swaps variant as MudBlazor does; shadcn's badge is not selectable.
+
+**Charts**
+
+- The default palette is recognised by value: a chart is restyled when it uses MudBlazor's default
+  colours (a palette of your own that happens to start with `#2979FF` gets that one colour mapped).
+- Tooltips are MudBlazor's SVG title and subtitle in shadcn's tooltip box: there is no colour
+  indicator, no row per series and no cursor band.
+- Bars are drawn as thick strokes, so their corners stay square. Line width, fill opacity and
+  marker size are `ChartOptions` parameters (MudBlazor's lines are 3px; shadcn's are 2px).
+- Labels on pie, donut and rose segments use the background colour, as in shadcn's examples, which
+  is low-contrast on light segments.

@@ -1,0 +1,25 @@
+<a href="@GetLink()" class="docs-explore-card">
+    <MudPaper Outlined="true" Class="pa-2 d-flex flex-column">
+        <MudPaper Elevation="0" Class="explore-card" role="img" aria-label="Component visualization">
+            <div class="d-flex justify-center align-center relative pa-8 mud-height-full mud-width-full">
+                @ChildContent
+            </div>
+        </MudPaper>
+        <MudText Typo="Typo.subtitle2" Class="mt-3 px-1">@Title</MudText>
+    </MudPaper>
+</a>
+
+@code {
+    [Parameter] public string Title { get; set; }
+    [Parameter] public string Link { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+
+    // The Explore page links a few non-component pages of mudblazor.com; send those there.
+    private string GetLink() => Link switch
+    {
+        null or "" => $"components/{Title.Replace(" ", "").ToLowerInvariant()}",
+        var link when link.StartsWith("/components/") => link.TrimStart('/'),
+        var link when link.StartsWith('/') => $"https://mudblazor.com{link}",
+        var link => link,
+    };
+}
