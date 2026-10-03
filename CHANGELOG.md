@@ -8,7 +8,9 @@ major version is a new MudShadcn major version.
 
 ## [Unreleased]
 
-The first public release, planned as 1.0.0. Written against MudBlazor 9.10.0, for .NET 10.
+## [1.0.0] — 2026-10-03
+
+The first public release. Written against MudBlazor 9.10.0, for .NET 10.
 
 ### Added
 - **`MudShadcnTheme`**: shadcn/ui's default neutral theme as a `MudTheme`, light and dark. Palette,
@@ -37,4 +39,5 @@ The first public release, planned as 1.0.0. Written against MudBlazor 9.10.0, fo
 - **Showcase** at <https://mudshadcn.pages.dev>: every page and example of mudblazor.com's component
   documentation, in the same menu and order, running on MudShadcn, in light and dark mode.
 
-[Unreleased]: https://github.com/sardar97/MudShadcn/commits/master
+[Unreleased]: https://github.com/sardar97/MudShadcn/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/sardar97/MudShadcn/releases/tag/v1.0.0
