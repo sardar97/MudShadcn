@@ -688,9 +688,11 @@ body {
 /* ---------------------------------------------------------------------------------------------
    4. Inputs — h-9, px-3, 1px border-input, shadow-xs, 3px ring on focus
    --------------------------------------------------------------------------------------------- */
-.mud-input {
+/* Typo.subtitle1 is MudInput's default; shadcn's input text is text-sm font-normal. */
+.mud-input.mud-typography-subtitle1 {
     font-size: 0.875rem;                              /* md:text-sm */
     line-height: 1.25rem;
+    font-weight: 400;
 }
 
 .mud-input > input.mud-input-root,
@@ -699,6 +701,10 @@ div.mud-input-slot.mud-input-root,
     font-size: inherit;
     line-height: 1.25rem;
     height: auto;
+}
+
+.mud-input > input.mud-input-root[type="color"] {
+    height: 1.25rem;                                  /* height:auto collapses the swatch to 10px */
 }
 
 .mud-input > input.mud-input-root::placeholder,
@@ -731,9 +737,20 @@ div.mud-input-slot.mud-input-root,
     box-shadow: var(--shadcn-focus-ring);
 }
 
-.mud-input.mud-input-outlined.mud-disabled {
+/* disabled:opacity-50 on the whole field, text keeps its colour (MudBlazor also greys it) */
+.mud-input.mud-disabled {
     opacity: 0.5;                                     /* disabled:opacity-50 */
+    color: var(--mud-palette-text-primary);
     cursor: not-allowed;
+}
+
+.mud-input.mud-disabled > input.mud-input-root,
+.mud-input.mud-disabled > textarea.mud-input-root {
+    cursor: not-allowed;
+}
+
+.mud-input.mud-disabled > .mud-input-adornment {
+    color: var(--mud-palette-text-secondary);
 }
 
 .mud-input.mud-input-outlined.mud-disabled .mud-input-outlined-border {
@@ -790,27 +807,54 @@ div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-start {
     padding: 4px;
 }
 
+.mud-input-adornment .mud-icon-button:hover .mud-icon-root,
+.mud-input-adornment .mud-icon-button:focus-visible .mud-icon-root {
+    color: var(--mud-palette-text-primary);
+}
+
+/* Adornment text (prefix/suffix, e.g. "$", "Kg"): InputGroupText text-sm text-muted-foreground */
+.mud-input-adornment > .mud-typography {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--mud-palette-text-secondary);
+}
+
 /*
  * Label. shadcn has no floating/notched label: a <Label> sits above the control
  * (text-sm font-medium leading-none, gap-2). MudBlazor's outlined label is re-seated
  * there permanently, the legend notch is closed, and the placeholder is always visible.
  */
-.mud-input-label {
-    font-size: 0.875rem;
+.mud-input-label,
+.mud-input-control > .mud-input-control-input-container > .mud-input-label-inputcontrol {
+    font-size: 0.875rem;                              /* text-sm, not subtitle1 */
+    letter-spacing: normal;
     color: var(--mud-palette-text-secondary);
 }
 
+/*
+ * The label's 22px is reserved as padding, so utility margins (mt-4, my-2 …) add to it instead
+ * of replacing it. It stands in for the room MudBlazor leaves for its notched label; on top,
+ * Margin.None/Dense keep MudBlazor's 4px below, Margin.Normal its 8px above and below.
+ */
 .mud-input-control.mud-input-outlined-with-label,
-.mud-input-control.mud-input-control-margin-dense.mud-input-outlined-with-label,
+.mud-input-control.mud-input-control-margin-dense.mud-input-outlined-with-label {
+    padding-top: 22px;                                /* 14px label + gap-2 */
+    margin-top: 0;
+    margin-bottom: 4px;
+}
+
 .mud-input-control.mud-input-control-margin-normal.mud-input-outlined-with-label {
-    margin-top: 22px;                                 /* 14px label + gap-2 */
-    margin-bottom: 0;
+    padding-top: 22px;
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
 
 .mud-input-control label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined,
 .mud-input-control .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined,
 .mud-input-control .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined,
-.mud-application-layout-rtl .mud-input-control label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined {
+.mud-application-layout-rtl .mud-input-control label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined,
+.mud-application-layout-rtl .mud-input-control .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined,
+.mud-application-layout-rtl .mud-input-control .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined {
     transform: translate(0, -22px) scale(1);
     max-width: 100%;
     padding: 0 !important;
@@ -822,6 +866,12 @@ div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-start {
     transition: none;
 }
 
+/* Kept in its own rule: a browser that does not know :-webkit-autofill drops the whole rule. */
+.mud-input-control .mud-input:has(:-webkit-autofill) ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined {
+    transform: translate(0, -22px) scale(1);
+    max-width: 100%;
+}
+
 .mud-input.mud-input-outlined > .mud-input-outlined-border legend {
     display: none !important;
 }
@@ -831,12 +881,55 @@ div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-start {
     opacity: 0.5;
 }
 
+.mud-input-control > .mud-input-control-input-container > .mud-input-label-inputcontrol.mud-disabled {
+    color: var(--mud-palette-text-secondary);         /* opacity-50 only, not greyed twice */
+}
+
 .mud-input-control.mud-input-error > label.mud-input-label,
 label.mud-input-label.mud-input-error {
     color: var(--mud-palette-error) !important;
 }
 
-/* Text (underline) and Filled variants: keep MudBlazor's structure, neutralise the accent */
+/*
+ * Text (underline) and Filled keep MudBlazor's floating label (shadcn has none). At rest it is
+ * text-sm like the value; floated it is text-xs (12/14) rather than MudBlazor's 0.75 scale.
+ */
+.mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol,
+.mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol {
+    transform: translate(0, 1.5px) scale(0.857);
+    max-width: calc(100% / 0.857);
+}
+
+.mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-filled,
+.mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-filled {
+    transform: translate(12px, 10px) scale(0.857);
+    max-width: calc((100% - 12px) / 0.857);
+}
+
+.mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-filled.mud-input-label-margin-dense,
+.mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-filled.mud-input-label-margin-dense {
+    transform: translate(12px, 7px) scale(0.857);
+}
+
+.mud-application-layout-rtl .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-filled,
+.mud-application-layout-rtl .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-filled {
+    transform: translate(-12px, 10px) scale(0.857);
+}
+
+.mud-application-layout-rtl .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-filled.mud-input-label-margin-dense,
+.mud-application-layout-rtl .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-filled.mud-input-label-margin-dense {
+    transform: translate(-12px, 7px) scale(0.857);
+}
+
+.mud-input:has(:-webkit-autofill) ~ label.mud-input-label.mud-input-label-inputcontrol {
+    transform: translate(0, 1.5px) scale(0.857);
+}
+
+.mud-input:has(:-webkit-autofill) ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-filled {
+    transform: translate(12px, 10px) scale(0.857);
+}
+
+/* Text (underline): 1px border-input line, ring colour on hover, foreground line on focus */
 .mud-input.mud-input-underline:before {
     border-bottom-color: var(--mud-palette-lines-inputs);
 }
@@ -849,24 +942,96 @@ label.mud-input-label.mud-input-error {
     border-bottom: 1px solid var(--mud-palette-text-primary);
 }
 
-.mud-input.mud-input-filled {
+/*
+ * Filled: a bg-muted rounded-md field without the Material underline; focus and error draw the
+ * same border-ring/ring-3 and border-destructive as the outlined field, as an inset line.
+ */
+.mud-input.mud-input-filled,
+.mud-input.mud-input-filled:hover,
+.mud-input.mud-input-filled.mud-focused,
+.mud-input.mud-input-filled.mud-disabled {
     background-color: var(--mud-palette-background-gray);
-    border-radius: var(--mud-default-borderradius) var(--mud-default-borderradius) 0 0;
 }
 
+.mud-input.mud-input-filled {
+    border-radius: var(--mud-default-borderradius);
+    transition: box-shadow var(--shadcn-transition);
+}
+
+.mud-input.mud-input-filled.mud-input-underline:before,
+.mud-input.mud-input-filled.mud-input-underline:after {
+    display: none;
+}
+
+.mud-input.mud-input-filled:focus-within {
+    box-shadow: inset 0 0 0 1px var(--shadcn-ring), var(--shadcn-focus-ring);
+}
+
+.mud-input.mud-input-filled.mud-input-error {
+    box-shadow: inset 0 0 0 1px var(--mud-palette-error);
+}
+
+.mud-input.mud-input-filled.mud-input-error:focus-within {
+    box-shadow: inset 0 0 0 1px var(--mud-palette-error), var(--shadcn-focus-ring-destructive);
+}
+
+/* Helper text and counter: FormDescription text-sm text-muted-foreground, FormItem gap-2 */
 .mud-input-control > .mud-input-control-helper-container {
     padding-left: 0 !important;
     padding-right: 0 !important;
+    margin-top: 8px;
 }
 
+.mud-input-control.mud-input-control-margin-dense > .mud-input-control-helper-container {
+    margin-top: 6px;
+}
+
+.mud-input-helper-text,
+.mud-input-helper-text.mud-input-helper-text-margin-dense {
+    margin-top: 0;                                    /* on the container: the onfocus variant hides by translateY(-100%) */
+    gap: 8px;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    letter-spacing: normal;
+    color: var(--mud-palette-text-secondary);
+}
+
+.mud-input-helper-text > .ms-auto {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Numeric spin buttons: muted chevrons, foreground on hover */
 .mud-input-control.mud-input-number-control .mud-input-numeric-spin button .mud-icon-root {
     font-size: 0.875rem;
+    color: var(--mud-palette-text-secondary);
 }
 
-.mud-input-helper-text {
-    font-size: 0.8125rem;
-    color: var(--mud-palette-text-secondary);
-    margin-top: 6px;
+.mud-input-control.mud-input-number-control .mud-input-numeric-spin button:hover .mud-icon-root {
+    color: var(--mud-palette-text-primary);
+}
+
+.mud-input-control.mud-input-number-control .mud-input-numeric-spin button {
+    width: 20px;
+    border-radius: var(--shadcn-radius-sm);
+}
+
+/* Inside a bordered or filled box the buttons sit 2px/4px in from its edge, not on it */
+.mud-input-control.mud-input-number-control .mud-input-outlined .mud-input-numeric-spin,
+.mud-input-control.mud-input-number-control .mud-input-filled .mud-input-numeric-spin {
+    top: 2px;
+    bottom: 2px;
+    right: 4px;
+}
+
+.mud-application-layout-rtl .mud-input-control.mud-input-number-control .mud-input-outlined .mud-input-numeric-spin,
+.mud-application-layout-rtl .mud-input-control.mud-input-number-control .mud-input-filled .mud-input-numeric-spin {
+    right: unset;
+    left: 4px;
+}
+
+.mud-input-control.mud-input-number-control.mud-input-showspin .mud-input.mud-input-outlined:not(.mud-input-adorned-end) input,
+.mud-input-control.mud-input-number-control.mud-input-showspin .mud-input.mud-input-filled:not(.mud-input-adorned-end) input {
+    padding-inline-end: 32px;
 }
 
 .mud-input-control > .mud-input-control-input-container > .mud-input-label-inputcontrol ~ .mud-input-control > .mud-input-control-helper-container {
@@ -877,10 +1042,23 @@ label.mud-input-label.mud-input-error {
 /* ---------------------------------------------------------------------------------------------
    5. Checkbox, radio, switch, slider
    --------------------------------------------------------------------------------------------- */
+/*
+ * Checkbox and radio. shadcn: a size-4 box (rounded-[4px] / rounded-full), border-input,
+ * shadow-xs; checked checkbox bg-primary with a size-3.5 check in primary-foreground, checked
+ * radio a size-2 primary dot. MudBlazor renders Material glyphs, so the default CheckBox,
+ * CheckBoxOutlineBlank, IndeterminateCheckBox, RadioButtonChecked and RadioButtonUnchecked
+ * icons are recognised by their path data and hidden: the box is drawn on the <svg>, the check
+ * on the button span. Custom CheckedIcon/UncheckedIcon glyphs are left as they are.
+ */
 .mud-checkbox .mud-icon-button,
 .mud-radio .mud-icon-button {
     padding: 6px;
     border-radius: var(--shadcn-radius-sm);
+}
+
+.mud-checkbox .mud-icon-button.mud-checkbox-dense,
+.mud-radio .mud-icon-button.mud-radio-dense {
+    padding: 2px;
 }
 
 .mud-checkbox .mud-icon-button:hover,
@@ -888,11 +1066,146 @@ label.mud-input-label.mud-input-error {
     background-color: transparent;
 }
 
+/* Custom icons 16/20/24px; the drawn box is 14/16/20px inside the same footprint. */
 .mud-checkbox .mud-icon-root,
 .mud-radio .mud-icon-root {
     font-size: 1.25rem;
 }
 
+.mud-checkbox .mud-icon-root.mud-icon-size-small,
+.mud-radio .mud-icon-root.mud-icon-size-small {
+    font-size: 1rem;
+}
+
+.mud-checkbox .mud-icon-root.mud-icon-size-large,
+.mud-radio .mud-icon-root.mud-icon-size-large {
+    font-size: 1.5rem;
+}
+
+/* Label: text-sm font-medium */
+.mud-checkbox > .mud-typography,
+.mud-radio > .mud-typography {
+    font-weight: 500;
+}
+
+.mud-checkbox > .mud-icon-button > svg:has(> path[d^="M19 5v14H5V5h14"], > path[d^="M19 3H5c-1.11 0-2"], path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"]),
+.mud-list[id^="select-listbox"] .mud-list-item-icon > svg:has(> path[d^="M19 5v14H5V5h14"], > path[d^="M19 3H5c-1.11 0-2"], path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"]),
+.mud-radio > .mud-icon-button > svg:has(> path[d^="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18"], > path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    box-sizing: border-box;
+    width: 16px;                                      /* size-4 */
+    height: 16px;
+    margin: 2px;
+    border: 1px solid var(--mud-palette-lines-inputs);
+    border-radius: 4px;                               /* rounded-[4px] */
+    background-color: var(--shadcn-input-background); /* dark:bg-input/30 */
+    box-shadow: var(--shadcn-shadow-xs);
+    transition: box-shadow var(--shadcn-transition), border-color var(--shadcn-transition);
+}
+
+.mud-radio > .mud-icon-button > svg:has(> path[d^="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18"], > path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    border-radius: 9999px;                            /* rounded-full */
+}
+
+.mud-checkbox > .mud-icon-button > svg:has(> path[d^="M19 5v14H5V5h14"], > path[d^="M19 3H5c-1.11 0-2"], path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"]) > *,
+.mud-list[id^="select-listbox"] .mud-list-item-icon > svg:has(> path[d^="M19 5v14H5V5h14"], > path[d^="M19 3H5c-1.11 0-2"], path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"]) > *,
+.mud-radio > .mud-icon-button > svg:has(> path[d^="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18"], > path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) > * {
+    display: none;
+}
+
+.mud-checkbox > .mud-icon-button > svg.mud-icon-size-small:has(> path[d^="M19 5v14H5V5h14"], > path[d^="M19 3H5c-1.11 0-2"], path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"]),
+.mud-radio > .mud-icon-button > svg.mud-icon-size-small:has(> path[d^="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18"], > path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    width: 14px;
+    height: 14px;
+    margin: 1px;
+}
+
+.mud-checkbox > .mud-icon-button > svg.mud-icon-size-large:has(> path[d^="M19 5v14H5V5h14"], > path[d^="M19 3H5c-1.11 0-2"], path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"]),
+.mud-radio > .mud-icon-button > svg.mud-icon-size-large:has(> path[d^="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18"], > path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    width: 20px;
+    height: 20px;
+}
+
+/* data-[state=checked]:bg-primary border-primary; another Color fills with that colour */
+.mud-checkbox > .mud-icon-button > svg:has(> path[d^="M19 3H5c-1.11 0-2"], path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"]),
+.mud-list[id^="select-listbox"] .mud-list-item-icon > svg:has(> path[d^="M19 3H5c-1.11 0-2"], path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"]) {
+    border-color: var(--mud-palette-primary);
+    background-color: var(--mud-palette-primary);
+}
+
+.mud-checkbox > .mud-icon-button:is(.mud-secondary-text, .mud-tertiary-text, .mud-info-text, .mud-success-text, .mud-warning-text, .mud-error-text, .mud-dark-text) > svg:has(> path[d^="M19 3H5c-1.11 0-2"], path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"]) {
+    border-color: currentColor;
+    background-color: currentColor;
+}
+
+/* Radio: CircleIcon size-2 fill-primary; the border stays border-input */
+.mud-radio > .mud-icon-button > svg:has(> path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    background-image: radial-gradient(circle, var(--mud-palette-primary) 3.5px, transparent 4px);
+}
+
+.mud-radio > .mud-icon-button:is(.mud-secondary-text, .mud-tertiary-text, .mud-info-text, .mud-success-text, .mud-warning-text, .mud-error-text, .mud-dark-text) > svg:has(> path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    background-image: radial-gradient(circle, currentColor 3.5px, transparent 4px);
+}
+
+.mud-radio > .mud-icon-button > svg.mud-icon-size-small:has(> path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    background-image: radial-gradient(circle, var(--mud-palette-primary) 2.5px, transparent 3px);
+}
+
+.mud-radio > .mud-icon-button > svg.mud-icon-size-large:has(> path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    background-image: radial-gradient(circle, var(--mud-palette-primary) 4.5px, transparent 5px);
+}
+
+/* The check (lucide CheckIcon / MinusIcon at size-3.5) in primary-foreground */
+.mud-checkbox > .mud-icon-button:has(> svg > path[d^="M19 3H5c-1.11 0-2"])::after,
+.mud-checkbox > .mud-icon-button:has(> svg path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"])::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 14px 14px no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 14px 14px no-repeat;
+}
+
+.mud-checkbox > .mud-icon-button:has(> svg path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"])::after {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+}
+
+.mud-checkbox > .mud-icon-button:has(> svg.mud-icon-size-small)::after {
+    -webkit-mask-size: 12px 12px;
+    mask-size: 12px 12px;
+}
+
+.mud-checkbox > .mud-icon-button:has(> svg.mud-icon-size-large)::after {
+    -webkit-mask-size: 16px 16px;
+    mask-size: 16px 16px;
+}
+
+.mud-checkbox > .mud-icon-button::after { background-color: var(--mud-palette-primary-text); }
+.mud-checkbox > .mud-icon-button.mud-secondary-text::after { background-color: var(--mud-palette-secondary); }
+.mud-checkbox > .mud-icon-button.mud-tertiary-text::after { background-color: var(--mud-palette-tertiary-text); }
+.mud-checkbox > .mud-icon-button.mud-info-text::after { background-color: var(--mud-palette-info-text); }
+.mud-checkbox > .mud-icon-button.mud-success-text::after { background-color: var(--mud-palette-success-text); }
+.mud-checkbox > .mud-icon-button.mud-warning-text::after { background-color: var(--mud-palette-warning-text); }
+.mud-checkbox > .mud-icon-button.mud-error-text::after { background-color: var(--mud-palette-error-text); }
+.mud-checkbox > .mud-icon-button.mud-dark-text::after { background-color: var(--mud-palette-dark-text); }
+
+/* aria-invalid:border-destructive (also Color.Error, and every radio of an invalid MudRadioGroup) */
+.mud-checkbox > .mud-icon-button.mud-error-text > svg:has(> path[d^="M19 5v14H5V5h14"]),
+.mud-radio > .mud-icon-button.mud-error-text > svg:has(> path[d^="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18"], > path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]),
+.mud-checkbox > .mud-icon-button > svg.mud-error-text:has(> path[d^="M19 5v14H5V5h14"], > path[d^="M19 3H5c-1.11 0-2"], path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"]),
+.mud-radio > .mud-icon-button > svg.mud-error-text:has(> path[d^="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18"], > path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    border-color: var(--mud-palette-error);
+}
+
+.mud-checkbox > .mud-icon-button > svg.mud-error-text:has(> path[d^="M19 3H5c-1.11 0-2"], path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"]) {
+    background-color: var(--mud-palette-error);
+}
+
+.mud-checkbox > .mud-icon-button:has(> svg.mud-error-text)::after {
+    background-color: var(--mud-palette-error-text);
+}
+
+/* focus-visible:border-ring focus-visible:ring-[3px] ring-ring/50 */
 .mud-checkbox:has(:focus-visible) .mud-icon-button,
 .mud-radio:has(:focus-visible) .mud-icon-button {
     background-color: transparent;
@@ -908,23 +1221,68 @@ label.mud-input-label.mud-input-error {
     border-radius: 9999px;
 }
 
-/* Switch: h-[1.15rem] w-8 track, size-4 thumb */
+.mud-checkbox:has(:focus-visible) > .mud-icon-button > svg:has(> path[d^="M19 5v14H5V5h14"]),
+.mud-radio:has(:focus-visible) > .mud-icon-button > svg:has(> path[d^="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18"], > path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    border-color: var(--shadcn-ring);
+}
+
+/* disabled:opacity-50 (MudBlazor already greys the label) */
+.mud-checkbox.mud-disabled > .mud-icon-button,
+.mud-radio.mud-disabled > .mud-icon-button {
+    opacity: 0.5;
+}
+
+.mud-checkbox.mud-disabled > .mud-icon-button > svg:has(> path[d^="M19 5v14H5V5h14"], > path[d^="M19 3H5c-1.11 0-2"], path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"]),
+.mud-radio.mud-disabled > .mud-icon-button > svg:has(> path[d^="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18"], > path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    color: var(--mud-palette-primary);
+}
+
+/*
+ * Switch: h-[1.15rem] w-8 rounded-full track, bg-input / bg-primary, size-4 thumb that moves
+ * calc(100% - 2px). Size.Small is shadcn's size="sm" (h-3.5 w-6, size-3 thumb); Size.Large
+ * scales the same proportions up (h-[1.4rem] w-10, size-5 thumb).
+ */
+
+.mud-switch > .mud-typography {
+    font-weight: 500;                                 /* Label: text-sm font-medium */
+}
+
+.mud-switch-span.mud-switch-span-small,
 .mud-switch-span.mud-switch-span-medium,
+.mud-switch-span.mud-switch-span-large,
 .mud-switch-span {
     width: 32px;
     height: 18.4px;
     padding: 0;
-    margin: 6px 8px 6px 0;
+    margin: 6px 8px;                                  /* gap-2 to the label, and to a neighbour */
     overflow: visible;
     border-radius: 9999px;
 }
 
+.mud-switch-span.mud-switch-span-small {
+    width: 24px;
+    height: 14px;
+    margin: 4px 8px;
+}
+
+.mud-switch-span.mud-switch-span-large {
+    width: 40px;
+    height: 22.4px;
+    margin: 8px 8px;
+}
+
 .mud-switch-base.mud-switch-base-medium,
+.mud-switch-base.mud-switch-base-small,
+.mud-switch-base.mud-switch-base-large,
 .mud-switch-base {
     padding: 0;
     top: 1.2px;
     left: 1px;
-    color: var(--mud-palette-background);
+    color: var(--mud-palette-white);
+}
+
+.mud-switch-base.mud-switch-base-small {
+    top: 1px;
 }
 
 .mud-switch-base:hover,
@@ -933,49 +1291,124 @@ label.mud-input-label.mud-input-error {
 }
 
 .mud-switch-base.mud-checked {
-    transform: translateX(14px);
+    transform: translateX(14px);                      /* translate-x-[calc(100%-2px)] */
 }
 
-.mud-switch-thumb-medium,
-.mud-switch-button .mud-switch-thumb-medium {
+.mud-switch-base.mud-switch-base-small.mud-checked {
+    transform: translateX(10px);
+}
+
+.mud-switch-base.mud-switch-base-large.mud-checked {
+    transform: translateX(18px);
+}
+
+/* bg-background thumb; in dark mode unchecked bg-foreground, checked bg-primary-foreground */
+.mud-switch-button .mud-switch-thumb-small,
+.mud-switch-button .mud-switch-thumb-medium,
+.mud-switch-button .mud-switch-thumb-large {
     width: 16px;
     height: 16px;
     box-shadow: none;
-    background-color: var(--mud-palette-background);
+    background-color: var(--mud-palette-white);
 }
 
-.mud-switch-base.mud-checked .mud-switch-thumb-medium {
+.mud-switch-button .mud-switch-thumb-small {
+    width: 12px;
+    height: 12px;
+}
+
+.mud-switch-button .mud-switch-thumb-large {
+    width: 20px;
+    height: 20px;
+}
+
+.mud-switch-base.mud-checked .mud-switch-button > span {
     background-color: var(--mud-palette-primary-text);
 }
 
-.mud-switch-track {
+.mud-switch-span .mud-switch-track,
+.mud-switch-span .mud-switch-base.mud-switch-disabled + .mud-switch-track {
+    box-sizing: border-box;
+    border: 1px solid transparent;
     border-radius: 9999px;
     opacity: 1 !important;
-    background-color: var(--mud-palette-lines-inputs);
+    background-color: var(--mud-palette-lines-inputs);    /* bg-input */
     box-shadow: var(--shadcn-shadow-xs);
+    transition: background-color var(--shadcn-transition), box-shadow var(--shadcn-transition);
 }
 
-.mud-switch-base.mud-checked + .mud-switch-track {
-    opacity: 1;
+.mud-switch-span .mud-switch-base.mud-checked + .mud-switch-track {
+    background-color: var(--mud-palette-primary);       /* data-[state=checked]:bg-primary */
+}
+
+/*
+ * Secondary is a grey surface (#f5f5f5): checked, its track takes the secondary foreground as
+ * secondary text does; unchecked (UncheckedColor) it is drawn as the plain bg-input track.
+ */
+.mud-switch-span .mud-switch-base.mud-checked + .mud-switch-track.mud-secondary {
+    background-color: var(--mud-palette-secondary-text) !important;
+}
+
+.mud-switch-span .mud-switch-base:not(.mud-checked) + .mud-switch-track.mud-secondary {
+    background-color: var(--mud-palette-lines-inputs) !important;
 }
 
 .mud-switch-span:has(:focus-visible) .mud-switch-track {
+    border-color: var(--shadcn-ring);
     box-shadow: var(--shadcn-focus-ring);
 }
 
-/* Slider: h-1.5 bg-muted track, size-4 thumb with border-primary bg-white shadow-sm */
+.mud-switch.mud-disabled .mud-switch-span {
+    opacity: 0.5;                                     /* disabled:opacity-50 */
+}
+
+/*
+ * Slider: h-1.5 track with a bg-primary range, size-4 thumb (border-primary bg-white shadow-sm,
+ * ring-4 ring-ring/50 on hover and focus). The track is drawn behind the native one so
+ * Variant.Filled's range and the tick marks show through it. It uses bg-input, not shadcn's
+ * bg-muted, which is invisible on the muted and white surfaces MudBlazor sliders often sit on.
+ */
+.mud-slider[class*="mud-slider-"] .mud-slider-input {
+    color: var(--mud-palette-primary);                /* thumb border and range follow Color */
+}
+
+.mud-slider.mud-slider-secondary .mud-slider-input { color: var(--mud-palette-secondary-text); }
+.mud-slider.mud-slider-tertiary .mud-slider-input { color: var(--mud-palette-tertiary); }
+.mud-slider.mud-slider-info .mud-slider-input { color: var(--mud-palette-info); }
+.mud-slider.mud-slider-success .mud-slider-input { color: var(--mud-palette-success); }
+.mud-slider.mud-slider-warning .mud-slider-input { color: var(--mud-palette-warning); }
+.mud-slider.mud-slider-error .mud-slider-input { color: var(--mud-palette-error); }
+.mud-slider.mud-slider-dark .mud-slider-input { color: var(--mud-palette-dark); }
+
+.mud-slider.mud-slider-secondary .mud-slider-filled {
+    background-color: var(--mud-palette-secondary-text);  /* secondary is a grey surface */
+}
+
 .mud-slider[class*="mud-slider-"] .mud-slider-input::-webkit-slider-runnable-track {
     height: 6px;
     margin: 8px 0;
     border-radius: 9999px;
-    background-color: var(--mud-palette-background-gray);
+    background-color: transparent;
 }
 
 .mud-slider[class*="mud-slider-"] .mud-slider-input::-moz-range-track {
     height: 6px;
     margin: 8px 0;
     border-radius: 9999px;
-    background-color: var(--mud-palette-background-gray);
+    background-color: transparent;
+}
+
+.mud-slider:not(.mud-picker-color-slider) > .mud-slider-container::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 6px;                                      /* h-1.5 */
+    transform: translateY(-50%);
+    border-radius: 9999px;
+    background-color: var(--mud-palette-lines-inputs);    /* bg-input: bg-muted vanishes on muted and card surfaces */
+    pointer-events: none;
 }
 
 .mud-slider[class*="mud-slider-"] .mud-slider-filled {
@@ -988,8 +1421,8 @@ label.mud-input-label.mud-input-error {
     height: 16px;
     margin-top: -5px;
     transform: none;
-    background-color: #fff;
-    border: 1px solid var(--mud-palette-primary);
+    background-color: var(--mud-palette-white);
+    border: 1px solid currentColor;
     box-shadow: var(--shadcn-shadow-sm);
 }
 
@@ -998,8 +1431,8 @@ label.mud-input-label.mud-input-error {
     height: 16px;
     transform: none;
     box-sizing: border-box;
-    background-color: #fff;
-    border: 1px solid var(--mud-palette-primary);
+    background-color: var(--mud-palette-white);
+    border: 1px solid currentColor;
     box-shadow: var(--shadcn-shadow-sm);
 }
 
@@ -1007,6 +1440,80 @@ label.mud-input-label.mud-input-error {
 .mud-slider[class*="mud-slider-"] .mud-slider-input:active::-webkit-slider-thumb,
 .mud-slider[class*="mud-slider-"] .mud-slider-input:hover::-webkit-slider-thumb {
     box-shadow: 0 0 0 4px color-mix(in oklab, var(--shadcn-ring) 50%, transparent) !important;
+}
+
+.mud-slider[class*="mud-slider-"] .mud-slider-input:focus-visible::-moz-range-thumb,
+.mud-slider[class*="mud-slider-"] .mud-slider-input:active::-moz-range-thumb,
+.mud-slider[class*="mud-slider-"] .mud-slider-input:hover::-moz-range-thumb {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--shadcn-ring) 50%, transparent) !important;
+}
+
+/* Size.Small: h-1 track, size-3 thumb; Size.Large: h-2 track, size-5 thumb */
+.mud-slider.mud-slider-small .mud-slider-input::-webkit-slider-runnable-track { height: 4px; }
+.mud-slider.mud-slider-small .mud-slider-input::-moz-range-track { height: 4px; }
+.mud-slider.mud-slider-small .mud-slider-input::-webkit-slider-thumb { width: 12px; height: 12px; margin-top: -4px; }
+.mud-slider.mud-slider-small .mud-slider-input::-moz-range-thumb { width: 12px; height: 12px; }
+.mud-slider.mud-slider-small > .mud-slider-container::before,
+.mud-slider.mud-slider-small .mud-slider-filled { height: 4px; }
+
+.mud-slider.mud-slider-large .mud-slider-input::-webkit-slider-runnable-track { height: 8px; margin: 10px 0; }
+.mud-slider.mud-slider-large .mud-slider-input::-moz-range-track { height: 8px; margin: 10px 0; }
+.mud-slider.mud-slider-large .mud-slider-input::-webkit-slider-thumb { width: 20px; height: 20px; margin-top: -6px; }
+.mud-slider.mud-slider-large .mud-slider-input::-moz-range-thumb { width: 20px; height: 20px; }
+.mud-slider.mud-slider-large > .mud-slider-container::before,
+.mud-slider.mud-slider-large .mud-slider-filled { height: 8px; }
+
+/* Tick marks: muted dots on the track; labels text-xs muted-foreground */
+.mud-slider[class*="mud-slider-"] .mud-slider-track-tick {
+    width: 4px;
+    height: 4px;
+    background-color: color-mix(in oklab, var(--mud-palette-text-secondary) 50%, transparent);
+}
+
+.mud-slider.mud-slider-small .mud-slider-track-tick {
+    width: 2px;
+    height: 2px;
+}
+
+.mud-slider.mud-slider-large .mud-slider-track-tick {
+    width: 4px;
+    height: 4px;
+}
+
+.mud-slider .mud-slider-track-tick-label.mud-typography {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+/* Value label: the tooltip look, bg-primary text-primary-foreground rounded-md px-3 py-1.5 text-xs */
+.mud-slider .mud-slider-value-label {
+    padding: 6px 12px;
+    border-radius: var(--mud-default-borderradius);
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+}
+
+/* data-[disabled]:opacity-50 on the whole slider, not MudBlazor's 0.38 on the input */
+.mud-slider:has(> .mud-slider-container > .mud-slider-input:disabled) {
+    opacity: 0.5;
+}
+
+.mud-slider .mud-slider-input:disabled {
+    opacity: 1;
+    cursor: not-allowed;
+}
+
+/* MudBlazor swaps the disabled thumb for a black dot with a white !important ring */
+.mud-slider[class*="mud-slider-"] .mud-slider-input:disabled::-webkit-slider-thumb {
+    color: inherit;
+    box-shadow: var(--shadcn-shadow-sm) !important;
+}
+
+.mud-slider[class*="mud-slider-"] .mud-slider-input:disabled::-moz-range-thumb {
+    color: inherit;
+    box-shadow: var(--shadcn-shadow-sm) !important;
 }
 
 /* ---------------------------------------------------------------------------------------------
@@ -2940,6 +3447,188 @@ label.mud-input-label.mud-input-error {
 /* ---------------------------------------------------------------------------------------------
    17. Form inputs: autocomplete, select, field, file upload, numeric field, rating
    --------------------------------------------------------------------------------------------- */
+
+/*
+ * Select / autocomplete open icon. MudBlazor's ArrowDropDown/ArrowDropUp triangles (matched by
+ * path data, so a custom AdornmentIcon is left alone) become lucide's ChevronDown/ChevronUp:
+ * size-4 opacity-50 in muted-foreground, as on SelectTrigger.
+ */
+.mud-input-adornment svg.mud-icon-root:has(> path[d="M7 10l5 5 5-5z"]),
+.mud-input-adornment svg.mud-icon-root:has(> path[d="M7 14l5-5 5 5z"]) {
+    width: 16px;
+    height: 16px;
+    opacity: 0.5;
+    background-color: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+
+.mud-input-adornment svg.mud-icon-root:has(> path[d="M7 14l5-5 5 5z"]) {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E");
+}
+
+.mud-input-adornment svg.mud-icon-root:has(> path[d="M7 10l5 5 5-5z"]) > *,
+.mud-input-adornment svg.mud-icon-root:has(> path[d="M7 14l5-5 5 5z"]) > * {
+    display: none;
+}
+
+.mud-input-adornment .mud-icon-button:has(svg > path[d="M7 10l5 5 5-5z"]):hover,
+.mud-input-adornment .mud-icon-button:has(svg > path[d="M7 14l5-5 5 5z"]):hover {
+    background-color: transparent;                    /* part of the trigger, not a ghost button */
+}
+
+/*
+ * Select list. SelectItem: pr-8 with a size-4 CheckIcon at right-2 on the selected option.
+ * MudBlazor's own mud-selected-item marks the keyboard-highlighted option (bg-accent, section 6).
+ */
+.mud-list[id^="select-listbox"]:not([aria-multiselectable="true"]) .mud-list-item[role="option"] {
+    padding-right: 32px;                              /* pr-8 */
+    padding-inline-end: 32px;
+}
+
+.mud-list[id^="select-listbox"]:not([aria-multiselectable="true"]) .mud-list-item[aria-selected="true"]::after {
+    content: "";
+    position: absolute;
+    right: 8px;                                       /* right-2 */
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    transform: translateY(-50%);
+    pointer-events: none;
+    background-color: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+
+/* MultiSelection: the option checkboxes get the Checkbox look (box rules in section 5) */
+.mud-list[id^="select-listbox"] .mud-list-item-icon {
+    position: relative;
+}
+
+.mud-list[id^="select-listbox"] .mud-list-item-icon:has(> svg > path[d^="M19 3H5c-1.11 0-2"])::after,
+.mud-list[id^="select-listbox"] .mud-list-item-icon:has(> svg path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"])::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 20px;                                      /* the 16px box and its 2px margins */
+    height: 20px;
+    transform: translateY(-50%);
+    pointer-events: none;
+    background-color: var(--mud-palette-primary-text);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 14px 14px no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 14px 14px no-repeat;
+}
+
+.mud-list[id^="select-listbox"] .mud-list-item-icon:has(> svg path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"])::after {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+}
+
+/* Autocomplete: before/after/more/no-items templates read as SelectLabel / CommandEmpty */
+.mud-autocomplete-before-items:not(:empty),
+.mud-autocomplete-after-items:not(:empty),
+.mud-autocomplete-more-items:not(:empty),
+.mud-autocomplete-no-items:not(:empty) {
+    padding: 6px 8px;                                 /* px-2 py-1.5 */
+    font-size: 0.875rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+/* Progress shown while searching: a 2px bar in the field's bottom edge, muted spinner */
+.mud-select.mud-autocomplete--with-progress .progress-indicator-circular .mud-progress-circular {
+    color: var(--mud-palette-text-secondary);
+}
+
+/*
+ * File upload drag area: shadcn's Empty pattern — rounded-lg border-dashed p-6, the icon in a
+ * size-10 bg-muted rounded-lg tile, text-sm muted-foreground; hover bg-muted/50.
+ */
+.mud-file-upload .mud-file-upload-dragarea {
+    gap: 8px;
+    padding: 24px;                                    /* p-6 */
+    border-width: 1px;
+    border-color: var(--mud-palette-lines-inputs);
+    border-radius: var(--shadcn-radius-lg);
+    background-color: transparent;
+    font: inherit;
+    color: var(--mud-palette-text-primary);
+    transition: background-color var(--shadcn-transition), border-color var(--shadcn-transition), box-shadow var(--shadcn-transition);
+}
+
+.mud-file-upload .mud-file-upload-dragarea-clickable:hover,
+.mud-file-upload .mud-file-upload-dragarea-clickable:active {
+    background-color: color-mix(in oklab, var(--mud-palette-background-gray) 50%, transparent);
+    border-color: var(--shadcn-ring);
+}
+
+.mud-file-upload .mud-file-upload-dragarea-clickable:focus-visible {
+    border-color: var(--shadcn-ring);
+    box-shadow: var(--shadcn-focus-ring);
+    outline: none;
+}
+
+.mud-file-upload .mud-file-upload-dragarea > .mud-icon-root {
+    box-sizing: content-box;
+    margin: 0 !important;                             /* the template's mb-2 is replaced by gap-2 */
+    padding: 8px;
+    font-size: 1.5rem;                                /* size-6 in a size-10 tile */
+    border-radius: var(--shadcn-radius-lg);
+    background-color: var(--mud-palette-background-gray);
+    color: var(--mud-palette-text-primary) !important;
+}
+
+.mud-file-upload .mud-file-upload-dragarea > .mud-typography {
+    font-size: 0.875rem;
+    line-height: 1.625;                               /* text-sm/relaxed */
+    color: var(--mud-palette-text-secondary) !important;
+}
+
+.mud-file-upload .mud-file-upload-dragarea:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.mud-file-upload .mud-file-upload-files-default-template {
+    margin-top: 8px;
+}
+
+.mud-file-upload .mud-file-upload-filelist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+/*
+ * Rating. shadcn has none; the stars take the theme's warning (amber) instead of MudBlazor's
+ * hard-coded #ffb400, sit at icon sizes closer to size-4/5, and drop the Material grow-on-hover.
+ */
+.mud-rating-root {
+    color: var(--mud-palette-warning);
+    border-radius: var(--shadcn-radius-sm);
+}
+
+.mud-rating-root:focus-visible:not(.mud-disabled):not(.mud-readonly) {
+    background-color: transparent;
+    box-shadow: var(--shadcn-focus-ring);
+}
+
+.mud-rating-item.mud-rating-item-active {
+    transform: none;
+}
+
+.mud-rating-item .mud-icon-root.mud-icon-size-small { font-size: 1rem; }
+.mud-rating-item .mud-icon-root.mud-icon-size-medium { font-size: 1.25rem; }
+.mud-rating-item .mud-icon-root.mud-icon-size-large { font-size: 1.75rem; }
+
+.mud-rating-item.mud-disabled {
+    opacity: 0.5;                                     /* disabled:opacity-50, colours kept */
+}
+
+.mud-rating-item.mud-disabled .mud-icon-root:not([class*="-text"]) {
+    color: inherit;
+}
 
 /* (end of section 17) */
 
