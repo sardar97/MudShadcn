@@ -38,6 +38,11 @@
     <EmbeddedResource Include="ExamplesData\Elements.json" LogicalName="Elements.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- The package README, served as /llms-full.txt for AI agents (see wwwroot/llms.txt). -->
+    <Content Include="..\..\README.md" Link="wwwroot\llms-full.txt" Visible="false" />
+  </ItemGroup>
+
   <!--
     mudblazor.com shows each component's <summary> under the page title. Extract the type summaries
     from the MudBlazor.xml next to the referenced MudBlazor.dll into a small tab-separated resource,
