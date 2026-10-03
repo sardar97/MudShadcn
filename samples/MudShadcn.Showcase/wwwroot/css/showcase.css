@@ -1,0 +1,669 @@
+/*
+ * The showcase's own chrome: app bar, sidebar, page header, example frames, code samples.
+ * Laid out like mudblazor.com, dressed like ui.shadcn.com's docs. Nothing in here styles a
+ * MudBlazor component inside an example: that is MudShadcn.css alone, which is the point.
+ */
+
+html {
+    scroll-padding-top: 80px;                         /* anchors land below the app bar */
+}
+
+body {
+    background-color: var(--mud-palette-background);
+}
+
+h1:focus {
+    outline: none;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Loading screen (index.html, before Blazor starts)
+   --------------------------------------------------------------------------------------------- */
+.docs-loading {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    color: #171717;
+    background: #fff;
+}
+
+.docs-loading-bar {
+    width: 160px;
+    height: 4px;
+    border-radius: 9999px;
+    overflow: hidden;
+    background: #f5f5f5;
+}
+
+.docs-loading-bar > div {
+    width: var(--blazor-load-percentage, 0%);
+    height: 100%;
+    background: #171717;
+    transition: width 150ms ease-out;
+}
+
+@media (prefers-color-scheme: dark) {
+    .docs-loading { color: #fafafa; background: #0a0a0a; }
+    .docs-loading-bar { background: #262626; }
+    .docs-loading-bar > div { background: #fafafa; }
+    .docs-loading svg path { stroke: #0a0a0a; }
+}
+
+#blazor-error-ui {
+    background: var(--mud-palette-surface, #fff);
+    border-top: 1px solid var(--mud-palette-lines-default, #e5e5e5);
+    bottom: 0;
+    display: none;
+    left: 0;
+    padding: 0.75rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 3000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   App bar
+   --------------------------------------------------------------------------------------------- */
+.docs-appbar.mud-appbar {
+    background-color: color-mix(in oklab, var(--mud-palette-background) 92%, transparent);
+    backdrop-filter: blur(8px);
+    z-index: calc(var(--mud-zindex-appbar) + 1);
+}
+
+.docs-appbar .mud-toolbar {
+    gap: 4px;
+}
+
+.docs-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-inline-end: 16px;
+    color: var(--mud-palette-text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.docs-logo {
+    flex: none;
+}
+
+.docs-topnav {
+    align-items: center;
+    gap: 2px;
+}
+
+.docs-topnav .docs-topnav-link {
+    color: var(--mud-palette-text-secondary);
+}
+
+.docs-topnav .docs-topnav-link:hover,
+.docs-topnav .docs-topnav-link.active {
+    color: var(--mud-palette-text-primary);
+}
+
+.docs-topnav .docs-topnav-link.active {
+    background-color: var(--shadcn-accent);
+}
+
+.docs-search {
+    position: relative;
+    align-items: center;
+    width: 280px;
+    margin-inline-end: 8px;
+}
+
+.docs-search .mud-input-control,
+.docs-search .mud-autocomplete {
+    margin: 0;
+    width: 100%;
+}
+
+.docs-search .mud-input.mud-input-outlined {
+    background-color: var(--mud-palette-background-gray);
+}
+
+.docs-kbd {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    padding: 1px 6px;
+    border: 1px solid var(--mud-palette-lines-default);
+    border-radius: var(--shadcn-radius-sm);
+    background-color: var(--mud-palette-background);
+    color: var(--mud-palette-text-secondary);
+    font: 500 0.6875rem/1rem "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    pointer-events: none;
+}
+
+.docs-search:focus-within .docs-kbd {
+    display: none;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Sidebar (the components menu)
+   --------------------------------------------------------------------------------------------- */
+.docs-nav-drawer .mud-drawer-content {
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.docs-nav.mud-navmenu {
+    padding: 12px 8px 32px;
+    gap: 1px;
+}
+
+/* Top-level groups read as sidebar group labels: text-xs font-medium text-sidebar-foreground/70 */
+.docs-nav > .mud-nav-group > .mud-nav-link {
+    min-height: 32px;
+    margin-top: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: color-mix(in oklab, var(--shadcn-sidebar-foreground) 70%, transparent);
+}
+
+.docs-nav > .mud-nav-group:first-child > .mud-nav-link {
+    margin-top: 0;
+}
+
+.docs-nav > .mud-nav-group > .mud-nav-link:hover {
+    background-color: transparent;
+    color: var(--shadcn-sidebar-foreground);
+}
+
+/* The menu itself is flat in the first level (no guide line), like mudblazor.com. */
+.docs-nav.mud-navmenu > .mud-nav-group > .mud-collapse-container > .mud-collapse-wrapper > .mud-collapse-wrapper-inner > .mud-navmenu {
+    padding: 0;
+    margin-inline-start: 0;
+    border-inline-start: 0;
+}
+
+.docs-nav .mud-nav-link {
+    min-height: 30px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.docs-nav .docs-single-link .mud-nav-link {
+    font-weight: 500;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Page frame
+   --------------------------------------------------------------------------------------------- */
+.docs-main {
+    min-height: 100vh;
+}
+
+.docs-container.mud-container {
+    padding-top: 32px;
+    padding-bottom: 48px;
+}
+
+@media (min-width: 960px) {
+    .docs-container.mud-container {
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+}
+
+.docs-page-header {
+    margin-bottom: 8px;
+}
+
+.docs-page-title.mud-typography {
+    font-size: 1.875rem;                              /* text-3xl font-bold tracking-tight */
+    font-weight: 700;
+    line-height: 2.25rem;
+    letter-spacing: -0.025em;
+}
+
+.docs-page-subtitle.mud-typography {
+    margin-top: 8px;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+.docs-page-header-special {
+    margin: 32px 0 48px;
+}
+
+.docs-title {
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.docs-title-description {
+    margin-top: 12px;
+    color: var(--mud-palette-text-secondary);
+}
+
+.docs-page-apilinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.docs-page-content {
+    min-height: 40vh;
+}
+
+/* Section headings: ## (text-xl font-semibold tracking-tight), ### (text-lg font-semibold) */
+.docs-page-section .docs-section-header .mud-typography-h5 {
+    margin-top: 40px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--mud-palette-lines-default);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.75rem;
+    letter-spacing: -0.025em;
+}
+
+.docs-page-section .docs-section-header .mud-typography-h6 {
+    margin-top: 32px;
+    margin-bottom: 8px;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.5rem;
+    letter-spacing: -0.0125em;
+}
+
+.docs-section-description.mud-typography {
+    margin-bottom: 20px;
+    line-height: 1.5rem;
+}
+
+.docs-section-header.mt-12 .mud-typography-h6,
+.docs-section-header .docs-section-subtitle {
+    margin-top: 24px;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Example frame + code sample (SectionContent)
+   --------------------------------------------------------------------------------------------- */
+.docs-section-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--shadcn-radius-xl);
+    background-color: var(--mud-palette-background);
+}
+
+.docs-section-content.outlined {
+    border: 1px solid var(--mud-palette-lines-default);
+}
+
+.docs-section-content.darken {
+    background-color: color-mix(in oklab, var(--mud-palette-background-gray) 60%, var(--mud-palette-background));
+}
+
+.docs-section-content-toolbar {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 6px 8px 0;
+}
+
+.docs-section-content-toolbar .mud-button {
+    color: var(--mud-palette-text-secondary);
+}
+
+.docs-section-files {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--shadcn-radius-lg);
+    background-color: var(--mud-palette-background-gray);
+}
+
+.docs-file-button {
+    padding: 2px 10px;
+    border: 0;
+    border-radius: var(--shadcn-radius-md);
+    background: transparent;
+    color: var(--mud-palette-text-secondary);
+    font: 500 0.8125rem/1.25rem "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    cursor: pointer;
+}
+
+.docs-file-button.active {
+    background-color: var(--mud-palette-background);
+    color: var(--mud-palette-text-primary);
+    box-shadow: var(--shadcn-shadow-sm);
+}
+
+.docs-section-content-inner > *:not(.mud-grid) {
+    margin: 8px;
+}
+
+.docs-section-content.show-code {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.docs-section-content.show-code.outlined {
+    border-bottom: 0;
+}
+
+.docs-section-source {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 8px;
+    border-radius: var(--shadcn-radius-xl);
+    background-color: var(--mud-palette-background-gray);
+}
+
+.docs-section-content.show-code + .docs-section-source {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.docs-section-source.outlined {
+    border: 1px solid var(--mud-palette-lines-default);
+}
+
+.docs-section-source:not(.show-code) {
+    display: none;
+}
+
+.docs-section-source-container {
+    max-height: 520px;
+    overflow: auto;
+    scrollbar-width: thin;
+}
+
+.docs-copy-code-button.mud-icon-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: var(--mud-palette-text-secondary);
+    opacity: 0;
+    transition: opacity var(--shadcn-transition);
+}
+
+.docs-section-source:hover .docs-copy-code-button,
+.docs-copy-code-button:focus-visible {
+    opacity: 1;
+}
+
+.docs-code-block {
+    margin-bottom: 0;
+}
+
+.docs-code-block .docs-section-source-container {
+    max-height: none;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Code highlighting (ColorCode's classes, as on mudblazor.com) in shadcn's neutral palette
+   --------------------------------------------------------------------------------------------- */
+.mud-codeblock {
+    padding: 16px 20px;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+}
+
+.mud-codeblock pre {
+    margin: 0;
+    padding: 0;
+    color: var(--mud-palette-text-primary);
+    font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: inherit;
+    white-space: pre;
+    direction: ltr;
+}
+
+.mud-codeblock .html + .csharp {
+    margin-top: 20px;
+}
+
+/* light-dark() follows the color-scheme MudShadcnProvider sets on :root for the active mode. */
+.mud-codeblock {
+    --code-tag: light-dark(#737373, #a3a3a3);
+    --code-element: light-dark(#0a0a0a, #fafafa);
+    --code-attribute: light-dark(#7c3aed, #c4b5fd);
+    --code-string: light-dark(#15803d, #86efac);
+    --code-keyword: light-dark(#2563eb, #93c5fd);
+    --code-type: light-dark(#0e7490, #67e8f9);
+    --code-number: light-dark(#c2410c, #fdba74);
+    --code-comment: light-dark(#a3a3a3, #737373);
+    --code-function: light-dark(#b45309, #fcd34d);
+}
+
+.mud-codeblock .htmlTagDelimiter,
+.mud-codeblock .htmlOperator,
+.mud-codeblock .quot { color: var(--code-tag); }
+.mud-codeblock .htmlElementName { color: var(--code-element); font-weight: 600; }
+.mud-codeblock .htmlAttributeName { color: var(--code-attribute); }
+.mud-codeblock .htmlAttributeValue,
+.mud-codeblock .htmlLink,
+.mud-codeblock .string { color: var(--code-string); }
+.mud-codeblock .keyword { color: var(--code-keyword); }
+.mud-codeblock .enum,
+.mud-codeblock .class,
+.mud-codeblock .interface,
+.mud-codeblock .type { color: var(--code-type); }
+.mud-codeblock .enumValue,
+.mud-codeblock .sharpVariable,
+.mud-codeblock .localVar,
+.mud-codeblock .atSign { color: var(--mud-palette-text-primary); }
+.mud-codeblock .number { color: var(--code-number); }
+.mud-codeblock .comment,
+.mud-codeblock .htmlComment { color: var(--code-comment); font-style: italic; }
+.mud-codeblock .function { color: var(--code-function); }
+
+/* Inline code: bg-muted rounded px-[0.3rem] py-[0.2rem] font-mono text-sm */
+.docs-code {
+    display: inline-block;
+    padding: 0.05rem 0.3rem;
+    border-radius: var(--shadcn-radius-sm);
+    background-color: var(--mud-palette-background-gray);
+    color: var(--mud-palette-text-primary);
+    font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.4;
+    direction: ltr;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   "On this page" (MudPageContentNavigation in the right drawer)
+   --------------------------------------------------------------------------------------------- */
+.docs-toc.mud-drawer {
+    border: 0 !important;
+}
+
+/* MudPageContentNavigation renders nothing for fewer than two sections (Explore): give the space back. */
+.docs-toc.mud-drawer:not(:has(.mud-navmenu)) {
+    display: none;
+}
+
+@media (min-width: 1280px) {
+    .mud-layout:has(.docs-toc.mud-drawer:not(:has(.mud-navmenu))) .mud-main-content {
+        margin-right: 0 !important;
+    }
+}
+
+.docs-toc .mud-drawer-content {
+    padding: 32px 16px 32px 8px;
+}
+
+.docs-toc .mud-navmenu {
+    gap: 0;
+    padding: 0 !important;
+}
+
+.docs-toc .mud-navmenu .title {
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.docs-toc .mud-nav-link {
+    min-height: 28px;
+    padding: 4px 0 4px 12px;
+    border-radius: 0;
+    border-inline-start: 1px solid var(--mud-palette-lines-default);
+    font-size: 0.8125rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+.docs-toc .mud-nav-link:hover {
+    background-color: transparent !important;
+    color: var(--mud-palette-text-primary);
+}
+
+.docs-toc .mud-nav-link.active {
+    border-inline-start-color: var(--mud-palette-text-primary);
+    background-color: transparent !important;
+    color: var(--mud-palette-text-primary);
+    font-weight: 500;
+}
+
+.docs-toc .navigation-level-1 .mud-nav-link-text {
+    padding-inline-start: 12px;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Footer, previous/next
+   --------------------------------------------------------------------------------------------- */
+.docs-navigation-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 48px;
+}
+
+.docs-footer {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--mud-palette-lines-default);
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Pages: landing, explore, theme
+   --------------------------------------------------------------------------------------------- */
+.docs-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 48px 0 40px;
+    text-align: center;
+}
+
+.docs-hero-title.mud-typography {
+    max-width: 760px;
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+}
+
+.docs-hero-lead.mud-typography {
+    max-width: 640px;
+    font-size: 1.125rem;
+    font-weight: 400;
+    line-height: 1.75rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+.docs-hero-lead code {
+    font-size: 0.95em;
+}
+
+.docs-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+@media (max-width: 600px) {
+    .docs-hero-title.mud-typography { font-size: 2.125rem; }
+    .docs-search { width: 200px; }
+}
+
+.docs-sticky-info {
+    position: sticky;
+    top: 96px;
+}
+
+.explore-mudblazor-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.docs-explore-card {
+    color: inherit;
+    text-decoration: none;
+}
+
+.docs-explore-card > .mud-paper {
+    border-radius: var(--shadcn-radius-xl);
+    transition: border-color var(--shadcn-transition), box-shadow var(--shadcn-transition);
+}
+
+.docs-explore-card:hover > .mud-paper {
+    border-color: var(--shadcn-ring);
+    box-shadow: var(--shadcn-shadow-sm);
+}
+
+.explore-card.mud-paper {
+    width: 157px;
+    height: 157px;
+    border-radius: var(--shadcn-radius-lg);
+    background-color: var(--mud-palette-background-gray);
+    overflow: hidden;
+}
+
+@media (max-width: 600px) {
+    .explore-card.mud-paper { width: 138px; height: 138px; }
+    .explore-mudblazor-items { justify-content: center; }
+}
+
+.docs-swatch {
+    height: 40px;
+    border-radius: var(--shadcn-radius-md);
+    border: 1px solid var(--mud-palette-lines-default);
+}
+
+.docs-radius {
+    display: grid;
+    place-items: center;
+    width: 88px;
+    height: 64px;
+    border: 1px solid var(--mud-palette-lines-default);
+    background-color: var(--mud-palette-background-gray);
+}
+
+/* Examples that mudblazor.com renders in an iframe (whole layouts). */
+.docs-iframe {
+    display: block;
+    width: 100%;
+    height: 400px;
+    margin: 0 !important;
+    border: 1px solid var(--mud-palette-lines-default);
+    border-radius: var(--shadcn-radius-lg);
+}

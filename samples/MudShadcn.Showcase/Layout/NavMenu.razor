@@ -1,0 +1,38 @@
+@inject MenuService MenuService
+
+<MudNavMenu Class="docs-nav" aria-label="Documentation">
+    <MudNavGroup Title="Getting Started" @bind-Expanded="_gettingStartedExpanded">
+        <MudNavLink Href="getting-started/installation">Installation</MudNavLink>
+    </MudNavGroup>
+
+    <MudNavLink Href="docs/overview" Class="docs-single-link">Explore</MudNavLink>
+
+    <MudNavGroup Title="Components" @bind-Expanded="_componentsExpanded">
+        @foreach (var item in MenuService.Components)
+        {
+            if (item.IsNavGroup)
+            {
+                <MudNavGroup Title="@item.Name" Expanded="true">
+                    @foreach (var subItem in item.GroupComponents)
+                    {
+                        <MudNavLink Href="@subItem.Href">@subItem.Name</MudNavLink>
+                    }
+                </MudNavGroup>
+            }
+            else
+            {
+                <MudNavLink Href="@item.Href">@item.Name</MudNavLink>
+            }
+        }
+    </MudNavGroup>
+
+    <MudNavGroup Title="Customization" @bind-Expanded="_customizationExpanded">
+        <MudNavLink Href="customization/theme">Theme</MudNavLink>
+    </MudNavGroup>
+</MudNavMenu>
+
+@code {
+    private bool _gettingStartedExpanded = true;
+    private bool _componentsExpanded = true;
+    private bool _customizationExpanded = true;
+}

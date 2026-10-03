@@ -1,0 +1,42 @@
+@using MudBlazor.Utilities
+@inject MenuService MenuService
+@inject NavigationManager NavigationManager
+
+<MudHotkey Key="JsKey.KeyK" KeyModifiers="CtrlLeft" OnHotkeyPressed="FocusAsync" />
+<MudHotkey Key="JsKey.KeyK" KeyModifiers="CtrlRight" OnHotkeyPressed="FocusAsync" />
+<MudHotkey Key="JsKey.KeyK" KeyModifiers="MetaLeft" OnHotkeyPressed="FocusAsync" />
+
+<div class="docs-search d-none d-sm-flex">
+    <MudAutocomplete @ref="_autocomplete" T="DocsComponent" Placeholder="Search components…" Variant="Variant.Outlined" Margin="Margin.Dense"
+                     SearchFunc="SearchAsync" ToStringFunc="@(c => c?.Name)" ValueChanged="OnSelectedAsync" DebounceInterval="0"
+                     MaxItems="null" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Outlined.Search"
+                     aria-label="Search components" aria-keyshortcuts="Control+K" />
+    <kbd class="docs-kbd">Ctrl K</kbd>
+</div>
+
+@code {
+    private static readonly JsKeyModifier[] CtrlLeft = [JsKeyModifier.ControlLeft];
+    private static readonly JsKeyModifier[] CtrlRight = [JsKeyModifier.ControlRight];
+    private static readonly JsKeyModifier[] MetaLeft = [JsKeyModifier.MetaLeft];
+
+    private MudAutocomplete<DocsComponent> _autocomplete;
+
+    private Task<IEnumerable<DocsComponent>> SearchAsync(string text, CancellationToken token) =>
+        Task.FromResult(string.IsNullOrWhiteSpace(text)
+            ? MenuService.Pages
+            : MenuService.Pages.Where(p => p.Name.Contains(text, StringComparison.OrdinalIgnoreCase)
+                                           || (p.Type is not null && MenuService.TypeName(p.Type).Contains(text, StringComparison.OrdinalIgnoreCase))));
+
+    private async Task OnSelectedAsync(DocsComponent component)
+    {
+        if (component is null)
+        {
+            return;
+        }
+
+        NavigationManager.NavigateTo(component.Href);
+        await _autocomplete.ClearAsync();
+    }
+
+    private async Task FocusAsync() => await _autocomplete.FocusAsync();
+}
