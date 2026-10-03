@@ -45,7 +45,8 @@ Read every release between the current and the new version at
 guide linked from the release. Note anything touching theming, palette, typography, CSS variables,
 and the components styled in `MudShadcn.css`: button, input, select, checkbox, radio, switch,
 slider, popover, menu, list, tooltip, dialog, tabs, table, data grid, chip, nav menu, drawer,
-app bar, alert, snackbar, progress, skeleton, pickers, expansion panel, card, paper.
+app bar, alert, snackbar, progress, skeleton, pickers, expansion panel, card, paper — and since
+MudShadcn styles every component, anything else the release notes mention as visual.
 
 ### 3. Diff the stylesheets — do not skip this
 
@@ -77,13 +78,37 @@ grep -oE '\.mud-[a-zA-Z0-9_-]+' $CSS | sort -u | comm -23 - classes-$NEW.txt
 ```
 
 The first should print only the three wildcard mentions in the header comment (`--mud-palette-`,
-`--mud-elevation-`, `--mud-typography-`). The second has known false positives: classes MudBlazor
+`--mud-elevation-`, `--mud-typography-`) and `--mud-palette-black`, which `MudThemeProvider` emits
+but MudBlazor's own CSS never reads. The second has known false positives: classes MudBlazor
 puts in its markup without styling them itself. As of 9.10.0 those are
-`.mud-avatar-filled-default`, `.mud-button-month`, `.mud-chip-color-default`, `.mud-picker-paper`,
-`.mud-snackbar-action-button` and `.mud-toggle-item-selected`. Confirm each still appears in the
-rendered HTML of the test app (`curl -s http://localhost:5152/pickers | grep -o mud-picker-paper`).
+`.mud-avatar-filled-default`, `.mud-chart-axis-value`, `.mud-chart-heat`, `.mud-chart-label-value`,
+`.mud-chart-point`, `.mud-chart-serie`, `.mud-chart-serie-hovered`,
+`.mud-charts-gridlines-xaxis-lines`, `.mud-charts-gridlines-yaxis`, `.mud-checkbox-true`,
+`.mud-chip-color-default`, `.mud-fab-filled-default`, `.mud-file-upload-filelist`,
+`.mud-pagination-text`, `.mud-picker-paper`, `.mud-picker-popover`, `.mud-snackbar-action-button`,
+`.mud-step-label-content-secondary-text` and `.mud-toggle-item-selected`. Confirm each still
+appears in the rendered HTML of the test app or the showcase
+(`curl -s http://localhost:5152/pickers | grep -o mud-picker-paper`; the showcase renders in the
+browser, so check its pages with the browser's dev tools).
 Anything else either command prints is an override that no longer applies: find the replacement
 in `rules-$NEW.txt` and update the selector.
+
+The default checkbox, radio and select-arrow icons are recognised by their SVG path data
+(`path[d^="…"]` in the inputs sections) and redrawn as shadcn's controls. If MudBlazor changes those
+icons (`Icons.Material.Filled.CheckBox`, `CheckBoxOutlineBlank`, `IndeterminateCheckBox`,
+`RadioButtonChecked`/`Unchecked`, `ArrowDropDown`/`Up`), the selectors stop matching and the
+Material glyphs come back: compare the path strings in the stylesheet with `src/MudBlazor/Icons/Material/Filled.cs`.
+
+Charts are matched on attribute values rather than class names. Check that MudBlazor's default
+chart palette is still the 20 colours listed at the top of the charts section of `MudShadcn.css`,
+and that the heat map still builds its five legend shades from the first five of them:
+
+```bash
+git clone --depth 1 --branch v$NEW --filter=blob:none --sparse https://github.com/MudBlazor/MudBlazor.git mud-src
+git -C mud-src sparse-checkout set src/MudBlazor/Components/Chart
+grep -A6 'ChartPalette { get; set; } =' mud-src/src/MudBlazor/Components/Chart/Base/DefaultChartOptions.cs
+grep -A12 'void BuildLegends' mud-src/src/MudBlazor/Components/Chart/Charts/HeatMap.razor.cs
+```
 
 Existence is not enough: also `diff rules-$OLD.txt rules-$NEW.txt` and look for changed rules on
 selectors MudShadcn overrides. Watch for a rule that gained specificity (an extra modifier class
@@ -97,7 +122,22 @@ at equal or higher specificity, because `MudShadcn.css` loads second.
 - The version table in `src/MudShadcn/README.md`, and `OLD=` in this file.
 - `<Version>` of MudShadcn itself. Use a major bump if MudBlazor's major changed.
 
-### 5. Build
+### 5. Re-port the showcase
+
+The showcase (`samples/MudShadcn.Showcase`) is a port of mudblazor.com's component pages. Bring
+them to the new version:
+
+```bash
+samples/MudShadcn.Showcase/sync-mudblazor-docs.sh $NEW
+```
+
+Then compare `samples/MudShadcn.Showcase/Services/MenuService.cs` with
+`src/MudBlazor.Docs/Services/Menu/MenuService.cs` at the new tag, add or rename entries, and update
+the version in `samples/MudShadcn.Showcase/THIRD-PARTY-NOTICES.md`. If a new docs page uses a
+MudBlazor.Docs component or parameter the showcase's `Docs/` folder does not have, add it there
+with the same name and parameters; do not edit the ported page.
+
+### 6. Build
 
 ```bash
 dotnet build MudShadcn.sln
@@ -108,13 +148,15 @@ report renamed or removed component parameters in the test app; treat those as e
 app has no MudBlazor reference of its own, so a successful build also re-proves that MudBlazor
 flows through MudShadcn transitively. Keep it that way.
 
-### 6. Look at it
+### 7. Look at it
 
 A green build says nothing about the styling. Run the test app and go through every page in both
-light and dark mode:
+light and dark mode, then do the same with the showcase, which has every example MudBlazor
+documents (a missing docs component or parameter shows up there as a page that fails to render):
 
 ```bash
-dotnet run --project samples/MudShadcn.TestApp --launch-profile http   # http://localhost:5152
+dotnet run --project samples/MudShadcn.TestApp --launch-profile http    # http://localhost:5152
+dotnet run --project samples/MudShadcn.Showcase --launch-profile http   # http://localhost:5153
 ```
 
 Check in particular, because these have the most fragile overrides:
@@ -128,11 +170,13 @@ Check in particular, because these have the most fragile overrides:
 - Cards and dialogs: 24px padding, not MudBlazor's 16px/8px.
 - Snackbar: bordered neutral surface, action button legible.
 - Buttons: 36px, no shadow, no ripple, ring on keyboard focus.
+- Charts: shadcn's chart colours (orange, teal, dark blue in light mode; blue, green, amber in
+  dark), muted axis labels, bordered tooltips.
 - The page's inline `<style>` still contains `--mud-palette-primary`, `--mud-elevation-1` and
   `--mud-default-borderradius` with MudShadcn's values
   (`curl -s http://localhost:5152/ | grep -oE -- '--mud-elevation-1:[^;]+'`).
 
-### 7. Check shadcn too
+### 8. Check shadcn too
 
 If the user asks for it, or it has been a while: compare `ShadcnTokens.cs` and the `:root` block
 of `MudShadcn.css` against the Default Theme CSS in
@@ -142,7 +186,7 @@ the shadow scale against
 The token values live in three places that must agree: `ShadcnTokens.cs`, the `:root` block of
 `MudShadcn.css`, and the hex conversions in `MudShadcnTheme.cs`.
 
-### 8. Report
+### 9. Report
 
 Tell the user the old and new versions, which overrides needed changing and why, anything in
 MudBlazor's release notes that affects consumers, and anything that could not be verified.
