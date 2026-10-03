@@ -1,0 +1,5 @@
+<MudLink Href="@($"https://mudblazor.com/api/{TypeName.ToLowerInvariant()}")" Target="_blank" Underline="Underline.None"><CodeInline>@TypeName</CodeInline></MudLink>
+
+@code {
+    [Parameter, EditorRequired] public string TypeName { get; set; }
+}

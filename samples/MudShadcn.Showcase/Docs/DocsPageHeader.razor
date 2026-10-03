@@ -1,0 +1,80 @@
+@inject MenuService MenuService
+
+<PageTitle>@($"{Title} - MudShadcn")</PageTitle>
+<HeadContent>
+    @if (!string.IsNullOrEmpty(_subTitle))
+    {
+        <meta name="description" content="@_subTitle" />
+    }
+</HeadContent>
+
+@if (SpecialHeaderContent is not null)
+{
+    <div class="docs-page-header docs-page-header-special">
+        @SpecialHeaderContent
+    </div>
+}
+else
+{
+    <div class="docs-page-header">
+        <MudText Typo="Typo.h3" Class="docs-page-title">@Title</MudText>
+        @if (!string.IsNullOrEmpty(_subTitle))
+        {
+            <MudText Typo="Typo.subtitle1" Class="docs-page-subtitle">@_subTitle</MudText>
+        }
+        @if (Description is not null)
+        {
+            <MudText Typo="Typo.body1">@Description</MudText>
+        }
+    </div>
+}
+
+@if (_types.Count > 0)
+{
+    <DocsPageSection api-link-section>
+        <SectionHeader Title="API" />
+        <div class="docs-page-apilinks">
+            @foreach (var type in _types)
+            {
+                <MudLink Href="@($"https://mudblazor.com/api/{type.ToLowerInvariant()}")" Target="_blank" Underline="Underline.None">
+                    <CodeInline Tag="true">@type</CodeInline>
+                </MudLink>
+            }
+        </div>
+    </DocsPageSection>
+}
+
+@code {
+    /// <summary>The page's component, e.g. <c>nameof(MudAlert)</c>. Drives the subtitle and API links.</summary>
+    [Parameter] public string Component { get; set; }
+
+    [Parameter] public string Title { get; set; }
+
+    [Parameter] public string SubTitle { get; set; }
+
+    [Parameter] public RenderFragment Description { get; set; }
+
+    [Parameter] public RenderFragment SpecialHeaderContent { get; set; }
+
+    // Accepted for source compatibility with MudBlazor's pages; the showcase has no API pages.
+    [Parameter] public bool IsApi { get; set; }
+
+    private string _subTitle;
+    private List<string> _types = [];
+
+    protected override void OnParametersSet()
+    {
+        var summary = string.IsNullOrWhiteSpace(SubTitle) ? ApiSummaries.Get(Component) : SubTitle;
+        _subTitle = string.IsNullOrWhiteSpace(summary) ? null : summary.TrimEnd('.') + ".";
+
+        _types = [];
+        if (!string.IsNullOrEmpty(Component))
+        {
+            _types.Add(Component);
+            if (MenuService.FindByComponentName(Component) is { } entry)
+            {
+                _types.AddRange(entry.ChildTypes.Select(MenuService.TypeName).Where(t => t != Component).Distinct());
+            }
+        }
+    }
+}

@@ -1,0 +1,55 @@
+@using MudBlazor.Utilities
+
+<div id="@SectionInfo?.Id" class="@Classname">
+    @if (!string.IsNullOrWhiteSpace(Title) && !HideTitle)
+    {
+        <MudText Typo="@(Section?.Level >= 1 ? Typo.h6 : Typo.h5)">@Title</MudText>
+    }
+    @if (SubTitle is not null)
+    {
+        <MudText Typo="Typo.h6" Class="docs-section-subtitle">@SubTitle</MudText>
+    }
+    @if (Description is not null)
+    {
+        <MudText Class="docs-section-description">@Description</MudText>
+    }
+</div>
+
+@code {
+    [CascadingParameter] private DocsPage DocsPage { get; set; }
+    [CascadingParameter] private DocsPageSection Section { get; set; }
+
+    [Parameter] public string Class { get; set; }
+    [Parameter] public string Title { get; set; }
+    [Parameter] public bool HideTitle { get; set; }
+    [Parameter] public RenderFragment SubTitle { get; set; }
+    [Parameter] public RenderFragment Description { get; set; }
+
+    public DocsSectionLink SectionInfo { get; private set; }
+
+    private string Classname => new CssBuilder("docs-section-header")
+        .AddClass("docs-section-anchor", !string.IsNullOrWhiteSpace(Title))
+        .AddClass(Class)
+        .Build();
+
+    protected override void OnInitialized()
+    {
+        if (DocsPage is null || string.IsNullOrWhiteSpace(Title))
+        {
+            return;
+        }
+
+        // Same ids as mudblazor.com, so #anchors carry over: "parent-title-title".
+        var parentTitle = DocsPage.GetParentTitle(Section);
+        var id = (string.IsNullOrEmpty(parentTitle) ? Title : $"{parentTitle}-{Title}").Replace(" ", "-").ToLowerInvariant();
+        SectionInfo = new DocsSectionLink(id, Title);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && SectionInfo is not null)
+        {
+            await DocsPage.AddSectionAsync(SectionInfo, Section);
+        }
+    }
+}
