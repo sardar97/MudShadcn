@@ -1,0 +1,58 @@
+name: CI
+
+# Quality gate only: builds and checks everything on every push and pull request to master.
+# It never deploys or publishes: the showcase deploys from the `docs` branch (Cloudflare Pages runs
+# build.sh) and the NuGet package publishes from `v*` tags (publish.yml). See RELEASE.md.
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    name: Build & check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      # The library, the test app and the showcase. Must stay at 0 warnings.
+      - name: Build
+        run: dotnet build MudShadcn.sln -c Release -warnaserror
+
+      # Nothing fails to build when MudBlazor renames a class the stylesheet overrides, so check the
+      # stylesheet's assumptions (classes, variables, chart colours, icon paths) explicitly.
+      - name: Check the stylesheet against MudBlazor
+        run: tools/verify-mudblazor.sh
+
+      - name: Pack
+        run: dotnet pack src/MudShadcn -c Release --no-build -o artifacts
+
+      # The same publish Cloudflare Pages runs from build.sh, so a broken showcase shows up here first.
+      - name: Publish the showcase
+        run: dotnet publish samples/MudShadcn.Showcase -c Release -o publish
+
+      - name: Upload the package
+        uses: actions/upload-artifact@v7
+        with:
+          name: package
+          path: artifacts
+          retention-days: 7

@@ -38,8 +38,29 @@ Any static host works. Two things to set up for a single-page app:
   - Azure Static Web Apps: a `staticwebapp.config.json` with
     `"navigationFallback": { "rewrite": "/index.html" }`.
   - Netlify: a `_redirects` file containing `/* /index.html 200`.
-  - Cloudflare Pages and Vercel serve `index.html` for unknown paths of a single-page app by
-    default.
+  - Cloudflare Pages does this by itself for a site without a top-level `404.html`, as here.
+
+`wwwroot/_headers` lets browsers cache `_framework/` (every file there has a content hash in its
+name) for a year instead of revalidating it on every visit. Cloudflare Pages and Netlify read it;
+other hosts ignore it.
+
+## Deploy
+
+The site is hosted at <https://mudshadcn.pages.dev> on [Cloudflare Pages](https://pages.cloudflare.com)
+(free: unlimited requests for static files, Brotli, a global CDN). Cloudflare builds it with
+`build.sh` at the repository root whenever the `docs` branch moves, so publishing the current
+`master` is:
+
+```bash
+git push origin origin/master:docs
+```
+
+The one-time Cloudflare setup, and the package release that is separate from it, are in
+`RELEASE.md`. CI (`.github/workflows/ci.yml`) runs the same `dotnet publish` on every push to
+`master`, so a showcase that fails to build shows up there before it reaches `docs`.
+
+GitHub Pages also works, at `https://<user>.github.io/MudShadcn/`, but needs the base path and the
+`404.html` and `.nojekyll` steps above, and ignores `_headers`.
 
 ## Moving to a new MudBlazor version
 
