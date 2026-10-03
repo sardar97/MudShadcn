@@ -36,4 +36,101 @@
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
+  <!--
+    wwwroot/MudShadcn.min.css: MudShadcn.css without comments and redundant whitespace, generated on
+    every build that changes the source (it is git-ignored; edit MudShadcn.css only). The first build
+    after a clean checkout creates the file after the static web assets were globbed, so it is
+    registered explicitly, the way MudBlazor registers its own generated stylesheet.
+  -->
+  <PropertyGroup>
+    <_MudShadcnCss>$(MSBuildProjectDirectory)/wwwroot/MudShadcn.css</_MudShadcnCss>
+    <_MudShadcnMinCss>$(MSBuildProjectDirectory)/wwwroot/MudShadcn.min.css</_MudShadcnMinCss>
+  </PropertyGroup>
+
+  <Target Name="MinifyMudShadcnCss" BeforeTargets="ResolveProjectStaticWebAssets" Condition="'$(DesignTimeBuild)' != 'true'"
+          Inputs="$(_MudShadcnCss);$(MSBuildProjectFullPath)" Outputs="$(_MudShadcnMinCss)">
+    <MinifyCss Source="$(_MudShadcnCss)" Destination="$(_MudShadcnMinCss)" />
+  </Target>
+
+  <Target Name="RegisterMudShadcnMinCss" BeforeTargets="ResolveProjectStaticWebAssets" DependsOnTargets="MinifyMudShadcnCss"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <ItemGroup>
+      <_MudShadcnMinCssAsset Include="wwwroot/MudShadcn.min.css" Exclude="@(Content)" />
+      <Content Include="@(_MudShadcnMinCssAsset)" />
+    </ItemGroup>
+  </Target>
+
+  <!--
+    A conservative minifier: it drops comments, collapses whitespace and removes it only next to
+    { } ; , ( and after : and >, never inside strings, and never where CSS needs it (around + and -
+    in calc(), after ")", before ":" of a descendant pseudo-class, before an attribute flag such as
+    [fill="#fff" i]). Chromium parses both files to the same rules.
+  -->
+  <UsingTask TaskName="MinifyCss" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Source ParameterType="System.String" Required="true" />
+      <Destination ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.Text" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        var css = File.ReadAllText(Source);
+        var sb = new StringBuilder(css.Length);
+        const string NoSpaceAfter = "{};,:(>";
+        const string NoSpaceBefore = "{};,)>";
+        var pendingSpace = false;
+        var i = 0;
+        while (i < css.Length)
+        {
+            var c = css[i];
+            if (c == '/' && i + 1 < css.Length && css[i + 1] == '*')
+            {
+                var end = css.IndexOf("*/", i + 2, StringComparison.Ordinal);
+                i = end < 0 ? css.Length : end + 2;
+                pendingSpace = true;
+                continue;
+            }
+
+            if (char.IsWhiteSpace(c))
+            {
+                pendingSpace = true;
+                i++;
+                continue;
+            }
+
+            if (pendingSpace && sb.Length > 0 && NoSpaceAfter.IndexOf(sb[sb.Length - 1]) < 0 && NoSpaceBefore.IndexOf(c) < 0)
+            {
+                sb.Append(' ');
+            }
+            pendingSpace = false;
+
+            if (c == '"' || c == '\'')
+            {
+                var start = i++;
+                while (i < css.Length && css[i] != c)
+                {
+                    i += css[i] == '\\' ? 2 : 1;
+                }
+                i = Math.Min(i + 1, css.Length);
+                sb.Append(css, start, i - start);
+                continue;
+            }
+
+            if (c == '}' && sb.Length > 0 && sb[sb.Length - 1] == ';')
+            {
+                sb.Length--;                                  // the last declaration needs no ';'
+            }
+            sb.Append(c);
+            i++;
+        }
+
+        var minified = sb.ToString();
+        if (!File.Exists(Destination) || File.ReadAllText(Destination) != minified)
+        {
+            File.WriteAllText(Destination, minified);
+        }
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
 </Project>
