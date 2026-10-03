@@ -180,8 +180,9 @@ inline style or a component parameter decides something, MudBlazor's version sta
   separator (`Separator`).
 - `Color.Secondary` is shadcn's light grey surface, not an accent. Where it would be a foreground
   (text, icons, a checked control) the stylesheet uses `secondary-foreground` instead.
-- `Color.Dark` is a dark grey in both modes, so as a text or icon colour it is barely visible on a
-  dark background. Use `Color.Default` (or no colour) for text that should follow the mode.
+- `Color.Dark` is near-black (`#171717`) in light mode and a mid grey (`#737373`) in dark mode: the
+  darkest grey that still reads as a text or icon colour on the dark background and behind white
+  text. Use `Color.Default` (or no colour) for text that should simply follow the mode.
 - shadcn defines no info, success or warning; they come from Tailwind's blue, green and amber, and
   components with a semantic colour keep it (a ghost button with `Color.Info` has blue text).
 - `<mark>` (what `MudHighlighter` renders) gets a soft warning tint everywhere on the page.

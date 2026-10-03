@@ -138,7 +138,9 @@ public static class MudShadcnTheme
         SuccessContrastText = "#0a0a0a",
         Warning = "#ffb900",
         WarningContrastText = "#0a0a0a",
-        Dark = "#262626",
+        // neutral-500 (shadcn's dark --ring): the darkest neutral that is legible both as a text or
+        // icon colour on the dark background (4.2:1) and behind white text (4.5:1).
+        Dark = "#737373",
         DarkContrastText = "#fafafa",
 
         TextPrimary = "#fafafa",
