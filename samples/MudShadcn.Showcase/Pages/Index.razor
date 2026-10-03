@@ -7,7 +7,7 @@
     <MudContainer MaxWidth="MaxWidth.Large" Class="docs-container">
         <section class="docs-hero">
             <MudChip T="string" Variant="Variant.Outlined" Size="Size.Small" Href="https://www.nuget.org/packages/MudShadcn" Target="_blank">
-                MudBlazor @DocsPage.MudBlazorVersion · .NET 10
+                MudBlazor @BuildInfo.MudBlazorVersion · .NET 10
             </MudChip>
             <MudText Typo="Typo.h1" Class="docs-hero-title">The shadcn/ui look for every MudBlazor component.</MudText>
             <MudText Typo="Typo.subtitle1" Class="docs-hero-lead">
@@ -72,6 +72,7 @@
                 </MudStack>
             </MudItem>
         </MudGrid>
+        <SiteFooter />
     </MudContainer>
 </MudMainContent>
 

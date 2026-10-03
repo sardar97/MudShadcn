@@ -1,0 +1,75 @@
+@page "/releases"
+@page "/changelog"
+
+<DocsPage>
+    <DocsPageHeader Title="Releases" SubTitle="Every notable change to MudShadcn, newest first. This page is CHANGELOG.md from the repository, which follows Keep a Changelog and Semantic Versioning." />
+    <DocsPageContent>
+        <MudPaper Outlined="true" Class="docs-versions">
+            <div class="docs-versions-item">
+                <MudText Typo="Typo.caption" Color="Color.Tertiary">MudShadcn package</MudText>
+                <div class="d-flex align-center gap-2">
+                    <MudChip T="string" Color="Color.Primary" Size="Size.Small">v@(BuildInfo.MudShadcnVersion)</MudChip>
+                    <MudLink Href="https://www.nuget.org/packages/MudShadcn" Target="_blank" Typo="Typo.body2">NuGet</MudLink>
+                </div>
+            </div>
+            <div class="docs-versions-item">
+                <MudText Typo="Typo.caption" Color="Color.Tertiary">Styles MudBlazor</MudText>
+                <div class="d-flex align-center gap-2">
+                    <MudChip T="string" Variant="Variant.Outlined" Size="Size.Small">v@(BuildInfo.MudBlazorVersion)</MudChip>
+                </div>
+            </div>
+            <MudSpacer />
+            <div class="d-flex flex-wrap gap-2">
+                <MudButton Href="@Changelog.ReleasesUrl" Target="_blank" Variant="Variant.Outlined" Size="Size.Small" StartIcon="@Icons.Custom.Brands.GitHub">GitHub Releases</MudButton>
+                <MudButton Href="@Changelog.FileUrl" Target="_blank" Variant="Variant.Text" Size="Size.Small">CHANGELOG.md</MudButton>
+            </div>
+        </MudPaper>
+
+        @foreach (var release in Changelog.Releases)
+        {
+            <DocsPageSection>
+                <SectionHeader Title="@release.Title">
+                    <Description>
+                        <span class="d-flex align-center gap-2">
+                            @if (release.IsUnreleased)
+                            {
+                                <MudChip T="string" Variant="Variant.Outlined" Size="Size.Small">Not released yet</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip T="string" Color="@(release == _latest ? Color.Primary : Color.Default)" Size="Size.Small">
+                                    @(release == _latest ? "Latest" : release.IsPreRelease ? "Pre-release" : "Stable")
+                                </MudChip>
+                            }
+                            @if (release.Date is not null)
+                            {
+                                <span>@release.Date</span>
+                            }
+                        </span>
+                    </Description>
+                </SectionHeader>
+                <div class="docs-release">
+                    @foreach (var paragraph in release.Paragraphs)
+                    {
+                        <p>@((MarkupString)paragraph)</p>
+                    }
+                    @foreach (var group in release.Groups)
+                    {
+                        <MudText Typo="Typo.subtitle2" Class="docs-release-group">@group.Heading</MudText>
+                        <ul>
+                            @foreach (var item in group.Items)
+                            {
+                                <li>@((MarkupString)item)</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </DocsPageSection>
+        }
+    </DocsPageContent>
+</DocsPage>
+
+@code {
+    // The newest released version that is not a pre-release.
+    private readonly ChangelogRelease _latest = Changelog.Releases.FirstOrDefault(r => !r.IsUnreleased && !r.IsPreRelease);
+}
