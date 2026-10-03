@@ -9,10 +9,12 @@ on:
   push:
     tags: ['v*']
 
-# contents: write lets the workflow create the GitHub Release. The NuGet push authenticates with
-# the NUGET_API_KEY secret, not with this token.
+# contents: write lets the workflow create the GitHub Release. id-token: write lets it ask GitHub
+# for the OIDC token that nuget.org's Trusted Publishing exchanges for a one-hour API key, so no
+# NuGet API key is stored anywhere (RELEASE.md, "Set up Trusted Publishing on nuget.org").
 permissions:
   contents: write
+  id-token: write
 
 env:
   DOTNET_NOLOGO: true
@@ -47,9 +49,18 @@ jobs:
       - name: Pack
         run: dotnet pack src/MudShadcn -c Release --no-build -p:Version=${{ steps.version.outputs.version }} -o artifacts
 
+      # Trusted Publishing: trades GitHub's OIDC token for a NuGet API key that is valid for an hour,
+      # so it is requested right before the push. `user` is the nuget.org profile name that owns the
+      # policy, not an email address.
+      - name: NuGet login
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: SardarQaslany
+
       # Pushes the .nupkg and, next to it, the .snupkg. --skip-duplicate makes a re-run safe.
       - name: Push to NuGet
-        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       # The notes for this version from CHANGELOG.md: the "## [1.2.3] — …" section, up to the next
       # version heading or the link references at the bottom of the file.

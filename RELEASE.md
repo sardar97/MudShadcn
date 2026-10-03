@@ -67,16 +67,33 @@ No GitHub secrets are needed for this: Cloudflare pulls from GitHub, and `build.
 To use a domain of your own later, buy one (Cloudflare Registrar sells at cost) and add it under the
 project's **Custom domains**. `mudshadcn.pages.dev` keeps working.
 
-### 3. Add the NuGet API key
+### 3. Set up Trusted Publishing on nuget.org
 
-1. Sign in at <https://www.nuget.org>, open **API Keys → Create**.
-2. Key name `MudShadcn GitHub Actions`, expiry 365 days, scope **Push new packages and package
-   versions**, glob pattern `MudShadcn`.
-3. Copy the key, then in GitHub: **Settings → Secrets and variables → Actions → New repository
-   secret**, name `NUGET_API_KEY`.
+`publish.yml` does not use a stored API key. With
+[Trusted Publishing](https://learn.microsoft.com/nuget/nuget-org/trusted-publishing), the workflow
+proves to nuget.org that it is this repository's `publish.yml` and gets an API key that lasts one
+hour. Nothing to store in GitHub and nothing that expires.
 
-The key expires; when it does, create a new one and replace the secret. `GITHUB_TOKEN`, which
-creates the GitHub Release, is provided automatically.
+1. Sign in at <https://www.nuget.org>, open your name (top right) → **Trusted Publishing** →
+   **Create**.
+2. Fill in (case does not matter):
+   - **Policy name:** `MudShadcn`
+   - **Package owner:** `SardarQaslany`
+   - **Repository owner:** `sardar97`
+   - **Repository:** `MudShadcn`
+   - **Workflow file:** `publish.yml` (the file name only, not `.github/workflows/publish.yml`)
+   - **Environment:** leave empty
+   - **Select Scopes:** tick **Push** with **Push new packages and package versions** (the first
+     release creates the package); leave **Unlist or relist package versions** unticked
+   - **Glob Patterns and Packages:** `MudShadcn`, so the policy can publish this package only
+3. **Create**.
+
+For a private repository nuget.org can only activate the policy for 7 days, until the first
+successful publish ties it to the repository; after that it stays active. Making the repository
+public first (step 0) avoids the time limit. An inactive policy can be restarted from the same page.
+
+The `user:` in `publish.yml`'s **NuGet login** step is the nuget.org profile name, `SardarQaslany`.
+`GITHUB_TOKEN`, which creates the GitHub Release, is provided automatically.
 
 ### 4. Fill in the repository's About box
 
