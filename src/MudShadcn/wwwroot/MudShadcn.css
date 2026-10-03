@@ -909,55 +909,140 @@ label.mud-input-label.mud-input-error {
 /* ---------------------------------------------------------------------------------------------
    9. Tables and data grid — text-sm, h-10 head, p-2 cells, hover:bg-muted/50
    --------------------------------------------------------------------------------------------- */
+/* Data Table container: overflow-hidden rounded-md border, without the shadow (Elevation="0" stays flat) */
 .mud-table {
-    border-radius: var(--shadcn-radius-lg);
+    border-radius: var(--mud-default-borderradius);   /* rounded-md */
     overflow: hidden;
 }
 
-.mud-table.mud-elevation-0:not(.mud-table-outlined),
-.mud-table.mud-paper {
+.mud-table:not(.mud-elevation-0) {
+    border: 1px solid var(--mud-palette-lines-default);
+}
+
+.mud-table.mud-elevation-1 {                          /* MudTable / MudDataGrid / MudSimpleTable default */
     box-shadow: none;
 }
 
 .mud-table-cell {
-    padding: 8px 12px;
+    padding: 8px;                                     /* p-2 */
     font-size: 0.875rem;
 }
 
+.mud-table-root .mud-table-row {
+    transition: background-color var(--shadcn-transition);   /* transition-colors */
+}
+
+/* TableHead: h-10 px-2 font-medium whitespace-nowrap text-foreground */
 .mud-table-root .mud-table-head .mud-table-cell {
-    height: 40px;                                     /* h-10 */
-    padding: 0 12px;
+    height: 40px;
+    padding: 0 8px;
     font-weight: 500;
-    color: var(--mud-palette-text-secondary);
+    color: var(--mud-palette-text-primary);
     white-space: nowrap;
 }
 
 .mud-table-root .mud-table-body .mud-table-row:last-child .mud-table-cell {
-    border-bottom: 0;
+    border-bottom: 0;                                 /* [&_tr:last-child]:border-0 */
 }
 
 .mud-table-dense * .mud-table-row .mud-table-cell {
-    padding: 4px 12px;
+    padding: 4px 8px;
 }
 
 .mud-table-dense * .mud-table-row .mud-table-cell:last-child {
-    padding-inline-end: 12px;
+    padding-inline-end: 8px;
+}
+
+.mud-table-root .mud-table-head.mud-table-dense .mud-table-cell {
+    height: 32px;
+}
+
+/* MudSimpleTable styles bare <th>/<td> the same way */
+.mud-simple-table table * tr > td,
+.mud-simple-table table * tr th {
+    padding: 8px;
+}
+
+.mud-simple-table table * tr th {
+    height: 40px;                                     /* h-10 px-2 font-medium whitespace-nowrap */
+    padding: 0 8px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.mud-simple-table.mud-table-dense * tr td,
+.mud-simple-table.mud-table-dense * tr th {
+    padding: 4px 8px;
+}
+
+.mud-simple-table.mud-table-dense * tr th {
+    height: 32px;
+}
+
+/* data-[state=selected]:bg-muted — MudBlazor marks no selected row, so key it off the checked selection box */
+.mud-table .mud-table-container .mud-table-root .mud-table-body .mud-table-row:has(> .mud-table-cell .mud-checkbox-true) {
+    background-color: var(--mud-palette-background-gray);
+}
+
+/* TableFooter: border-t bg-muted/50 font-medium (mixed opaque so FixedFooter stays solid) */
+.mud-table .mud-table-root .mud-table-foot .mud-table-row .mud-table-cell,
+.mud-simple-table table tfoot td,
+.mud-simple-table table tfoot th {
+    background-color: color-mix(in srgb, var(--mud-palette-background-gray) 50%, var(--mud-palette-surface));
+    color: var(--mud-palette-text-primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.mud-table .mud-table-root .mud-table-foot .mud-table-row:first-child .mud-table-cell,
+.mud-simple-table table tfoot tr:first-child > * {
+    border-top: 1px solid var(--mud-palette-table-lines);
+}
+
+/* Sticky header offsets for the filter row and loading bar, matching the 40px (dense 32px) head */
+.mud-table-sticky-header * .mud-table-root .mud-table-head .filter-header-cell,
+.mud-table-sticky-header * .mud-table-root .mud-table-head .mud-table-loading {
+    top: 40px;
+}
+
+.mud-table-sticky-header * .mud-table-root .mud-table-head.mud-table-dense .filter-header-cell,
+.mud-table-sticky-header * .mud-table-root .mud-table-head.mud-table-dense .mud-table-loading {
+    top: 32px;
+}
+
+.mud-table-sticky-header * .mud-table-root .mud-table-head:has(.filter-header-cell) .mud-table-loading {
+    top: 81px;                                        /* + the 41px filter row */
+}
+
+.mud-table-sticky-header * .mud-table-root .mud-table-head.mud-table-dense:has(.filter-header-cell) .mud-table-loading {
+    top: 73px;
 }
 
 .mud-table-toolbar {
-    padding: 12px 16px;
+    padding: 8px;
+    padding-inline: 8px;
     height: auto;
-    min-height: 56px;
+    min-height: 52px;
+    gap: 8px;
 }
 
+/* Pager: muted text-sm captions, an h-8 select trigger and outline size-8 buttons with gap-2.
+   The wrapper draws the divider so custom PagerContent gets one too. */
 .mud-table-pagination {
     border-top: 1px solid var(--mud-palette-table-lines);
 }
 
-.mud-table-pagination-toolbar {
+.mud-table-pagination.mud-table-pagination-top {
+    border-top: 0;
+    border-bottom: 1px solid var(--mud-palette-table-lines);
+}
+
+.mud-table-pagination .mud-table-pagination-toolbar {
+    height: auto;
     min-height: 48px;
-    height: 48px;
-    padding-inline: 12px !important;
+    padding: 8px;
+    padding-inline: 8px;
+    border: 0;
 }
 
 .mud-table-pagination .mud-table-pagination-caption,
@@ -966,16 +1051,63 @@ label.mud-input-label.mud-input-error {
     color: var(--mud-palette-text-secondary);
 }
 
-.mud-table-pagination-select .mud-input-slot {
-    font-size: 0.875rem;
+.mud-table-pagination .mud-table-pagination-caption {
+    padding-inline: 8px;
+}
+
+.mud-table-pagination-select .mud-input.mud-select-input {
+    height: 32px;                                     /* SelectTrigger size="sm": h-8 rounded-md border shadow-xs */
+    border: 1px solid var(--mud-palette-lines-inputs);
+    border-radius: var(--mud-default-borderradius);
+    background-color: var(--shadcn-input-background);
+    box-shadow: var(--shadcn-shadow-xs);
+    transition: border-color var(--shadcn-transition), box-shadow var(--shadcn-transition);
+}
+
+.mud-table-pagination-select .mud-input.mud-select-input:focus-within {
+    border-color: var(--shadcn-ring);
+    box-shadow: var(--shadcn-focus-ring);
+}
+
+.mud-table-pagination-select .mud-input .mud-input-root {
+    margin-top: 0;
+    color: var(--mud-palette-text-primary);
+}
+
+.mud-table-pagination-select .mud-input-adornment .mud-icon-root {
+    opacity: 0.5;                                     /* [&_svg]:opacity-50 */
+}
+
+.mud-table-pagination .mud-table-pagination-actions {
+    gap: 8px;
+    margin-inline-start: 8px;
+}
+
+.mud-table-pagination-actions .mud-icon-button {
+    width: 32px;                                      /* variant="outline" size-8 */
+    height: 32px;
+    padding: 0;
+    border: 1px solid var(--mud-palette-lines-inputs);
+    background-color: var(--shadcn-input-background);
+    box-shadow: var(--shadcn-shadow-xs);
+    color: var(--mud-palette-text-primary);
+}
+
+.mud-table-pagination-actions .mud-icon-button:hover {
+    background-color: var(--shadcn-hover);
+}
+
+.mud-table-pagination-actions .mud-icon-button .mud-icon-root {
+    font-size: 1rem;                                  /* size-4 */
 }
 
 .mud-table-sort-label:hover {
     color: var(--mud-palette-text-primary);
 }
 
-.mud-table-row.mud-selected {
-    background-color: var(--mud-palette-background-gray);  /* data-[state=selected]:bg-muted */
+.mud-table-sort-label .mud-table-sort-label-icon {
+    font-size: 1rem;                                  /* size-4 */
+    color: var(--mud-palette-text-secondary);
 }
 
 /* ---------------------------------------------------------------------------------------------
@@ -1357,11 +1489,68 @@ label.mud-input-label.mud-input-error {
     border-color: var(--mud-palette-lines-default);
 }
 
-.mud-pagination .mud-pagination-item .mud-button {
-    min-width: 36px;
+/* Pagination: gap-1, ghost size-9 links, the active page as variant="outline", rounded-md throughout */
+.mud-pagination {
+    gap: 4px;                                         /* gap-1 */
+}
+
+.mud-pagination .mud-pagination-item > * {
+    min-width: 36px;                                  /* size-9 */
     height: 36px;
+    margin: 0;
     padding: 0 8px;
+    border-radius: var(--mud-default-borderradius);
+}
+
+.mud-pagination.mud-pagination-small .mud-pagination-item > * {
+    min-width: 32px;                                  /* size-8 */
+    height: 32px;
+    padding: 0 6px;
+}
+
+.mud-pagination.mud-pagination-large .mud-pagination-item > * {
+    min-width: 40px;                                  /* size-10 */
+    height: 40px;
+    padding: 0 10px;
+}
+
+.mud-pagination .mud-pagination-item .mud-icon-button .mud-icon-root {
+    font-size: 1rem;                                  /* [&_svg]:size-4 */
+}
+
+.mud-pagination .mud-pagination-item > .mud-typography {
+    display: inline-flex;                             /* ellipsis: flex size-9 items-center justify-center */
+    align-items: center;
+    justify-content: center;
+}
+
+.mud-pagination-text .mud-pagination-item-selected .mud-button-filled.mud-button-filled-primary {
+    border: 1px solid var(--mud-palette-lines-inputs);
+    background-color: var(--shadcn-input-background);
+    box-shadow: var(--shadcn-shadow-xs);
+    color: var(--mud-palette-text-primary);
+}
+
+.mud-pagination-text .mud-pagination-item-selected .mud-button-filled.mud-button-filled-primary:hover {
+    background-color: var(--shadcn-hover);
+}
+
+.mud-pagination-outlined .mud-pagination-item-selected .mud-button-outlined.mud-button-outlined-primary {
+    background-color: var(--shadcn-hover);
+}
+
+/* Filled: MudBlazor paints the other pages surface + shadow; use the secondary (bg-secondary) button */
+.mud-pagination-filled .mud-pagination-item .mud-button {
     box-shadow: none;
+}
+
+.mud-pagination-filled .mud-pagination-item:not(.mud-pagination-item-selected) .mud-button {
+    background-color: var(--mud-palette-secondary);
+    color: var(--mud-palette-secondary-text);
+}
+
+.mud-pagination-filled .mud-pagination-item:not(.mud-pagination-item-selected) .mud-button:hover {
+    background-color: color-mix(in oklab, var(--mud-palette-secondary) 80%, transparent);
 }
 
 .mud-stepper .mud-step-label-icon {
@@ -1676,6 +1865,216 @@ label.mud-input-label.mud-input-error {
 /* ---------------------------------------------------------------------------------------------
    19. Data: data grid, table extras, tree view
    --------------------------------------------------------------------------------------------- */
+
+/* Data grid: group rows, filter row, sticky columns ------------------------------------------- */
+/* Group rows read as expanded rows (has-aria-expanded:bg-muted/50); MudBlazor uses full bg-muted */
+.mud-data-grid .mud-table-cell.mud-datagrid-group {
+    background-color: color-mix(in oklab, var(--mud-palette-background-gray) 50%, transparent);
+}
+
+.mud-table-row-expander .mud-icon-root {
+    font-size: 1rem;                                  /* size-4 chevron */
+}
+
+/* Filter row (FilterMode.ColumnFilterRow): its text-variant fields drawn as h-8 Inputs */
+.mud-data-grid .mud-table-cell.filter-header-cell {
+    padding: 4px 8px;
+}
+
+.mud-data-grid .filter-header-cell .mud-input-control {
+    margin: 0;
+}
+
+.mud-data-grid .filter-header-cell .mud-input.mud-input-underline {
+    height: 32px;                                     /* h-8 rounded-md border bg-transparent px-2 shadow-xs */
+    padding: 0 8px;
+    border: 1px solid var(--mud-palette-lines-inputs);
+    border-radius: var(--mud-default-borderradius);
+    background-color: var(--shadcn-input-background);
+    box-shadow: var(--shadcn-shadow-xs);
+    transition: border-color var(--shadcn-transition), box-shadow var(--shadcn-transition);
+}
+
+.mud-data-grid .filter-header-cell .mud-input.mud-input-underline::before,
+.mud-data-grid .filter-header-cell .mud-input.mud-input-underline::after {
+    content: none;
+}
+
+.mud-data-grid .filter-header-cell .mud-input.mud-input-underline:focus-within {
+    border-color: var(--shadcn-ring);
+    box-shadow: var(--shadcn-focus-ring);
+}
+
+.mud-data-grid .filter-header-cell .mud-input > input.mud-input-root,
+.mud-data-grid .filter-header-cell div.mud-input-slot.mud-input-root {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* Cell and inline editing: borderless h-8 fields that show border + ring on focus, like the
+   editable cells in shadcn's dashboard data table (border-transparent bg-transparent shadow-none
+   hover:bg-input/30 focus-visible:border focus-visible:bg-background) */
+.mud-data-grid .mud-table-cell.edit-mode-cell .mud-input-control-input-container {
+    margin-block: -6px;                               /* keep the 36px row (the input has margin-top:0 inline) */
+}
+
+.mud-data-grid .mud-table-cell.edit-mode-cell .mud-input {
+    height: 32px;
+    margin-inline: -8px;                              /* text stays in line with the column */
+    padding-inline: 8px;
+    font-weight: 400;                                 /* as the read-only cells, not subtitle1's 500 */
+    border-radius: var(--mud-default-borderradius);
+    transition: background-color var(--shadcn-transition), box-shadow var(--shadcn-transition);
+}
+
+.mud-data-grid .mud-table-cell.edit-mode-cell .mud-input.mud-input-underline::after {
+    content: none;                                    /* MudBlazor's :after rule has a typo, so it stays */
+}
+
+.mud-data-grid .mud-table-cell.edit-mode-cell .mud-input > input.mud-input-root,
+.mud-data-grid .mud-table-cell.edit-mode-cell div.mud-input-slot.mud-input-root {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.mud-data-grid .mud-table-cell.edit-mode-cell .mud-input:hover {
+    background-color: color-mix(in oklab, var(--mud-palette-lines-inputs) 30%, transparent);
+}
+
+.mud-data-grid .mud-table-cell.edit-mode-cell .mud-input:focus-within {
+    background-color: var(--mud-palette-background);
+    box-shadow: inset 0 0 0 1px var(--shadcn-ring), var(--shadcn-focus-ring);
+}
+
+.mud-data-grid .mud-table-cell.edit-mode-cell .mud-input.mud-input-error {
+    box-shadow: inset 0 0 0 1px var(--mud-palette-error);   /* aria-invalid:border-destructive */
+}
+
+.mud-data-grid .mud-table-cell.edit-mode-cell .mud-input.mud-input-error:focus-within {
+    box-shadow: inset 0 0 0 1px var(--mud-palette-error), var(--shadcn-focus-ring-destructive);
+}
+
+/* Sticky columns: the table surface with a 1px edge instead of MudBlazor's bg-muted fill */
+.mud-data-grid .mud-table-cell.sticky-left,
+.mud-data-grid .mud-table-cell.sticky-right,
+.mud-table-sticky-header * .mud-table-root .mud-table-head * .mud-table-cell.sticky-left,
+.mud-table-sticky-header * .mud-table-root .mud-table-head * .mud-table-cell.sticky-right {
+    background-color: var(--mud-palette-surface);
+}
+
+.mud-data-grid .mud-table-cell.sticky-left {
+    box-shadow: inset -1px 0 0 var(--mud-palette-table-lines);
+}
+
+.mud-data-grid .mud-table-cell.sticky-right {
+    box-shadow: inset 1px 0 0 var(--mud-palette-table-lines);
+}
+
+/* ...layered so row hover, stripes and selection still show on them (the row colours are translucent) */
+.mud-table-striped .mud-table-container .mud-table-root .mud-table-body .mud-table-row:nth-of-type(odd) > .mud-table-cell:is(.sticky-left, .sticky-right) {
+    background-image: linear-gradient(var(--mud-palette-table-striped), var(--mud-palette-table-striped));
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .mud-table-hover .mud-table-container .mud-table-root .mud-table-body .mud-table-row:hover > .mud-table-cell:is(.sticky-left, .sticky-right) {
+        background-image: linear-gradient(var(--mud-palette-table-hover), var(--mud-palette-table-hover));
+    }
+}
+
+.mud-table .mud-table-container .mud-table-root .mud-table-body .mud-table-row:has(> .mud-table-cell .mud-checkbox-true) > .mud-table-cell:is(.sticky-left, .sticky-right) {
+    background-color: var(--mud-palette-background-gray);
+}
+
+/* Tree view: shadcn's sidebar file tree. Rows are SidebarMenuButton (h-8 rounded-md p-2 gap-2 text-sm,
+   size-4 icons, hover/active bg-sidebar-accent); children sit in SidebarMenuSub (mx-3.5 border-l
+   px-2.5 py-0.5 gap-1) --------------------------------------------------------------------------- */
+.mud-treeview-item + .mud-treeview-item {
+    margin-top: 4px;                                  /* gap-1 */
+}
+
+.mud-treeview-item-content {
+    min-height: 32px;                                 /* h-8 */
+    padding: 0 8px;                                   /* p-2 */
+    gap: 8px;                                         /* gap-2 */
+    border-radius: var(--mud-default-borderradius);   /* rounded-md */
+}
+
+.mud-treeview-dense .mud-treeview-item-content {
+    min-height: 28px;                                 /* size="sm": h-7 */
+    padding: 0 8px;
+}
+
+.mud-treeview-item-arrow {
+    width: 16px;
+    min-height: 0;
+    margin: 0;
+}
+
+.mud-treeview-item .mud-treeview-item-arrow .mud-icon-button {
+    padding: 4px;                                     /* 24px hit area, 16px in the layout */
+    margin: -4px;
+}
+
+.mud-treeview-item-arrow .mud-icon-root,
+.mud-treeview-item-icon .mud-icon-root {
+    font-size: 1rem;                                  /* [&>svg]:size-4 */
+}
+
+.mud-treeview-item .mud-treeview-item-checkbox .mud-icon-button {
+    padding: 0;
+}
+
+.mud-treeview-item-icon {
+    width: auto;
+    margin: 0;
+}
+
+.mud-treeview-item-label {
+    padding: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .mud-treeview-hover .mud-treeview-item-content:hover {
+        background-color: var(--shadcn-hover);       /* hover:bg-sidebar-accent */
+    }
+}
+
+.mud-treeview.mud-treeview-selected-primary .mud-treeview-item-content.mud-treeview-item-selected {
+    color: var(--mud-palette-text-primary);           /* data-[active=true]:bg-sidebar-accent */
+    background-color: var(--shadcn-hover);
+}
+
+.mud-treeview-item-content.mud-treeview-item-selected .mud-treeview-item-label {
+    font-weight: 500;                                 /* data-[active=true]:font-medium */
+}
+
+.mud-treeview-group {
+    margin-inline-start: 15px;                        /* centred under the 16px chevron */
+    padding-block: 2px;
+    padding-inline-start: 10px;
+    border-inline-start: 1px solid var(--mud-palette-lines-default);
+}
+
+/* List: rows are shadcn Items — ItemTitle font-medium over ItemDescription (font-normal,
+   text-muted-foreground), ItemMedia then gap-4, a size-4 chevron for nested lists -------------- */
+.mud-list-item-text .mud-typography:has(> .mud-list-item-secondary-text) {
+    font-weight: 500;
+}
+
+.mud-list-item-text .mud-list-item-secondary-text {
+    font-weight: 400;
+}
+
+.mud-list-item > .mud-icon-root {
+    margin-inline-start: auto;
+    font-size: 1rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+.mud-list-item-avatar {
+    min-width: 0;
+    margin-inline-end: 8px;
+}
 
 /* (end of section 19) */
 
