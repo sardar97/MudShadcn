@@ -1,0 +1,118 @@
+@page "/getting-started/installation"
+
+<DocsPage>
+    <DocsPageHeader Title="Installation" SubTitle="Add MudShadcn to a Blazor app: one package, one provider, two stylesheets." />
+    <DocsPageContent>
+        <DocsPageSection>
+            <SectionHeader Title="Install the package">
+                <Description>
+                    MudShadcn depends on MudBlazor @DocsPage.MudBlazorVersion and brings it along, so it is the only package you reference.
+                    If the project already references <CodeInline>MudBlazor</CodeInline>, remove that reference.
+                </Description>
+            </SectionHeader>
+            <CodeBlock Language="shell" Code="dotnet add package MudShadcn" />
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Register services">
+                <Description>
+                    <CodeInline>AddMudShadcn</CodeInline> calls MudBlazor's <CodeInline>AddMudServices</CodeInline> and sets sonner-style
+                    snackbar defaults. It takes the same configuration callback.
+                </Description>
+            </SectionHeader>
+            <CodeBlock Language="csharp" Code="@ProgramCs" />
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Add the stylesheets">
+                <Description>
+                    MudBlazor's stylesheet first, then MudShadcn's: it overrides MudBlazor rules at equal specificity, so it has to load second.
+                    You do not need MudBlazor's Roboto font link.
+                </Description>
+            </SectionHeader>
+            <CodeBlock Language="html" Code="@Stylesheets" />
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Add the imports">
+            </SectionHeader>
+            <CodeBlock Language="razor" Code="@Imports" />
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Add the provider">
+                <Description>
+                    <CodeInline>MudShadcnProvider</CodeInline> replaces <CodeInline>MudThemeProvider</CodeInline>, <CodeInline>MudPopoverProvider</CodeInline>,
+                    <CodeInline>MudDialogProvider</CodeInline> and <CodeInline>MudSnackbarProvider</CodeInline>. It starts in the operating system's colour
+                    scheme and emits the <CodeInline>--shadcn-*</CodeInline> tokens for the active mode.
+                </Description>
+            </SectionHeader>
+            <CodeBlock Language="razor" Code="@Layout" />
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Write MudBlazor">
+                <Description>Every component keeps its full MudBlazor API. The shadcn vocabulary maps onto it like this:</Description>
+            </SectionHeader>
+            <MudSimpleTable Elevation="0" Outlined="true" Dense="true">
+                <thead>
+                    <tr><th>shadcn/ui</th><th>MudBlazor</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var (shadcn, mud) in Mapping)
+                    {
+                        <tr><td>@shadcn</td><td><code class="docs-code">@mud</code></td></tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+        </DocsPageSection>
+    </DocsPageContent>
+</DocsPage>
+
+@code {
+    private const string ProgramCs = """
+        using MudShadcn;
+
+        builder.Services.AddMudShadcn();
+        """;
+
+    private const string Stylesheets = """
+        <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
+        <link rel="stylesheet" href="_content/MudShadcn/MudShadcn.css" />
+        ...
+        <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+        """;
+
+    private const string Imports = """
+        @using MudBlazor
+        @using MudShadcn
+        """;
+
+    private const string Layout = """
+        <MudShadcnProvider @bind-IsDarkMode="_isDarkMode" />
+
+        <MudLayout>
+            ...
+        </MudLayout>
+
+        @code {
+            private bool _isDarkMode;
+        }
+        """;
+
+    private static readonly (string Shadcn, string Mud)[] Mapping =
+    [
+        ("Button default", "Variant.Filled Color.Primary"),
+        ("Button secondary", "Variant.Filled Color.Secondary"),
+        ("Button destructive", "Variant.Filled Color.Error"),
+        ("Button outline / ghost", "Variant.Outlined / Variant.Text"),
+        ("Input, Select, Textarea", "Variant.Outlined (Margin.Dense for h-8)"),
+        ("Badge", "MudChip"),
+        ("Tabs", "MudTabs MinimumTabWidth=\"0px\""),
+        ("Sheet / Sidebar", "MudDrawer temporary / persistent"),
+        ("Sonner", "ISnackbar"),
+        ("Accordion", "MudExpansionPanels"),
+        ("Chart", "MudChart (the default palette maps to --shadcn-chart-1…5)"),
+        ("muted-foreground text", "Color.Tertiary"),
+    ];
+}

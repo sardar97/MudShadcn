@@ -1,0 +1,83 @@
+@page "/customization/theme"
+
+<DocsPage>
+    <DocsPageHeader Title="Theme" SubTitle="shadcn's tokens as MudShadcnProvider emits them for the active mode, the radius scale and the type scale." />
+    <DocsPageContent>
+        <DocsPageSection>
+            <SectionHeader Title="Colour tokens">
+                <Description>Each swatch is painted with <CodeInline>var(--shadcn-*)</CodeInline>, the original OKLCH value. Toggle dark mode to see the other set.</Description>
+            </SectionHeader>
+            <MudGrid Spacing="3">
+                @foreach (var (name, value) in _tokens)
+                {
+                    <MudItem xs="6" sm="4" md="3">
+                        <div class="docs-swatch" style="background:var(--shadcn-@name)"></div>
+                        <MudText Typo="Typo.subtitle2" Class="mt-1">--shadcn-@name</MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Tertiary">@value</MudText>
+                    </MudItem>
+                }
+            </MudGrid>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Chart colours">
+                <Description>MudBlazor's default chart palette is mapped onto these five, so charts need no options to look like shadcn's.</Description>
+            </SectionHeader>
+            <div class="d-flex flex-wrap gap-3">
+                @for (var i = 1; i <= 5; i++)
+                {
+                    <div class="docs-swatch" style="width:88px;background:var(--shadcn-chart-@i)"></div>
+                }
+            </div>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Radius">
+                <Description>Derived from <CodeInline>--shadcn-radius</CodeInline> (0.625rem): ×0.6, ×0.8, ×1, ×1.4, ×1.8.</Description>
+            </SectionHeader>
+            <div class="d-flex flex-wrap gap-3">
+                @foreach (var r in new[] { "sm", "md", "lg", "xl", "2xl" })
+                {
+                    <div class="docs-radius" style="border-radius:var(--shadcn-radius-@r)"><MudText Typo="Typo.caption">@r</MudText></div>
+                }
+            </div>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Typography" />
+            <MudStack Spacing="2">
+                <MudText Typo="Typo.h1">h1 · Taxing laughter</MudText>
+                <MudText Typo="Typo.h2">h2 · The people of the kingdom</MudText>
+                <MudText Typo="Typo.h3">h3 · The joke tax</MudText>
+                <MudText Typo="Typo.h4">h4 · People stopped telling jokes</MudText>
+                <MudText Typo="Typo.h5">h5 · Dialog title</MudText>
+                <MudText Typo="Typo.h6">h6 · Card title</MudText>
+                <MudText Typo="Typo.subtitle1">subtitle1 · 1rem medium</MudText>
+                <MudText Typo="Typo.subtitle2">subtitle2 · 0.875rem medium</MudText>
+                <MudText Typo="Typo.body1">body1 · The king, seeing how much happier his subjects were, realised the error of his ways.</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Tertiary">body2 · muted-foreground text at text-sm.</MudText>
+                <MudText Typo="Typo.caption">caption · 0.75rem</MudText>
+                <MudText Typo="Typo.overline">overline</MudText>
+            </MudStack>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Customising">
+                <Description>Start from <CodeInline>MudShadcnTheme.Create()</CodeInline> and change what you need; the stylesheet reads MudBlazor's palette variables, so the change flows everywhere.</Description>
+            </SectionHeader>
+            <CodeBlock Language="csharp" Code="@Customising" />
+        </DocsPageSection>
+    </DocsPageContent>
+</DocsPage>
+
+@code {
+    private const string Customising = """
+        var theme = MudShadcnTheme.Create(["Geist", .. MudShadcnTheme.DefaultFontFamily]);
+        theme.PaletteLight.Primary = "#2563eb";
+        theme.LayoutProperties.DefaultBorderRadius = "0.375rem";
+        """;
+
+    private readonly IReadOnlyDictionary<string, string> _tokens = ShadcnTokens.Light
+        .Where(t => !t.Key.StartsWith("chart") && !t.Key.StartsWith("sidebar-") && !t.Key.EndsWith("-background"))
+        .ToDictionary(t => t.Key, t => $"{t.Value} / {ShadcnTokens.Dark[t.Key]}");
+}
