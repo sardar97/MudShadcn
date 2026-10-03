@@ -1,0 +1,17 @@
+{
+  "name": "MudShadcn: the shadcn/ui look for MudBlazor",
+  "short_name": "MudShadcn",
+  "description": "Every MudBlazor component in the shadcn/ui style: a MudTheme and one stylesheet, light and dark.",
+  "lang": "en",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "categories": ["developer"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

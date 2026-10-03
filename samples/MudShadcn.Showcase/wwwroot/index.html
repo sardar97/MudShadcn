@@ -5,15 +5,83 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MudShadcn - shadcn/ui for MudBlazor</title>
+
+    <!--
+      Search, social and AI metadata. The site's address (https://mudshadcn.pages.dev) is also in
+      robots.txt, sitemap.xml, llms.txt and skill.md; RELEASE.md says how to change it everywhere.
+      There is deliberately no <link rel="canonical"> or og:url: this is a single-page app, so one
+      static value would claim every page is the home page.
+    -->
     <meta name="description" content="MudShadcn gives every MudBlazor component the shadcn/ui look: a MudTheme and one stylesheet, no new components." />
+    <meta name="keywords" content="MudShadcn, shadcn, shadcn/ui, MudBlazor, Blazor, theme, dark mode, Blazor components, Blazor WebAssembly, Blazor Server, .NET, C#, NuGet" />
+    <meta name="author" content="Sardar Qaslany" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MudShadcn" />
+    <meta property="og:title" content="MudShadcn: the shadcn/ui look for every MudBlazor component" />
+    <meta property="og:description" content="A MudTheme and one stylesheet. No new components, no forks: keep writing MudBlazor, in shadcn/ui's style, light and dark." />
+    <meta property="og:image" content="https://mudshadcn.pages.dev/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="MudShadcn: MudBlazor components in the shadcn/ui style" />
+    <meta property="og:locale" content="en" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MudShadcn: the shadcn/ui look for every MudBlazor component" />
+    <meta name="twitter:description" content="A MudTheme and one stylesheet. No new components, no forks: keep writing MudBlazor, in shadcn/ui's style, light and dark." />
+    <meta name="twitter:image" content="https://mudshadcn.pages.dev/og-image.png" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://mudshadcn.pages.dev/#website",
+          "name": "MudShadcn",
+          "url": "https://mudshadcn.pages.dev/",
+          "description": "Every MudBlazor component and documented example, styled by MudShadcn in shadcn/ui's look.",
+          "inLanguage": "en",
+          "publisher": { "@id": "https://mudshadcn.pages.dev/#author" }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://mudshadcn.pages.dev/#author",
+          "name": "Sardar Qaslany",
+          "url": "https://github.com/sardar97"
+        },
+        {
+          "@type": "SoftwareSourceCode",
+          "name": "MudShadcn",
+          "description": "A MudTheme and one stylesheet that give every MudBlazor component the shadcn/ui look, in light and dark mode.",
+          "url": "https://mudshadcn.pages.dev/",
+          "image": "https://mudshadcn.pages.dev/og-image.png",
+          "codeRepository": "https://github.com/sardar97/MudShadcn",
+          "programmingLanguage": ["C#", "CSS"],
+          "runtimePlatform": ".NET 10",
+          "license": "https://opensource.org/licenses/MIT",
+          "author": { "@id": "https://mudshadcn.pages.dev/#author" },
+          "keywords": "Blazor, MudBlazor, shadcn/ui, theme, NuGet"
+        }
+      ]
+    }
+    </script>
+
     <!-- When hosting under a sub-path (e.g. GitHub Pages at /MudShadcn/), change this to that path. -->
     <base href="/" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link rel="manifest" href="site.webmanifest" />
     <link rel="preload" id="webassembly" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Geist+Mono:wght@100..900&amp;display=swap" />
     <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
+    <!-- The readable stylesheet, so edits to it show on a reload. An app links MudShadcn.min.css. -->
     <link rel="stylesheet" href="_content/MudShadcn/MudShadcn.css" />
     <link rel="stylesheet" href="css/showcase.css" />
     <script type="importmap"></script>
@@ -24,7 +92,7 @@
         <div class="docs-loading" role="status" aria-label="Loading">
             <svg viewBox="0 0 32 32" width="48" height="48" aria-hidden="true">
                 <rect width="32" height="32" rx="8" fill="currentColor" />
-                <path d="M19 9 11 23M24 9 16 23" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                <path d="M9.5 22.5v-13l6.5 8 6.5-8v13" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
             </svg>
             <div class="docs-loading-bar"><div></div></div>
         </div>

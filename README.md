@@ -1,4 +1,20 @@
-# MudShadcn
+<p align="center">
+  <img src="https://raw.githubusercontent.com/sardar97/MudShadcn/master/docs/images/logo.svg" alt="MudShadcn logo" width="88">
+</p>
+
+<h1 align="center">MudShadcn</h1>
+
+<p align="center">The <a href="https://ui.shadcn.com">shadcn/ui</a> look for every <a href="https://mudblazor.com">MudBlazor</a> component: a <code>MudTheme</code> and one stylesheet.</p>
+
+<p align="center">
+  <a href="https://github.com/sardar97/MudShadcn/actions/workflows/ci.yml"><img src="https://github.com/sardar97/MudShadcn/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://www.nuget.org/packages/MudShadcn"><img src="https://img.shields.io/nuget/v/MudShadcn.svg" alt="NuGet"></a>
+  <a href="https://www.nuget.org/packages/MudShadcn"><img src="https://img.shields.io/nuget/dt/MudShadcn.svg" alt="NuGet downloads"></a>
+  <a href="https://github.com/sardar97/MudShadcn/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+</p>
+
+**Showcase and docs: [mudshadcn.pages.dev](https://mudshadcn.pages.dev)**, every page and example of
+mudblazor.com's component docs, running on MudShadcn.
 
 A [shadcn/ui](https://ui.shadcn.com) look and feel for [MudBlazor](https://mudblazor.com): neutral
 palette, flat bordered surfaces, shadcn's radius scale, 3px focus rings, labels above inputs, no
@@ -8,10 +24,28 @@ MudShadcn is a theme and a stylesheet, nothing more. Every MudBlazor component i
 original MudBlazor component with its full API. MudBlazor comes along as a dependency, so
 **MudShadcn is the only package you reference**.
 
-| | |
-|---|---|
-| Target framework | .NET 10 (`net10.0`) |
-| MudBlazor | 9.10.0 |
+| Light | Dark |
+| --- | --- |
+| ![MudShadcn in light mode](https://raw.githubusercontent.com/sardar97/MudShadcn/master/docs/images/light.png) | ![MudShadcn in dark mode](https://raw.githubusercontent.com/sardar97/MudShadcn/master/docs/images/dark.png) |
+
+> **Using an AI coding assistant?** MudShadcn publishes an agent skill and plain-text docs, so tools
+> like Claude Code, Cursor or Copilot set it up correctly. See [For AI agents and LLMs](#for-ai-agents-and-llms).
+
+## Highlights
+
+- **Every component, charts included.** All 88 component pages of MudBlazor's documentation are
+  restyled, from buttons and inputs to the data grid, the date and time pickers and every chart type.
+- **Nothing to learn.** No new components and no fork: you write ordinary MudBlazor, and MudBlazor's
+  documentation, API and upgrades still apply.
+- **One package.** MudBlazor comes along as a dependency, with its own stylesheet and script.
+- **Light and dark.** Both of shadcn's palettes; the app starts in the operating system's colour
+  scheme and follows it, or you bind `IsDarkMode` yourself.
+- **Charts in shadcn's colours** without any options, in both modes.
+- **Your theme, not ours.** Change the palette, radius or font through `MudTheme`; the stylesheet
+  reads MudBlazor's palette variables, so your colours flow through. shadcn's own tokens are there as
+  `--shadcn-*` CSS variables.
+- **Checked against MudBlazor on every build.** A stylesheet override that stops matching does not
+  fail a build, so CI checks every class, variable, chart colour and icon the stylesheet relies on.
 
 ## Install
 
@@ -37,13 +71,15 @@ builder.Services.AddMudShadcn();
 
 ```html
 <link rel="stylesheet" href="@Assets["_content/MudBlazor/MudBlazor.min.css"]" />
-<link rel="stylesheet" href="@Assets["_content/MudShadcn/MudShadcn.css"]" />
+<link rel="stylesheet" href="@Assets["_content/MudShadcn/MudShadcn.min.css"]" />
 ...
 <script src="@Assets["_content/MudBlazor/MudBlazor.min.js"]"></script>
 ```
 
-The order matters: `MudShadcn.css` overrides MudBlazor rules at equal specificity and has to come
-second. You do not need MudBlazor's Roboto font link.
+The order matters: MudShadcn's stylesheet overrides MudBlazor rules at equal specificity and has to
+come second. You do not need MudBlazor's Roboto font link. `MudShadcn.min.css` is `MudShadcn.css`
+without comments and whitespace (about 14 KB instead of 26 KB over Brotli); link `MudShadcn.css`
+instead when you want to read the rules in the browser's dev tools.
 
 **3. `_Imports.razor`**
 
@@ -180,8 +216,9 @@ inline style or a component parameter decides something, MudBlazor's version sta
   separator (`Separator`).
 - `Color.Secondary` is shadcn's light grey surface, not an accent. Where it would be a foreground
   (text, icons, a checked control) the stylesheet uses `secondary-foreground` instead.
-- `Color.Dark` is a dark grey in both modes, so as a text or icon colour it is barely visible on a
-  dark background. Use `Color.Default` (or no colour) for text that should follow the mode.
+- `Color.Dark` is near-black (`#171717`) in light mode and a mid grey (`#737373`) in dark mode: the
+  darkest grey that still reads as a text or icon colour on the dark background and behind white
+  text. Use `Color.Default` (or no colour) for text that should simply follow the mode.
 - shadcn defines no info, success or warning; they come from Tailwind's blue, green and amber, and
   components with a semantic colour keep it (a ghost button with `Color.Info` has blue text).
 - `<mark>` (what `MudHighlighter` renders) gets a soft warning tint everywhere on the page.
@@ -245,3 +282,79 @@ inline style or a component parameter decides something, MudBlazor's version sta
   marker size are `ChartOptions` parameters (MudBlazor's lines are 3px; shadcn's are 2px).
 - Labels on pie, donut and rose segments use the background colour, as in shadcn's examples, which
   is low-contrast on light segments.
+
+## Versions
+
+| MudShadcn | MudBlazor | .NET |
+| --- | --- | --- |
+| 1.x | 9.10.0 | 10 (`net10.0`) |
+
+MudShadcn follows [Semantic Versioning](https://semver.org); moving to a new MudBlazor major version is
+a new MudShadcn major version. What changed in each release is in the
+[changelog](https://github.com/sardar97/MudShadcn/blob/master/CHANGELOG.md) and on the
+[Releases page](https://github.com/sardar97/MudShadcn/releases).
+
+## For AI agents and LLMs
+
+The showcase is a Blazor WebAssembly app, so fetching one of its pages returns an empty shell. These
+plain-text files are served next to it for AI coding assistants:
+
+| Resource | URL | What it is |
+| --- | --- | --- |
+| **Agent skill** | [`/skill.md`](https://mudshadcn.pages.dev/skill.md) | How to set up and use MudShadcn, with the frontmatter of a Claude Code / agent skill. |
+| **Full docs** | [`/llms-full.txt`](https://mudshadcn.pages.dev/llms-full.txt) | This README as one Markdown file. |
+| **Index** | [`/llms.txt`](https://mudshadcn.pages.dev/llms.txt) | An [llms.txt](https://llmstxt.org) index of the above and the showcase pages. |
+
+The NuGet package carries the skill too, as `docs/skill.md`. To use it as a Claude Code skill:
+
+```bash
+mkdir -p ~/.claude/skills/mudshadcn
+curl -fsSL https://mudshadcn.pages.dev/skill.md -o ~/.claude/skills/mudshadcn/SKILL.md
+```
+
+or save it as `.claude/skills/mudshadcn/SKILL.md` in a repository to scope it to that project.
+
+## Repository
+
+| Path | What |
+| --- | --- |
+| [`src/MudShadcn`](https://github.com/sardar97/MudShadcn/tree/master/src/MudShadcn) | The package: `MudShadcnTheme`, `ShadcnTokens`, `MudShadcnProvider`, `AddMudShadcn()` and `wwwroot/MudShadcn.css`. |
+| [`samples/MudShadcn.Showcase`](https://github.com/sardar97/MudShadcn/tree/master/samples/MudShadcn.Showcase) | The showcase site (Blazor WebAssembly). |
+| [`samples/MudShadcn.TestApp`](https://github.com/sardar97/MudShadcn/tree/master/samples/MudShadcn.TestApp) | A Blazor Server app with one page per component category, for quick checks. |
+| [`tools/verify-mudblazor.sh`](https://github.com/sardar97/MudShadcn/blob/master/tools/verify-mudblazor.sh) | Checks the stylesheet against MudBlazor (also run by CI). |
+
+```bash
+dotnet build MudShadcn.sln                                              # 0 warnings
+dotnet run --project samples/MudShadcn.Showcase --launch-profile http   # http://localhost:5153
+dotnet run --project samples/MudShadcn.TestApp --launch-profile http    # http://localhost:5152
+tools/verify-mudblazor.sh
+```
+
+In development both apps serve `MudShadcn.css` straight from `src/`, so a stylesheet change needs only
+a browser reload.
+
+## Contributing
+
+Issues and pull requests are welcome on [GitHub](https://github.com/sardar97/MudShadcn). If a
+component does not look like its shadcn/ui counterpart, an issue with the MudBlazor component, the
+variant and a screenshot (light or dark) is the most useful report. Styling changes go in
+`src/MudShadcn/wwwroot/MudShadcn.css`; check them on the component's showcase page in both modes and
+run `tools/verify-mudblazor.sh`.
+
+## Support the project
+
+MudShadcn is free and open source, maintained in spare time. If it saves you work and you would like
+to support its development, donations are gratefully received:
+
+**[Donate via PayPal](https://paypal.me/sardarqaslany)**
+
+Starring the [repository](https://github.com/sardar97/MudShadcn) and reporting issues help just as
+much and cost nothing.
+
+## License
+
+[MIT](https://github.com/sardar97/MudShadcn/blob/master/LICENSE) © Sardar Qaslany.
+
+MudShadcn is not affiliated with shadcn/ui, Tailwind CSS or MudBlazor. It reproduces shadcn/ui's
+design tokens and Tailwind's scales under their MIT licences; see
+[THIRD-PARTY-NOTICES.md](https://github.com/sardar97/MudShadcn/blob/master/THIRD-PARTY-NOTICES.md).

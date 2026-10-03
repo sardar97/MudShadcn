@@ -1,0 +1,83 @@
+name: Publish to NuGet
+
+# Publishes the NuGet package, and creates a matching GitHub Release, whenever a version tag
+# (v1.2.3, v1.1.0-beta.1, …) is pushed. The tag is the single source of truth for the version.
+#
+# This is the ONLY thing that publishes the package. The showcase deploys separately (push to the
+# `docs` branch → Cloudflare Pages); see RELEASE.md.
+on:
+  push:
+    tags: ['v*']
+
+# contents: write lets the workflow create the GitHub Release. The NuGet push authenticates with
+# the NUGET_API_KEY secret, not with this token.
+permissions:
+  contents: write
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  publish:
+    name: Pack & push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      # refs/tags/v1.0.0-beta.1 -> 1.0.0-beta.1
+      - name: Resolve version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      # Quality gate: the same build and check as CI, so a red tag never reaches nuget.org.
+      - name: Build
+        run: dotnet build MudShadcn.sln -c Release -warnaserror -p:Version=${{ steps.version.outputs.version }}
+
+      - name: Check the stylesheet against MudBlazor
+        run: tools/verify-mudblazor.sh
+
+      # Produces MudShadcn.<version>.nupkg and the matching .snupkg (symbols).
+      - name: Pack
+        run: dotnet pack src/MudShadcn -c Release --no-build -p:Version=${{ steps.version.outputs.version }} -o artifacts
+
+      # Pushes the .nupkg and, next to it, the .snupkg. --skip-duplicate makes a re-run safe.
+      - name: Push to NuGet
+        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      # The notes for this version from CHANGELOG.md: the "## [1.2.3] — …" section, up to the next
+      # version heading or the link references at the bottom of the file.
+      - name: Extract release notes
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          awk -v ver="$VERSION" '
+            index($0, "## [" ver "]") == 1 { flag = 1; next }
+            flag && (/^## \[/ || /^\[[^]]+\]: /) { exit }
+            flag { print }
+          ' CHANGELOG.md > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "Release v$VERSION. See CHANGELOG.md for details." > release-notes.md
+          fi
+          printf '\nNuGet: https://www.nuget.org/packages/MudShadcn/%s\n' "$VERSION" >> release-notes.md
+
+      # Creates the GitHub Release for the tag (or updates it on a re-run), with the package
+      # attached. A version with a hyphen (1.1.0-beta.1) is marked as a pre-release.
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          PRERELEASE=""
+          case "$VERSION" in *-*) PRERELEASE="--prerelease" ;; esac
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release edit "$GITHUB_REF_NAME" --notes-file release-notes.md
+            gh release upload "$GITHUB_REF_NAME" artifacts/* --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" artifacts/* --title "v$VERSION" --notes-file release-notes.md $PRERELEASE
+          fi

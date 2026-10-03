@@ -1,0 +1,43 @@
+# The MudShadcn showcase: open to all crawlers, AI crawlers included.
+# The site's address also appears in index.html, sitemap.xml, llms.txt and skill.md (RELEASE.md).
+
+User-agent: *
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://mudshadcn.pages.dev/sitemap.xml
+
+# This site is a WebAssembly app, so its pages are empty to a plain HTTP fetch. AI agents should
+# read these plain-text files instead:
+#   Index:      https://mudshadcn.pages.dev/llms.txt
+#   Full docs:  https://mudshadcn.pages.dev/llms-full.txt
+#   Skill:      https://mudshadcn.pages.dev/skill.md

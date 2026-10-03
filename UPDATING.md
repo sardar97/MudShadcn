@@ -48,10 +48,34 @@ slider, popover, menu, list, tooltip, dialog, tabs, table, data grid, chip, nav 
 app bar, alert, snackbar, progress, skeleton, pickers, expansion panel, card, paper — and since
 MudShadcn styles every component, anything else the release notes mention as visual.
 
-### 3. Diff the stylesheets — do not skip this
+### 3. Check the stylesheet against the new version — do not skip this
 
-Release notes rarely mention CSS changes. Compare the shipped CSS directly. Work in the
-scratchpad, not the repo.
+Release notes rarely mention CSS changes, and nothing fails to build when an override stops
+matching. Start with the script, which checks everything that can be checked mechanically:
+
+```bash
+tools/verify-mudblazor.sh $NEW
+```
+
+It downloads the new MudBlazor and checks that:
+
+- every `--mud-*` variable and `.mud-*` class `MudShadcn.css` uses exists in MudBlazor's
+  stylesheet. Classes MudBlazor renders without styling them are listed in the script
+  (`MARKUP_ONLY_CLASSES`); a new one must be confirmed in the rendered HTML before it goes on that
+  list (`curl -s http://localhost:5152/pickers | grep -o mud-picker-paper` for the test app; the
+  showcase renders in the browser, so use the browser's dev tools there);
+- MudBlazor's default chart palette and the five heat-map shades built from it are still the colours
+  the charts section recolours (they are matched by attribute value, not class);
+- the default checkbox, radio and select/autocomplete icons still have the SVG paths the inputs
+  sections match (`path[d^="…"]`) to redraw them as shadcn's controls. If they changed, the
+  Material glyphs come back.
+
+It reads the defaults through MudBlazor's API with a small C# probe. If that no longer compiles, the
+API changed: update the probe in the script as well.
+
+A missing class or variable is an override that no longer applies: find its replacement in the new
+stylesheet and update the selector. Existence is not enough, though. Diff the shipped rules too,
+working in the scratchpad, not the repo:
 
 ```bash
 OLD=9.10.0; NEW=<new version>
@@ -59,68 +83,25 @@ for v in $OLD $NEW; do
   curl -sL https://api.nuget.org/v3-flatcontainer/mudblazor/$v/mudblazor.$v.nupkg -o mud-$v.nupkg
   unzip -o -q mud-$v.nupkg 'staticwebassets/MudBlazor.min.css' -d mud-$v
   tr '}' '\n' < mud-$v/staticwebassets/MudBlazor.min.css | sort > rules-$v.txt
-  grep -oE -- '--mud-[a-zA-Z0-9-]+' mud-$v/staticwebassets/MudBlazor.min.css | sort -u > vars-$v.txt
-  grep -oE '\.mud-[a-zA-Z0-9_-]+' mud-$v/staticwebassets/MudBlazor.min.css | sort -u > classes-$v.txt
 done
-
-diff vars-$OLD.txt vars-$NEW.txt        # renamed or removed custom properties
-diff classes-$OLD.txt classes-$NEW.txt  # renamed or removed classes
+diff rules-$OLD.txt rules-$NEW.txt
 ```
 
-Then check what MudShadcn actually uses against the new version:
-
-```bash
-CSS=src/MudShadcn/wwwroot/MudShadcn.css
-# every --mud-* variable we read must still exist
-grep -oE -- '--mud-[a-zA-Z0-9-]+' $CSS | sort -u | comm -23 - vars-$NEW.txt
-# every .mud-* class we target must still exist
-grep -oE '\.mud-[a-zA-Z0-9_-]+' $CSS | sort -u | comm -23 - classes-$NEW.txt
-```
-
-The first should print only the three wildcard mentions in the header comment (`--mud-palette-`,
-`--mud-elevation-`, `--mud-typography-`) and `--mud-palette-black`, which `MudThemeProvider` emits
-but MudBlazor's own CSS never reads. The second has known false positives: classes MudBlazor
-puts in its markup without styling them itself. As of 9.10.0 those are
-`.mud-avatar-filled-default`, `.mud-chart-axis-value`, `.mud-chart-heat`, `.mud-chart-label-value`,
-`.mud-chart-point`, `.mud-chart-serie`, `.mud-chart-serie-hovered`,
-`.mud-charts-gridlines-xaxis-lines`, `.mud-charts-gridlines-yaxis`, `.mud-checkbox-true`,
-`.mud-chip-color-default`, `.mud-fab-filled-default`, `.mud-file-upload-filelist`,
-`.mud-pagination-text`, `.mud-picker-paper`, `.mud-picker-popover`, `.mud-snackbar-action-button`,
-`.mud-step-label-content-secondary-text` and `.mud-toggle-item-selected`. Confirm each still
-appears in the rendered HTML of the test app or the showcase
-(`curl -s http://localhost:5152/pickers | grep -o mud-picker-paper`; the showcase renders in the
-browser, so check its pages with the browser's dev tools).
-Anything else either command prints is an override that no longer applies: find the replacement
-in `rules-$NEW.txt` and update the selector.
-
-The default checkbox, radio and select-arrow icons are recognised by their SVG path data
-(`path[d^="…"]` in the inputs sections) and redrawn as shadcn's controls. If MudBlazor changes those
-icons (`Icons.Material.Filled.CheckBox`, `CheckBoxOutlineBlank`, `IndeterminateCheckBox`,
-`RadioButtonChecked`/`Unchecked`, `ArrowDropDown`/`Up`), the selectors stop matching and the
-Material glyphs come back: compare the path strings in the stylesheet with `src/MudBlazor/Icons/Material/Filled.cs`.
-
-Charts are matched on attribute values rather than class names. Check that MudBlazor's default
-chart palette is still the 20 colours listed at the top of the charts section of `MudShadcn.css`,
-and that the heat map still builds its five legend shades from the first five of them:
-
-```bash
-git clone --depth 1 --branch v$NEW --filter=blob:none --sparse https://github.com/MudBlazor/MudBlazor.git mud-src
-git -C mud-src sparse-checkout set src/MudBlazor/Components/Chart
-grep -A6 'ChartPalette { get; set; } =' mud-src/src/MudBlazor/Components/Chart/Base/DefaultChartOptions.cs
-grep -A12 'void BuildLegends' mud-src/src/MudBlazor/Components/Chart/Charts/HeatMap.razor.cs
-```
-
-Existence is not enough: also `diff rules-$OLD.txt rules-$NEW.txt` and look for changed rules on
-selectors MudShadcn overrides. Watch for a rule that gained specificity (an extra modifier class
-such as `.mud-card-header.mud-card-header-padding`) or moved a value inline. An override only wins
-at equal or higher specificity, because `MudShadcn.css` loads second.
+Look for changed rules on selectors MudShadcn overrides. Watch for a rule that gained specificity
+(an extra modifier class such as `.mud-card-header.mud-card-header-padding`) or moved a value
+inline. An override only wins at equal or higher specificity, because `MudShadcn.css` loads second.
 
 ### 4. Bump
 
 - `src/MudShadcn/MudShadcn.csproj`: the `MudBlazor` `PackageReference` version.
 - The `Written against MudBlazor x.y.z` line at the top of `MudShadcn.css`.
-- The version table in `src/MudShadcn/README.md`, and `OLD=` in this file.
-- `<Version>` of MudShadcn itself. Use a major bump if MudBlazor's major changed.
+- The Versions table in `README.md`, and `OLD=` in this file.
+- The MudBlazor version in `samples/MudShadcn.Showcase/wwwroot/skill.md` (frontmatter and first
+  paragraph) and `wwwroot/llms.txt`.
+- An entry under `## [Unreleased]` in `CHANGELOG.md` naming the new MudBlazor version and anything
+  that changed for consumers. Do not set MudShadcn's own `<Version>` or tag a release: that is
+  `RELEASE.md`, and Sardar does it. Note in the report that a MudBlazor major change means a
+  MudShadcn major version.
 
 ### 5. Re-port the showcase
 

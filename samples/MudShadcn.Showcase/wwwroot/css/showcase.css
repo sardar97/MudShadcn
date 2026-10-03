@@ -559,6 +559,66 @@ h1:focus {
     border-top: 1px solid var(--mud-palette-lines-default);
 }
 
+.docs-footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 20px;
+    margin-top: 12px;
+}
+
+.docs-footer-links .mud-link {
+    color: var(--mud-palette-text-secondary);
+}
+
+.docs-footer-links .mud-link:hover {
+    color: var(--mud-palette-text-primary);
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Releases page
+   --------------------------------------------------------------------------------------------- */
+.docs-versions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 32px;
+    padding: 16px 20px;
+    margin-bottom: 8px;
+}
+
+.docs-versions-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.docs-release {
+    line-height: 1.6;
+}
+
+.docs-release p {
+    margin: 0 0 12px;
+}
+
+.docs-release-group.mud-typography {
+    margin: 16px 0 6px;
+}
+
+.docs-release ul {
+    margin: 0;
+    padding-inline-start: 20px;
+}
+
+.docs-release li {
+    margin-bottom: 8px;
+}
+
+.docs-release a {
+    color: var(--mud-palette-text-primary);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
 /* ---------------------------------------------------------------------------------------------
    Pages: landing, explore, theme
    --------------------------------------------------------------------------------------------- */

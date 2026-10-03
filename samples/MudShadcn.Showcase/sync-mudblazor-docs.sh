@@ -63,7 +63,10 @@ done
 rm -rf "$HERE/wwwroot/images"
 cp -r "$SRC/MudBlazor.Docs.Wasm/wwwroot/images" "$HERE/wwwroot/images"
 
-# 8. Remind about the version-specific parts that need a human eye.
+# 8. The sitemap lists every page, so it changes with them.
+"$HERE/generate-sitemap.sh"
+
+# 9. Remind about the version-specific parts that need a human eye.
 echo "Ported MudBlazor $VERSION docs. Now:"
 echo "  - update the version in THIRD-PARTY-NOTICES.md and Services/MenuService.cs (diff MudBlazor.Docs/Services/Menu/MenuService.cs),"
 echo "  - dotnet build MudShadcn.sln (0 warnings), and fix any example that no longer compiles,"

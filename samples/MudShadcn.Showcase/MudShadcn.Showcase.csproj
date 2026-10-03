@@ -36,6 +36,13 @@
     <!-- Example sources, shown under each example by SectionContent. -->
     <EmbeddedResource Include="Pages\Components\**\Examples\*.razor" LogicalName="Examples/%(Filename)%(Extension)" />
     <EmbeddedResource Include="ExamplesData\Elements.json" LogicalName="Elements.json" />
+    <!-- The Releases page renders the changelog itself, so the site never needs a copy of it. -->
+    <EmbeddedResource Include="..\..\CHANGELOG.md" LogicalName="CHANGELOG.md" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The package README, served as /llms-full.txt for AI agents (see wwwroot/llms.txt). -->
+    <Content Include="..\..\README.md" Link="wwwroot\llms-full.txt" Visible="false" />
   </ItemGroup>
 
   <!--

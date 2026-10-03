@@ -12,8 +12,6 @@ namespace MudShadcn.Showcase.Docs;
 /// </summary>
 public partial class DocsPage
 {
-    internal static readonly string MudBlazorVersion = typeof(MudButton).Assembly.GetName().Version?.ToString(3) ?? "";
-
     private readonly Queue<(DocsSectionLink Link, DocsPageSection? Section)> _pending = new();
     private readonly Dictionary<DocsPageSection, MudPageContentSection> _sections = [];
     private MudPageContentNavigation? _contentNavigation;

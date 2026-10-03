@@ -1,0 +1,21 @@
+# MudShadcn
+
+> MudShadcn gives every MudBlazor component the shadcn/ui look: a MudTheme and one stylesheet, in light and dark mode. It adds no components and forks nothing: an app keeps writing ordinary MudBlazor, with MudBlazor's full API, and it renders with shadcn/ui's neutral palette, flat bordered surfaces, radius scale, focus rings and sizes. Charts get shadcn's chart colours. MudBlazor comes along as a dependency, so MudShadcn is the only package an app references. Written against MudBlazor 9.10.0, for .NET 10. MIT licensed.
+
+Install from NuGet as `MudShadcn`, call `builder.Services.AddMudShadcn()`, link `_content/MudBlazor/MudBlazor.min.css` and then `_content/MudShadcn/MudShadcn.min.css`, and put one `<MudShadcnProvider />` in the layout. This site is a Blazor WebAssembly app, so a plain HTTP fetch of a page returns an empty shell: read the plain-text resources below instead.
+
+## AI and agent resources
+- [Agent skill](https://mudshadcn.pages.dev/skill.md): set-up for every Blazor hosting model, the shadcn/ui to MudBlazor mapping (which Variant and Color give each shadcn component), theming, charts and the mistakes that break the styling. Has Claude Code skill frontmatter.
+- [Full documentation](https://mudshadcn.pages.dev/llms-full.txt): the package README as one Markdown file.
+
+## Showcase pages
+- [Installation](https://mudshadcn.pages.dev/getting-started/installation): the four set-up steps and the shadcn/ui vocabulary in MudBlazor.
+- [Theme](https://mudshadcn.pages.dev/customization/theme): the palette and tokens, light and dark, and how to customise them.
+- [Components](https://mudshadcn.pages.dev/docs/overview): every MudBlazor component page and documented example, in mudblazor.com's menu order, running on MudShadcn. Each component is at `https://mudshadcn.pages.dev/components/<name>`, for example `/components/button`, `/components/datagrid`, `/components/datepicker`, `/components/barchart`.
+- [Releases](https://mudshadcn.pages.dev/releases): the changelog and the current package version.
+
+## Package and source
+- [NuGet package](https://www.nuget.org/packages/MudShadcn)
+- [Source code on GitHub](https://github.com/sardar97/MudShadcn)
+- [Changelog](https://github.com/sardar97/MudShadcn/blob/master/CHANGELOG.md)
+- [MudBlazor](https://mudblazor.com), the component library it styles, and [shadcn/ui](https://ui.shadcn.com), the design it follows.
