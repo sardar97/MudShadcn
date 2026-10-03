@@ -110,14 +110,23 @@ body {
     line-height: 1;                                   /* leading-none font-semibold */
 }
 
+/* CardHeader gap-2 between title and description; CardDescription text-sm text-muted-foreground */
+.mud-card-header .mud-card-header-content > .mud-typography + .mud-typography {
+    margin-top: 8px;
+}
+
+.mud-card-header .mud-card-header-content .mud-typography-body2 {
+    color: var(--mud-palette-text-secondary);
+}
+
+/* Card gap-6 between header and whatever follows it */
+.mud-card-header:has(+ .mud-card-media) {
+    padding-bottom: 24px;
+}
+
 .mud-card-content,
 .mud-card-content.mud-card-content-padding {
     padding: 24px;
-}
-
-.mud-card-header + .mud-card-content,
-.mud-card-header + .mud-card-content.mud-card-content-padding {
-    padding-top: 16px;
 }
 
 .mud-card-actions,
@@ -148,29 +157,71 @@ body {
     border-left: 1px solid var(--mud-palette-lines-default);
 }
 
-.mud-drawer.mud-drawer-temporary {
+.mud-drawer.mud-drawer-pos-top {
+    border-bottom: 1px solid var(--mud-palette-lines-default);
+}
+
+.mud-drawer.mud-drawer-pos-bottom {
+    border-top: 1px solid var(--mud-palette-lines-default);
+}
+
+/* Only while open: a closed temporary drawer sits just off-screen and its shadow would show. */
+.mud-drawer.mud-drawer-temporary.mud-drawer--open {
     box-shadow: var(--shadcn-shadow-lg) !important;  /* sheet: shadow-lg */
 }
 
+/* Accordion: border-b last:border-b-0, no surface, no elevation. Outlined="false" drops the lines. */
 .mud-expansion-panels .mud-expand-panel {
     box-shadow: none !important;
     border: 0;
-    border-bottom: 1px solid var(--mud-palette-lines-default);
     border-radius: 0 !important;
     background-color: transparent;
     margin: 0 !important;
 }
 
+.mud-expansion-panels .mud-expand-panel.mud-expand-panel-border {
+    border-bottom: 1px solid var(--mud-palette-lines-default);
+}
+
+.mud-expansion-panels .mud-expand-panel.mud-expand-panel-border:last-child {
+    border-bottom: 0;
+}
+
+/* AccordionTrigger: py-4 text-sm font-medium hover:underline, focus-visible ring */
 .mud-expand-panel .mud-expand-panel-header,
 .mud-expand-panel .mud-expand-panel-header.mud-expand-panel-header-gutters {
+    font-size: 0.875rem;
     font-weight: 500;
+    line-height: 1.25rem;
     padding: 16px 0;
     min-height: 0;
+    gap: 16px;                                        /* gap-4 */
+}
+
+.mud-expand-panel .mud-expand-panel-header:hover:not(.mud-disabled) .mud-expand-panel-text {
+    text-decoration: underline;
+}
+
+.mud-expand-panel .mud-expand-panel-header:focus-visible {
+    background-color: transparent;
+    border-radius: var(--mud-default-borderradius);   /* rounded-md */
+    box-shadow: var(--shadcn-focus-ring);
+}
+
+/* ChevronDown size-4 text-muted-foreground */
+.mud-expand-panel .mud-expand-panel-header .mud-expand-panel-icon {
+    font-size: 1rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+.mud-expand-panel > .mud-expand-panel-header.mud-disabled {
+    color: var(--mud-palette-text-primary);
+    opacity: 0.5;                                     /* disabled:opacity-50 */
 }
 
 .mud-expand-panel .mud-expand-panel-content,
 .mud-expand-panel .mud-expand-panel-content.mud-expand-panel-gutters {
-    padding: 0 0 16px;
+    padding: 0 0 16px;                                /* pt-0 pb-4 */
 }
 
 /* ---------------------------------------------------------------------------------------------
@@ -1099,13 +1150,25 @@ label.mud-input-label.mud-input-error {
 /* ---------------------------------------------------------------------------------------------
    8. Tabs — segmented control: bg-muted rounded-lg p-[3px], active tab bg-background shadow-sm
    --------------------------------------------------------------------------------------------- */
+/*
+ * Colours: shadcn's tabs have none. Color="…" no longer paints the tab bar; tertiary and the
+ * semantic colours tint the active tab's label, everything else stays neutral.
+ * Dark mode follows shadcn's dark: variants through light-dark(), which tracks the color-scheme
+ * MudShadcnProvider sets on :root.
+ */
 .mud-tabs-tabbar {
+    color: inherit;
     background-color: transparent;
     box-shadow: none !important;
 }
 
+.mud-tabs-tabbar.mud-tabs-rounded,
+.mud-tabs-tabbar.mud-paper-outlined {
+    border-radius: var(--shadcn-radius-lg);
+}
+
 .mud-tabs-tabbar .mud-tabs-tabbar-inner {
-    min-height: 36px;
+    min-height: 36px;                                 /* h-9 */
 }
 
 .mud-tabs-tabbar-content .mud-tabs-tabbar-wrapper {
@@ -1115,10 +1178,11 @@ label.mud-input-label.mud-input-error {
     gap: 0;
 }
 
+/* TabsTrigger: rounded-md border-transparent px-2 py-1 text-sm font-medium text-foreground/60 */
 .mud-tab {
     min-height: 30px;
     min-width: 0;
-    padding: 4px 12px;
+    padding: 4px 8px;
     border-radius: var(--shadcn-radius-md);
     border: 1px solid transparent;
     font-size: 0.875rem;
@@ -1127,6 +1191,8 @@ label.mud-input-label.mud-input-error {
     letter-spacing: normal;
     text-transform: none;
     color: color-mix(in oklab, var(--mud-palette-text-primary) 60%, transparent);
+    color: light-dark(color-mix(in oklab, var(--mud-palette-text-primary) 60%, transparent),
+                      var(--mud-palette-text-secondary));        /* dark:text-muted-foreground */
     transition: color var(--shadcn-transition), background-color var(--shadcn-transition), box-shadow var(--shadcn-transition);
     z-index: 1;
 }
@@ -1136,23 +1202,53 @@ label.mud-input-label.mud-input-error {
     color: var(--mud-palette-text-primary);
 }
 
+/* focus-visible:border-ring ring-[3px] ring-ring/50 outline-1 outline-ring */
 .mud-tab:focus-visible {
+    box-shadow: var(--shadcn-focus-ring);
+    border-color: var(--shadcn-ring);
+    outline: 1px solid var(--shadcn-ring);
+}
+
+/* data-[state=active]:bg-background shadow-sm; dark: bg-input/30 border-input */
+.mud-tabs-tabbar .mud-tab.mud-tab-active,
+.mud-tabs-tabbar .mud-tab.mud-tab-active:hover {
+    color: var(--mud-palette-text-primary);
+    background-color: var(--mud-palette-background);
+    background-color: light-dark(var(--mud-palette-background), var(--shadcn-input-background));
+    border-color: light-dark(transparent, var(--mud-palette-lines-inputs));
+    box-shadow: var(--shadcn-shadow-sm);
+}
+
+.mud-tabs-tabbar.mud-tabs-tabbar-tertiary .mud-tab.mud-tab-active { color: var(--mud-palette-tertiary); }
+.mud-tabs-tabbar.mud-tabs-tabbar-info .mud-tab.mud-tab-active { color: var(--mud-palette-info); }
+.mud-tabs-tabbar.mud-tabs-tabbar-success .mud-tab.mud-tab-active { color: var(--mud-palette-success); }
+.mud-tabs-tabbar.mud-tabs-tabbar-warning .mud-tab.mud-tab-active { color: var(--mud-palette-warning); }
+.mud-tabs-tabbar.mud-tabs-tabbar-error .mud-tab.mud-tab-active { color: var(--mud-palette-error); }
+
+.mud-tabs-tabbar .mud-tab.mud-tab-active:focus-visible {
     box-shadow: var(--shadcn-focus-ring);
     border-color: var(--shadcn-ring);
 }
 
-.mud-tab.mud-tab-active {
-    color: var(--mud-palette-text-primary);
-    background-color: var(--mud-palette-background);
-    box-shadow: var(--shadcn-shadow-sm);
+.mud-tab .mud-icon-root {
+    font-size: 1rem;                                  /* [&_svg]:size-4 */
 }
 
-.mud-tab .mud-icon-root {
-    font-size: 1rem;
+.mud-tab .mud-tab-icon-text {
+    margin-inline-end: 6px;                           /* gap-1.5 */
 }
 
 .mud-tab.mud-disabled {
-    opacity: 0.5;
+    color: color-mix(in oklab, var(--mud-palette-text-primary) 60%, transparent);
+    color: light-dark(color-mix(in oklab, var(--mud-palette-text-primary) 60%, transparent),
+                      var(--mud-palette-text-secondary));
+    opacity: 0.5;                                     /* disabled:opacity-50 */
+}
+
+/* group-data-[orientation=vertical]: w-full justify-start */
+.mud-tabs-tabbar-wrapper.mud-tabs-vertical .mud-tab {
+    justify-content: flex-start;
+    text-align: start;
 }
 
 /*
@@ -1163,8 +1259,53 @@ label.mud-input-label.mud-input-error {
     display: none;
 }
 
+/* Scroll buttons and the vertical variant's full-width ones: ghost icon buttons. */
+.mud-tabs-tabbar.mud-tabs-vertical .mud-tabs-tabbar-inner .mud-tabs-scroll-button .mud-button-root {
+    border-radius: var(--mud-default-borderradius);
+}
+
+/* Dynamic tabs: a size-5 close button that fits inside the 30px trigger. */
+.mud-dynamic-tabs .mud-tabs-tabbar .mud-tab {
+    padding: 4px 8px;
+}
+
+.mud-dynamic-tabs .mud-tabs-tabbar .mud-tab .mud-icon-button {
+    padding: 2px;
+    margin-inline-end: -2px;
+    border-radius: var(--shadcn-radius-sm);
+}
+
+.mud-dynamic-tabs .mud-tabs-tabbar .mud-tab .mud-icon-button .mud-icon-root {
+    font-size: 1rem;
+}
+
+/* Tabs gap-2 between the list and the content, on whichever side the list sits. */
 .mud-tabs-panels {
     padding-top: 8px;
+}
+
+.mud-tabs.mud-tabs-reverse > .mud-tabs-panels {
+    padding-top: 0;
+    padding-bottom: 8px;
+}
+
+.mud-tabs.mud-tabs-vertical > .mud-tabs-panels {
+    padding-top: 0;
+    padding-inline-start: 8px;
+}
+
+.mud-tabs.mud-tabs-vertical.mud-tabs-vertical-reverse > .mud-tabs-panels {
+    padding-inline-start: 0;
+    padding-inline-end: 8px;
+}
+
+/* ApplyEffectsToContainer: the whole thing is a card — rounded-xl, border with the elevation. */
+.mud-tabs.mud-tabs-rounded {
+    border-radius: var(--shadcn-radius-xl);
+}
+
+.mud-tabs[class*="mud-elevation-"]:not(.mud-paper-outlined) {
+    border: 1px solid var(--mud-palette-lines-default);
 }
 
 /* ---------------------------------------------------------------------------------------------
@@ -1463,12 +1604,52 @@ label.mud-input-label.mud-input-error {
     font-size: 1rem;
 }
 
+/* gap-2 between icon and label only; an icon-less label starts at the button's p-2. */
 .mud-nav-link .mud-nav-link-text {
+    margin-inline-start: 0;
+}
+
+.mud-nav-link .mud-icon-root + .mud-nav-link-text {
     margin-inline-start: 8px;
 }
 
-.mud-nav-group > .mud-nav-link {
+/* A group trigger is a plain SidebarMenuButton: font-normal; only the active link is font-medium. */
+.mud-nav-group > .mud-nav-link,
+.mud-nav-group > .mud-nav-link > .mud-nav-link-text,
+.mud-nav-group * .mud-nav-group > .mud-nav-link.mud-expanded > .mud-nav-link-text {
     font-weight: 400;
+}
+
+.mud-nav-link .mud-nav-link-expand-icon {
+    font-size: 1.25rem;
+    color: inherit;
+}
+
+/* The expanded chevron keeps the text colour instead of turning primary / the menu colour. */
+.mud-navmenu[class*="mud-navmenu-"] .mud-nav-link .mud-nav-link-expand-icon.mud-transform {
+    fill: currentColor;
+}
+
+/* Dense: SidebarMenuButton size="sm" (h-7) */
+.mud-navmenu.mud-navmenu-dense .mud-nav-link {
+    min-height: 28px;
+    padding: 4px 8px;
+}
+
+/* Bordered: keep MudBlazor's 2px end bar, straight against a square end. */
+.mud-navmenu.mud-navmenu-bordered .mud-nav-link.active:not(.mud-nav-link-disabled) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+}
+
+/* Secondary is a light surface in shadcn: as a nav colour it is the accent pair. */
+.mud-navmenu.mud-navmenu-secondary .mud-nav-link.active:not(.mud-nav-link-disabled),
+.mud-navmenu.mud-navmenu-secondary .mud-nav-link.active:not(.mud-nav-link-disabled) .mud-nav-link-icon {
+    color: var(--mud-palette-secondary-text);
+}
+
+.mud-navmenu.mud-navmenu-secondary .mud-nav-link.active:not(.mud-nav-link-disabled) {
+    background-color: var(--mud-palette-secondary);
 }
 
 .mud-navmenu .mud-nav-group .mud-collapse-container .mud-navmenu {
@@ -1481,25 +1662,96 @@ label.mud-input-label.mud-input-error {
     padding-inline-start: 8px !important;
 }
 
+/* Drawer with Color="…": hover/active take the drawer's own text colour instead of sidebar-accent. */
+.mud-drawer:is(.mud-theme-primary, .mud-theme-secondary, .mud-theme-tertiary, .mud-theme-info,
+    .mud-theme-success, .mud-theme-warning, .mud-theme-error, .mud-theme-dark) .mud-nav-link:is(:hover, :focus-visible):not(.mud-nav-link-disabled) {
+    background-color: color-mix(in oklab, currentColor 10%, transparent);
+}
+
+.mud-drawer:is(.mud-theme-primary, .mud-theme-secondary, .mud-theme-tertiary, .mud-theme-info,
+    .mud-theme-success, .mud-theme-warning, .mud-theme-error, .mud-theme-dark) .mud-navmenu .mud-nav-link.active:not(.mud-nav-link-disabled) {
+    color: inherit;
+    background-color: color-mix(in oklab, currentColor 15%, transparent);
+}
+
 .mud-drawer-header {
     padding: 12px 16px;
     align-items: center;
 }
 
+.mud-drawer-header.mud-drawer-header-dense {
+    padding: 8px 16px;
+}
+
+/*
+ * Mini drawer: centre the size-8 buttons in the rail whatever its width (MudBlazor's default
+ * DrawerMiniWidthLeft is 56px; shadcn's --sidebar-width-icon is 3rem).
+ */
+.mud-drawer-mini.mud-drawer-pos-left > .mud-drawer-content > .mud-navmenu {
+    padding-inline: max(0px, calc((var(--mud-drawer-width-mini-left) - 32px) / 2));
+}
+
+.mud-drawer-mini.mud-drawer-pos-right > .mud-drawer-content > .mud-navmenu {
+    padding-inline: max(0px, calc((var(--mud-drawer-width-mini-right) - 32px) / 2));
+}
+
 /* Breadcrumbs, links, pagination */
+/* BreadcrumbList: text-sm text-muted-foreground sm:gap-2.5; BreadcrumbPage: font-normal text-foreground */
 .mud-breadcrumbs {
     font-size: 0.875rem;
+    line-height: 1.25rem;
     color: var(--mud-palette-text-secondary);
+}
+
+.mud-breadcrumb-separator {
+    padding: 0 10px;
+}
+
+.mud-breadcrumb-separator > span {
+    color: inherit;
+    opacity: 1;
+}
+
+.mud-breadcrumb-separator .mud-icon-root {
+    font-size: 0.875rem;                              /* [&>svg]:size-3.5 */
 }
 
 .mud-breadcrumb-item > a {
+    gap: 6px;                                         /* gap-1.5 */
     color: var(--mud-palette-text-secondary);
+    transition: color var(--shadcn-transition);
+}
+
+.mud-breadcrumb-item > a > svg.mud-icon-root {
+    margin: 0;
+    font-size: 1rem;
 }
 
 .mud-breadcrumb-item > a:hover,
+.mud-breadcrumb-item > a[aria-current="page"],
 .mud-breadcrumb-item.mud-disabled > a {
     color: var(--mud-palette-text-primary);
     text-decoration: none;
+}
+
+/* BreadcrumbEllipsis: MudBlazor hard-codes a #eee chip. */
+.mud-breadcrumbs-expander {
+    align-items: center;
+    justify-content: center;
+    padding: 2px 4px;
+    border-radius: var(--shadcn-radius-sm);
+    background-color: transparent;
+    transition: color var(--shadcn-transition), background-color var(--shadcn-transition);
+}
+
+.mud-breadcrumbs-expander:hover {
+    color: var(--mud-palette-text-primary);
+    background-color: var(--shadcn-hover);
+}
+
+.mud-breadcrumbs-expander > svg {
+    width: 1rem;                                      /* size-4 */
+    height: 1rem;
 }
 
 .mud-link {
@@ -2938,6 +3190,224 @@ label.mud-input-label.mud-input-error {
 /* ---------------------------------------------------------------------------------------------
    20. Layout and navigation: stepper, timeline, carousel, split panel, toolbar
    --------------------------------------------------------------------------------------------- */
+
+/*
+ * Stepper — shadcn has no stepper; this uses its language: size-8 rounded-full indicators,
+ * outlined and muted until current/completed (filled with the step colour), border-coloured
+ * connector lines, text-sm labels.
+ */
+.mud-stepper .mud-stepper-nav .mud-step .mud-step-label .mud-step-label-icon {
+    width: 32px;                                      /* size-8 */
+    height: 32px;
+    font-size: 0.875rem;                              /* text-sm font-medium */
+    color: var(--mud-palette-text-secondary);
+    background-color: transparent;
+    border: 1px solid var(--mud-palette-lines-inputs);
+}
+
+.mud-stepper .mud-step .mud-step-label .mud-step-label-icon:is(.mud-primary, .mud-secondary, .mud-tertiary,
+    .mud-info, .mud-success, .mud-warning, .mud-error, .mud-dark) {
+    border-color: transparent;
+}
+
+.mud-stepper .mud-step .mud-step-label .mud-step-label-icon.mud-primary { color: var(--mud-palette-primary-text); }
+.mud-stepper .mud-step .mud-step-label .mud-step-label-icon.mud-secondary { color: var(--mud-palette-secondary-text); }
+.mud-stepper .mud-step .mud-step-label .mud-step-label-icon.mud-tertiary { color: var(--mud-palette-tertiary-text); }
+.mud-stepper .mud-step .mud-step-label .mud-step-label-icon.mud-info { color: var(--mud-palette-info-text); }
+.mud-stepper .mud-step .mud-step-label .mud-step-label-icon.mud-success { color: var(--mud-palette-success-text); }
+.mud-stepper .mud-step .mud-step-label .mud-step-label-icon.mud-warning { color: var(--mud-palette-warning-text); }
+.mud-stepper .mud-step .mud-step-label .mud-step-label-icon.mud-error { color: var(--mud-palette-error-text); }
+.mud-stepper .mud-step .mud-step-label .mud-step-label-icon.mud-dark { color: var(--mud-palette-dark-text); }
+
+.mud-stepper .mud-step-label-icon .mud-typography {
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: 1;
+}
+
+.mud-stepper .mud-step-label-icon .mud-icon-root {
+    font-size: 1rem;                                  /* size-4 */
+}
+
+.mud-stepper .mud-stepper-nav .mud-step {
+    border-radius: var(--mud-default-borderradius);
+}
+
+.mud-stepper .mud-stepper-nav .mud-step.mud-clickable:hover,
+.mud-stepper .mud-stepper-nav .mud-step.mud-clickable:active {
+    background-color: var(--shadcn-hover);
+}
+
+.mud-stepper .mud-stepper-nav .mud-step.mud-clickable:focus-visible {
+    background-color: transparent;
+    box-shadow: var(--shadcn-focus-ring);
+}
+
+/* Disabled: opacity-50 instead of MudBlazor's grey disc. */
+.mud-stepper .mud-stepper-nav .mud-step:disabled {
+    opacity: 0.5;
+}
+
+.mud-stepper .mud-stepper-nav .mud-step:disabled .mud-step-label .mud-step-label-icon {
+    color: var(--mud-palette-text-secondary) !important;
+    background-color: transparent !important;
+}
+
+.mud-stepper .mud-stepper-nav .mud-step:disabled .mud-step-label-content {
+    color: var(--mud-palette-text-secondary) !important;
+}
+
+.mud-stepper .mud-stepper-nav .mud-step .mud-step-label .mud-step-label-content-secondary-text {
+    color: var(--mud-palette-text-secondary);
+}
+
+.mud-stepper .mud-stepper-nav-connector .mud-stepper-nav-connector-line,
+.mud-stepper.mud-stepper__vertical > .mud-stepper-nav > .mud-stepper-nav-connector .mud-stepper-nav-connector-line {
+    border-color: var(--mud-palette-lines-default);
+}
+
+/* Geometry for the 32px indicator (MudBlazor centres lines on a 24px one). */
+.mud-stepper.mud-stepper__horizontal.mud-stepper__center-labels > .mud-stepper-nav > .mud-stepper-nav-connector {
+    margin-top: 39px;                                 /* 24px step padding + 16px - 1px */
+}
+
+.mud-stepper.mud-stepper__vertical > .mud-stepper-nav > .mud-stepper-nav-connector {
+    margin-inline-start: 32px;
+}
+
+/* Vertical: each step's content sits in the nav; indent it under the title and run the line through. */
+.mud-stepper.mud-stepper__vertical > .mud-stepper-nav > .mud-stepper-content {
+    margin-inline-start: 32px;
+    padding-inline-start: 23px;                       /* content lines up with the step title */
+    border-inline-start: 1px solid var(--mud-palette-lines-default);
+}
+
+/*
+ * Timeline — small dots, border-coloured line (MudTimeline's --mud-palette-divider already is).
+ * Color.Default dots are rings rather than grey discs; colours stay filled. The default
+ * Elevation="1" shadow on the dot is dropped.
+ */
+.mud-timeline-item-dot.mud-elevation-1 {
+    box-shadow: none;
+}
+
+.mud-timeline-item-dot .mud-timeline-item-dot-inner.mud-timeline-dot-default {
+    color: var(--mud-palette-text-primary);
+    background-color: var(--mud-palette-surface);
+    box-shadow: inset 0 0 0 2px var(--mud-palette-gray-light);
+}
+
+/*
+ * Timeline modifiers: the caret on a MudCard. Our elevated cards carry a border like outlined
+ * ones, so the caret gets the outlined treatment (border-coloured outline, surface fill 1px in).
+ * Kept at MudBlazor's outlined-rule specificity so its per-position rules still win.
+ */
+.mud-timeline-modifiers .mud-timeline-item-content .mud-card:not(.mud-paper-outlined, .mud-elevation-0)::before {
+    top: calc(50% - 16px);
+    border-right-color: var(--mud-palette-lines-default);
+}
+
+.mud-timeline-modifiers .mud-timeline-item-content .mud-card:not(.mud-paper-outlined, .mud-elevation-0)::after {
+    border-left: 1px solid transparent;
+}
+
+/*
+ * Carousel — prev/next as shadcn's carousel buttons (outline, size-8, rounded-full); the
+ * default radio-button bullets become small dots. Custom icons and templates are left alone.
+ * (MudCarousel puts opacity:.75 inline on both.)
+ */
+.mud-carousel > .d-flex > .mud-icon-button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    margin-inline: 16px;
+    border-radius: 9999px;
+    border: 1px solid var(--mud-palette-lines-inputs);
+    background-color: var(--mud-palette-background);
+    box-shadow: var(--shadcn-shadow-xs);
+}
+
+.mud-carousel > .d-flex > .mud-icon-button.mud-inherit-text {
+    color: var(--mud-palette-text-primary) !important;
+}
+
+.mud-carousel > .d-flex > .mud-icon-button:hover {
+    background-color: var(--shadcn-hover);
+}
+
+.mud-carousel > .d-flex > .mud-icon-button .mud-icon-root {
+    font-size: 1rem;                                  /* size-4 */
+}
+
+.mud-carousel > .d-flex > div > .d-flex > .mud-icon-button:is(:has(path[d^="M12 2C6.48"]), :has(path[d^="M12 7c-2.76"])) {
+    padding: 6px;
+    border-radius: 9999px;
+    background-color: transparent;
+}
+
+.mud-carousel > .d-flex > div > .d-flex > .mud-icon-button:is(:has(path[d^="M12 2C6.48"]), :has(path[d^="M12 7c-2.76"])) .mud-icon-root {
+    font-size: 8px;                                   /* size-2 */
+    border-radius: 9999px;
+    background-color: currentColor;
+}
+
+.mud-carousel > .d-flex > div > .d-flex > .mud-icon-button:is(:has(path[d^="M12 2C6.48"]), :has(path[d^="M12 7c-2.76"])) path {
+    display: none;
+}
+
+.mud-carousel > .d-flex > div > .d-flex > .mud-icon-button:has(path[d^="M12 2C6.48"]):not(:hover) .mud-icon-root {
+    opacity: 0.4;
+}
+
+/*
+ * Split panel — shadcn's ResizableHandle withHandle: a small rounded-xs bg-border grip with a
+ * GripVertical dot pattern, centred on the gap. Elevated panels get a border like MudPaper.
+ */
+.mud-split-panel .child-panel[class*="mud-elevation-"] {
+    border: 1px solid var(--mud-palette-lines-default);
+}
+
+.mud-split-panel .divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    box-sizing: border-box;
+    width: 12px;                                      /* w-3 */
+    height: 16px;                                     /* h-4 */
+    padding: 2.5px 2px;                               /* GripVertical size-2.5: 2 × 3 dots */
+    transform: translate(-50%, -50%);
+    border: 1px solid var(--mud-palette-lines-default);
+    border-radius: 2px;                               /* rounded-xs */
+    background-image: radial-gradient(circle, var(--mud-palette-text-primary) 0.75px, transparent 1px),
+                      linear-gradient(var(--mud-palette-lines-default), var(--mud-palette-lines-default));
+    background-size: 3px 3px, auto;
+    background-origin: content-box, border-box;
+    background-clip: content-box, border-box;
+    pointer-events: none;
+}
+
+.mud-split-panel .divider.horizontal::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.mud-split-panel .divider:focus {
+    outline: none;
+}
+
+.mud-split-panel .divider:focus-visible {
+    outline: 1px solid var(--shadcn-ring);            /* focus-visible:ring-1 ring-ring ring-offset-1 */
+    outline-offset: 1px;
+}
+
+/*
+ * Coloured surfaces (Color="…" on MudAppBar / MudDrawer, or a mud-theme-primary/… class): ghost hovers
+ * use the surface's own text colour at 10% — bg-accent would be a light square on a dark bar.
+ */
+:is(.mud-theme-primary, .mud-theme-secondary, .mud-theme-tertiary, .mud-theme-info, .mud-theme-success,
+    .mud-theme-warning, .mud-theme-error, .mud-theme-dark) :is(.mud-icon-button, .mud-button-text):is(:hover, :focus-visible) {
+    background-color: color-mix(in oklab, currentColor 10%, transparent);
+}
 
 /* (end of section 20) */
 
