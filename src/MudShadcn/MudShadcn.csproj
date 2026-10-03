@@ -8,15 +8,35 @@
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
+  <!-- NuGet package metadata -->
   <PropertyGroup>
     <IsPackable>true</IsPackable>
     <PackageId>MudShadcn</PackageId>
-    <Version>0.1.0</Version>
+    <Title>MudShadcn: the shadcn/ui look for MudBlazor</Title>
+    <!-- The release workflow packs with the tag's version; keep this equal to it (RELEASE.md). -->
+    <Version>1.0.0</Version>
     <Authors>Sardar Qaslany</Authors>
-    <Description>A shadcn/ui look and feel for MudBlazor: neutral palette, flat surfaces, subtle borders, shadcn focus rings and radii. Ships the full MudBlazor component library, so MudShadcn is the only package you reference.</Description>
-    <PackageTags>blazor;mudblazor;shadcn;theme;components;ui</PackageTags>
+    <Product>MudShadcn</Product>
+    <Copyright>Copyright (c) 2026 Sardar Qaslany</Copyright>
+    <Description>The shadcn/ui look for every MudBlazor component, charts included: a MudTheme and one stylesheet, in light and dark mode. No new components and no fork: you keep writing MudBlazor with its full API. MudBlazor comes along as a dependency, so MudShadcn is the only package you reference.</Description>
+    <PackageTags>blazor;mudblazor;shadcn;shadcn-ui;theme;dark-mode;css;ui;components;blazor-server;blazor-webassembly;dotnet;csharp</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <!-- The showcase is the package's landing page; the source is RepositoryUrl. -->
+    <PackageProjectUrl>https://mudshadcn.pages.dev</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReleaseNotes>https://github.com/sardar97/MudShadcn/blob/master/CHANGELOG.md</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/sardar97/MudShadcn</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <!-- Source Link comes with the .NET SDK; the .snupkg lets debuggers step into the library. -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,8 +52,14 @@
     <PackageReference Include="MudBlazor" Version="9.10.0" />
   </ItemGroup>
 
+  <!--
+    Packed at the package root: the README is the repository's (nuget.org shows it, so its links and
+    images are absolute), and the icon is a PNG because NuGet does not accept SVG icons.
+  -->
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" Visible="false" />
+    <None Include="..\..\THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="\" Visible="false" />
+    <None Update="icon.png" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 
   <!--
