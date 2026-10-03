@@ -16,7 +16,16 @@ it adds no components of its own and must never wrap, fork or replace MudBlazor'
   - `ServiceCollectionExtensions.cs` — `AddMudShadcn()`.
   - `README.md` — consumer docs; packed into the nupkg.
 - `samples/MudShadcn.TestApp/` — Blazor Server, global InteractiveServer. One page per component
-  category. This is the only way to see whether a change worked.
+  category: the quick way to see whether a change worked.
+- `samples/MudShadcn.Showcase/` — Blazor WebAssembly, the public showcase (Sardar deploys it). A
+  port of mudblazor.com's component docs: same menu and order, every MudBlazor docs example, run
+  against MudShadcn. Use it to check a change against every variant MudBlazor documents.
+  - `Pages/Components/` is MudBlazor's docs, copied by `sync-mudblazor-docs.sh`. Do not edit it by
+    hand; re-run the script (its comments list the few edits it makes).
+  - `Docs/` re-implements the MudBlazor.Docs page components the ported pages use, with the same
+    names and parameters. A missing parameter only fails at runtime, when the page renders.
+  - `wwwroot/css/showcase.css` styles the site's chrome only, never a component inside an example.
+  - `README.md` covers publishing and hosting.
 - `UPDATING.md` — procedure for moving to a new MudBlazor version. Follow it when asked to update.
 
 ## Commands
@@ -24,17 +33,20 @@ it adds no components of its own and must never wrap, fork or replace MudBlazor'
 ```bash
 dotnet build MudShadcn.sln                                              # must be 0 warnings, 0 errors
 dotnet run --project samples/MudShadcn.TestApp --launch-profile http    # http://localhost:5152
+dotnet run --project samples/MudShadcn.Showcase --launch-profile http   # http://localhost:5153
+dotnet publish samples/MudShadcn.Showcase -c Release -o <scratchpad>/site   # static site, trimmed
 ```
 
-`MudShadcn.css` is served straight from `src/` in development, so CSS edits only need a browser
-reload. `.razor` and `.cs` edits need a rebuild and restart. There are no tests; verification is
-visual, in both light and dark mode. The app starts in the OS colour scheme.
+`MudShadcn.css` is served straight from `src/` in development (in both apps), so CSS edits only
+need a browser reload. `.razor` and `.cs` edits need a rebuild and restart. There are no tests;
+verification is visual, in both light and dark mode. Both apps start in the OS colour scheme; the
+showcase remembers an explicit choice in localStorage.
 
 ## Rules that are easy to break
 
-- **The test app must not reference MudBlazor.** It gets it transitively through MudShadcn, and
-  that is the proof the package works as a single reference. Do not add `PrivateAssets` to the
-  MudBlazor `PackageReference` in the library either.
+- **The test app and the showcase must not reference MudBlazor.** They get it transitively through
+  MudShadcn, and that is the proof the package works as a single reference. Do not add
+  `PrivateAssets` to the MudBlazor `PackageReference` in the library either.
 - **Do not set `--mud-palette-*`, `--mud-elevation-*`, `--mud-typography-*` or
   `--mud-default-borderradius` in the stylesheet.** `MudThemeProvider` writes them into an inline
   `<style>` in the body, which beats any stylesheet. They are set in `MudShadcnTheme.cs`.
@@ -75,6 +87,10 @@ Do this in the scratchpad, not the repo. Things already learned the hard way:
 - Outlined input labels are pinned above the field and the legend notch is hidden. Anything that
   touches `.mud-input-label-outlined` or `.mud-input-control` margins has to keep that working,
   including `Margin.Dense`.
+- Charts colour series with SVG `fill`/`stroke` attributes from `ChartOptions.ChartPalette`. The
+  charts section maps MudBlazor's default palette, by attribute value, to `--shadcn-chart-*`;
+  palettes a consumer sets are left alone. If MudBlazor changes `DefaultChartOptions.ChartPalette`
+  or the heat map's shade logic, those selectors silently stop matching.
 
 After CSS changes, run the class/variable existence check from step 3 of `UPDATING.md`.
 
