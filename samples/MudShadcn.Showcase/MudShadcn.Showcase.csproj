@@ -1,0 +1,108 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <!--
+      The pages and examples under Pages/Components are MudBlazor's own docs, ported verbatim
+      (see THIRD-PARTY-NOTICES.md), and like MudBlazor.Docs they are written without nullable
+      annotations. The showcase's own .cs files opt in with #nullable enable.
+    -->
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Several examples format numbers and dates in other cultures. -->
+    <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+    <!-- Fills the #[.{fingerprint}] placeholders and the import map in wwwroot/index.html. -->
+    <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      MudShadcn is the only UI reference: MudBlazor arrives transitively, which is the point of
+      this showcase. Do not add a MudBlazor PackageReference here.
+    -->
+    <ProjectReference Include="..\..\src\MudShadcn\MudShadcn.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.12" PrivateAssets="all" />
+    <!-- The highlighter mudblazor.com uses for its code samples. -->
+    <PackageReference Include="ColorCode.HTML" Version="2.0.15" />
+    <!-- Used by two of MudBlazor's form examples. -->
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Example sources, shown under each example by SectionContent. -->
+    <EmbeddedResource Include="Pages\Components\**\Examples\*.razor" LogicalName="Examples/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="ExamplesData\Elements.json" LogicalName="Elements.json" />
+  </ItemGroup>
+
+  <!--
+    mudblazor.com shows each component's <summary> under the page title. Extract the type summaries
+    from the MudBlazor.xml next to the referenced MudBlazor.dll into a small tab-separated resource,
+    so the subtitles follow whatever MudBlazor version MudShadcn references.
+  -->
+  <Target Name="ExtractMudBlazorSummaries" AfterTargets="ResolveAssemblyReferences" Condition="'$(DesignTimeBuild)' != 'true'">
+    <ItemGroup>
+      <_MudBlazorReference Include="@(ReferencePath)" Condition="'%(Filename)' == 'MudBlazor'" />
+      <_MudBlazorXmlDoc Include="@(_MudBlazorReference->'%(RootDir)%(Directory)%(Filename).xml')" />
+    </ItemGroup>
+    <ExtractTypeSummaries XmlDocPath="@(_MudBlazorXmlDoc)" OutputPath="$(IntermediateOutputPath)ApiSummaries.tsv"
+                          Condition="'@(_MudBlazorXmlDoc)' != '' And Exists('@(_MudBlazorXmlDoc)')" />
+    <ItemGroup Condition="Exists('$(IntermediateOutputPath)ApiSummaries.tsv')">
+      <EmbeddedResource Include="$(IntermediateOutputPath)ApiSummaries.tsv" LogicalName="ApiSummaries.tsv" />
+      <FileWrites Include="$(IntermediateOutputPath)ApiSummaries.tsv" />
+    </ItemGroup>
+  </Target>
+
+  <UsingTask TaskName="ExtractTypeSummaries" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <XmlDocPath ParameterType="System.String" Required="true" />
+      <OutputPath ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.Linq" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Using Namespace="System.Xml.Linq" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        // "T:MudBlazor.Charts.Bar`1" -> "Bar"; "MudBlazor.MudChip`1" -> "MudChip"
+        Func<string, string> shortName = cref =>
+        {
+            var name = cref.Substring(cref.IndexOf(':') + 1);
+            name = name.Substring(name.LastIndexOf('.') + 1);
+            var tick = name.IndexOf('`');
+            return tick < 0 ? name : name.Substring(0, tick);
+        };
+
+        Func<XElement, string> flatten = null;
+        flatten = element => string.Concat(element.Nodes().Select(node =>
+        {
+            if (node is XText text) return text.Value;
+            var child = (XElement)node;
+            var cref = (string)child.Attribute("cref");
+            if (cref != null) return shortName(cref);
+            var other = (string)child.Attribute("langword") ?? (string)child.Attribute("name");
+            if (other != null && child.Name.LocalName != "c") return other;
+            return flatten(child) + (child.Name.LocalName == "para" ? " " : "");
+        }));
+
+        var lines = XDocument.Load(XmlDocPath).Descendants("member")
+            .Select(m => new { Name = (string)m.Attribute("name"), Summary = m.Element("summary") })
+            .Where(m => m.Name != null && m.Name.StartsWith("T:") && m.Summary != null)
+            // Types directly in the MudBlazor namespace win over same-named nested or chart types.
+            .OrderBy(m => m.Name.Count(c => c == '.'))
+            .Select(m => shortName(m.Name) + "\t" + Regex.Replace(flatten(m.Summary), @"\s+", " ").Trim())
+            .ToArray();
+
+        var content = string.Join("\n", lines);
+        if (!File.Exists(OutputPath) || File.ReadAllText(OutputPath) != content)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(OutputPath));
+            File.WriteAllText(OutputPath, content);
+        }
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+</Project>
