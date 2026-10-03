@@ -3042,9 +3042,12 @@ label.mud-input-label.mud-input-error {
  * ChartOptions.ChartPalette, whose default is 20 Material accent colours. Any stylesheet rule
  * beats a presentation attribute, so the default palette is matched by value and swapped for
  * shadcn's chart tokens: chart-1…5, then tints, shades and lighter tints of them for series 6–20.
- * A palette you set yourself uses other values and is left alone. The legend paints its markers
- * with an inline style, which only !important can override; those rules are limited to the default
- * colours in the same way. --shadcn-chart-series-N exposes the mapped colours to your own CSS.
+ * A palette you set yourself uses other values and is left alone. Colours 2–20 are swapped only
+ * in a chart that also contains colour 1 (the first series, its legend entry included), so a
+ * palette of your own that happens to reuse one of the defaults (say ["#512DA8"]) keeps it.
+ * The legend paints its markers with an inline style, which only !important can override; those
+ * rules are limited to the default colours in the same way. --shadcn-chart-series-N exposes the
+ * mapped colours to your own CSS.
  */
 :is(.mud-chart, .mud-chart-heat, .mud-chart-sankey) {
     --shadcn-chart-series-1: var(--shadcn-chart-1);
@@ -3075,120 +3078,119 @@ label.mud-input-label.mud-input-error {
 .mud-chart-legend-marker[style*="#2979ff" i] { background-color: var(--shadcn-chart-series-1) !important; }
 .mud-chart-legend-checkbox[style*="#2979ff" i] { --checkbox-color: var(--shadcn-chart-series-1) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#1de9b6" i] { fill: var(--shadcn-chart-series-2); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#1de9b6" i] { stroke: var(--shadcn-chart-series-2); }
-.mud-chart-sankey stop[stop-color="#1de9b6" i] { stop-color: var(--shadcn-chart-series-2); }
-.mud-chart-legend-marker[style*="#1de9b6" i] { background-color: var(--shadcn-chart-series-2) !important; }
-.mud-chart-legend-checkbox[style*="#1de9b6" i] { --checkbox-color: var(--shadcn-chart-series-2) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#1de9b6" i] { fill: var(--shadcn-chart-series-2); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#1de9b6" i] { stroke: var(--shadcn-chart-series-2); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#1de9b6" i] { stop-color: var(--shadcn-chart-series-2); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#1de9b6" i] { background-color: var(--shadcn-chart-series-2) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#1de9b6" i] { --checkbox-color: var(--shadcn-chart-series-2) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#ffc400" i] { fill: var(--shadcn-chart-series-3); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#ffc400" i] { stroke: var(--shadcn-chart-series-3); }
-.mud-chart-sankey stop[stop-color="#ffc400" i] { stop-color: var(--shadcn-chart-series-3); }
-.mud-chart-legend-marker[style*="#ffc400" i] { background-color: var(--shadcn-chart-series-3) !important; }
-.mud-chart-legend-checkbox[style*="#ffc400" i] { --checkbox-color: var(--shadcn-chart-series-3) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#ffc400" i] { fill: var(--shadcn-chart-series-3); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#ffc400" i] { stroke: var(--shadcn-chart-series-3); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#ffc400" i] { stop-color: var(--shadcn-chart-series-3); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#ffc400" i] { background-color: var(--shadcn-chart-series-3) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#ffc400" i] { --checkbox-color: var(--shadcn-chart-series-3) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#ff9100" i] { fill: var(--shadcn-chart-series-4); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#ff9100" i] { stroke: var(--shadcn-chart-series-4); }
-.mud-chart-sankey stop[stop-color="#ff9100" i] { stop-color: var(--shadcn-chart-series-4); }
-.mud-chart-legend-marker[style*="#ff9100" i] { background-color: var(--shadcn-chart-series-4) !important; }
-.mud-chart-legend-checkbox[style*="#ff9100" i] { --checkbox-color: var(--shadcn-chart-series-4) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#ff9100" i] { fill: var(--shadcn-chart-series-4); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#ff9100" i] { stroke: var(--shadcn-chart-series-4); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#ff9100" i] { stop-color: var(--shadcn-chart-series-4); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#ff9100" i] { background-color: var(--shadcn-chart-series-4) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#ff9100" i] { --checkbox-color: var(--shadcn-chart-series-4) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#ff1744" i] { fill: var(--shadcn-chart-series-5); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#ff1744" i] { stroke: var(--shadcn-chart-series-5); }
-.mud-chart-sankey stop[stop-color="#ff1744" i] { stop-color: var(--shadcn-chart-series-5); }
-.mud-chart-legend-marker[style*="#ff1744" i] { background-color: var(--shadcn-chart-series-5) !important; }
-.mud-chart-legend-checkbox[style*="#ff1744" i] { --checkbox-color: var(--shadcn-chart-series-5) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#ff1744" i] { fill: var(--shadcn-chart-series-5); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#ff1744" i] { stroke: var(--shadcn-chart-series-5); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#ff1744" i] { stop-color: var(--shadcn-chart-series-5); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#ff1744" i] { background-color: var(--shadcn-chart-series-5) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#ff1744" i] { --checkbox-color: var(--shadcn-chart-series-5) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#651fff" i] { fill: var(--shadcn-chart-series-6); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#651fff" i] { stroke: var(--shadcn-chart-series-6); }
-.mud-chart-sankey stop[stop-color="#651fff" i] { stop-color: var(--shadcn-chart-series-6); }
-.mud-chart-legend-marker[style*="#651fff" i] { background-color: var(--shadcn-chart-series-6) !important; }
-.mud-chart-legend-checkbox[style*="#651fff" i] { --checkbox-color: var(--shadcn-chart-series-6) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#651fff" i] { fill: var(--shadcn-chart-series-6); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#651fff" i] { stroke: var(--shadcn-chart-series-6); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#651fff" i] { stop-color: var(--shadcn-chart-series-6); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#651fff" i] { background-color: var(--shadcn-chart-series-6) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#651fff" i] { --checkbox-color: var(--shadcn-chart-series-6) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#00e676" i] { fill: var(--shadcn-chart-series-7); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#00e676" i] { stroke: var(--shadcn-chart-series-7); }
-.mud-chart-sankey stop[stop-color="#00e676" i] { stop-color: var(--shadcn-chart-series-7); }
-.mud-chart-legend-marker[style*="#00e676" i] { background-color: var(--shadcn-chart-series-7) !important; }
-.mud-chart-legend-checkbox[style*="#00e676" i] { --checkbox-color: var(--shadcn-chart-series-7) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#00e676" i] { fill: var(--shadcn-chart-series-7); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#00e676" i] { stroke: var(--shadcn-chart-series-7); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#00e676" i] { stop-color: var(--shadcn-chart-series-7); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#00e676" i] { background-color: var(--shadcn-chart-series-7) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#00e676" i] { --checkbox-color: var(--shadcn-chart-series-7) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#00b0ff" i] { fill: var(--shadcn-chart-series-8); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#00b0ff" i] { stroke: var(--shadcn-chart-series-8); }
-.mud-chart-sankey stop[stop-color="#00b0ff" i] { stop-color: var(--shadcn-chart-series-8); }
-.mud-chart-legend-marker[style*="#00b0ff" i] { background-color: var(--shadcn-chart-series-8) !important; }
-.mud-chart-legend-checkbox[style*="#00b0ff" i] { --checkbox-color: var(--shadcn-chart-series-8) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#00b0ff" i] { fill: var(--shadcn-chart-series-8); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#00b0ff" i] { stroke: var(--shadcn-chart-series-8); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#00b0ff" i] { stop-color: var(--shadcn-chart-series-8); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#00b0ff" i] { background-color: var(--shadcn-chart-series-8) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#00b0ff" i] { --checkbox-color: var(--shadcn-chart-series-8) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#26a69a" i] { fill: var(--shadcn-chart-series-9); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#26a69a" i] { stroke: var(--shadcn-chart-series-9); }
-.mud-chart-sankey stop[stop-color="#26a69a" i] { stop-color: var(--shadcn-chart-series-9); }
-.mud-chart-legend-marker[style*="#26a69a" i] { background-color: var(--shadcn-chart-series-9) !important; }
-.mud-chart-legend-checkbox[style*="#26a69a" i] { --checkbox-color: var(--shadcn-chart-series-9) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#26a69a" i] { fill: var(--shadcn-chart-series-9); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#26a69a" i] { stroke: var(--shadcn-chart-series-9); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#26a69a" i] { stop-color: var(--shadcn-chart-series-9); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#26a69a" i] { background-color: var(--shadcn-chart-series-9) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#26a69a" i] { --checkbox-color: var(--shadcn-chart-series-9) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#ffca28" i] { fill: var(--shadcn-chart-series-10); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#ffca28" i] { stroke: var(--shadcn-chart-series-10); }
-.mud-chart-sankey stop[stop-color="#ffca28" i] { stop-color: var(--shadcn-chart-series-10); }
-.mud-chart-legend-marker[style*="#ffca28" i] { background-color: var(--shadcn-chart-series-10) !important; }
-.mud-chart-legend-checkbox[style*="#ffca28" i] { --checkbox-color: var(--shadcn-chart-series-10) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#ffca28" i] { fill: var(--shadcn-chart-series-10); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#ffca28" i] { stroke: var(--shadcn-chart-series-10); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#ffca28" i] { stop-color: var(--shadcn-chart-series-10); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#ffca28" i] { background-color: var(--shadcn-chart-series-10) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#ffca28" i] { --checkbox-color: var(--shadcn-chart-series-10) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#ffa726" i] { fill: var(--shadcn-chart-series-11); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#ffa726" i] { stroke: var(--shadcn-chart-series-11); }
-.mud-chart-sankey stop[stop-color="#ffa726" i] { stop-color: var(--shadcn-chart-series-11); }
-.mud-chart-legend-marker[style*="#ffa726" i] { background-color: var(--shadcn-chart-series-11) !important; }
-.mud-chart-legend-checkbox[style*="#ffa726" i] { --checkbox-color: var(--shadcn-chart-series-11) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#ffa726" i] { fill: var(--shadcn-chart-series-11); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#ffa726" i] { stroke: var(--shadcn-chart-series-11); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#ffa726" i] { stop-color: var(--shadcn-chart-series-11); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#ffa726" i] { background-color: var(--shadcn-chart-series-11) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#ffa726" i] { --checkbox-color: var(--shadcn-chart-series-11) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#ef5350" i] { fill: var(--shadcn-chart-series-12); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#ef5350" i] { stroke: var(--shadcn-chart-series-12); }
-.mud-chart-sankey stop[stop-color="#ef5350" i] { stop-color: var(--shadcn-chart-series-12); }
-.mud-chart-legend-marker[style*="#ef5350" i] { background-color: var(--shadcn-chart-series-12) !important; }
-.mud-chart-legend-checkbox[style*="#ef5350" i] { --checkbox-color: var(--shadcn-chart-series-12) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#ef5350" i] { fill: var(--shadcn-chart-series-12); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#ef5350" i] { stroke: var(--shadcn-chart-series-12); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#ef5350" i] { stop-color: var(--shadcn-chart-series-12); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#ef5350" i] { background-color: var(--shadcn-chart-series-12) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#ef5350" i] { --checkbox-color: var(--shadcn-chart-series-12) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#7e57c2" i] { fill: var(--shadcn-chart-series-13); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#7e57c2" i] { stroke: var(--shadcn-chart-series-13); }
-.mud-chart-sankey stop[stop-color="#7e57c2" i] { stop-color: var(--shadcn-chart-series-13); }
-.mud-chart-legend-marker[style*="#7e57c2" i] { background-color: var(--shadcn-chart-series-13) !important; }
-.mud-chart-legend-checkbox[style*="#7e57c2" i] { --checkbox-color: var(--shadcn-chart-series-13) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#7e57c2" i] { fill: var(--shadcn-chart-series-13); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#7e57c2" i] { stroke: var(--shadcn-chart-series-13); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#7e57c2" i] { stop-color: var(--shadcn-chart-series-13); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#7e57c2" i] { background-color: var(--shadcn-chart-series-13) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#7e57c2" i] { --checkbox-color: var(--shadcn-chart-series-13) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#66bb6a" i] { fill: var(--shadcn-chart-series-14); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#66bb6a" i] { stroke: var(--shadcn-chart-series-14); }
-.mud-chart-sankey stop[stop-color="#66bb6a" i] { stop-color: var(--shadcn-chart-series-14); }
-.mud-chart-legend-marker[style*="#66bb6a" i] { background-color: var(--shadcn-chart-series-14) !important; }
-.mud-chart-legend-checkbox[style*="#66bb6a" i] { --checkbox-color: var(--shadcn-chart-series-14) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#66bb6a" i] { fill: var(--shadcn-chart-series-14); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#66bb6a" i] { stroke: var(--shadcn-chart-series-14); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#66bb6a" i] { stop-color: var(--shadcn-chart-series-14); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#66bb6a" i] { background-color: var(--shadcn-chart-series-14) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#66bb6a" i] { --checkbox-color: var(--shadcn-chart-series-14) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#29b6f6" i] { fill: var(--shadcn-chart-series-15); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#29b6f6" i] { stroke: var(--shadcn-chart-series-15); }
-.mud-chart-sankey stop[stop-color="#29b6f6" i] { stop-color: var(--shadcn-chart-series-15); }
-.mud-chart-legend-marker[style*="#29b6f6" i] { background-color: var(--shadcn-chart-series-15) !important; }
-.mud-chart-legend-checkbox[style*="#29b6f6" i] { --checkbox-color: var(--shadcn-chart-series-15) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#29b6f6" i] { fill: var(--shadcn-chart-series-15); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#29b6f6" i] { stroke: var(--shadcn-chart-series-15); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#29b6f6" i] { stop-color: var(--shadcn-chart-series-15); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#29b6f6" i] { background-color: var(--shadcn-chart-series-15) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#29b6f6" i] { --checkbox-color: var(--shadcn-chart-series-15) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#ffa000" i] { fill: var(--shadcn-chart-series-16); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#ffa000" i] { stroke: var(--shadcn-chart-series-16); }
-.mud-chart-sankey stop[stop-color="#ffa000" i] { stop-color: var(--shadcn-chart-series-16); }
-.mud-chart-legend-marker[style*="#ffa000" i] { background-color: var(--shadcn-chart-series-16) !important; }
-.mud-chart-legend-checkbox[style*="#ffa000" i] { --checkbox-color: var(--shadcn-chart-series-16) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#ffa000" i] { fill: var(--shadcn-chart-series-16); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#ffa000" i] { stroke: var(--shadcn-chart-series-16); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#ffa000" i] { stop-color: var(--shadcn-chart-series-16); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#ffa000" i] { background-color: var(--shadcn-chart-series-16) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#ffa000" i] { --checkbox-color: var(--shadcn-chart-series-16) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#f57c00" i] { fill: var(--shadcn-chart-series-17); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#f57c00" i] { stroke: var(--shadcn-chart-series-17); }
-.mud-chart-sankey stop[stop-color="#f57c00" i] { stop-color: var(--shadcn-chart-series-17); }
-.mud-chart-legend-marker[style*="#f57c00" i] { background-color: var(--shadcn-chart-series-17) !important; }
-.mud-chart-legend-checkbox[style*="#f57c00" i] { --checkbox-color: var(--shadcn-chart-series-17) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#f57c00" i] { fill: var(--shadcn-chart-series-17); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#f57c00" i] { stroke: var(--shadcn-chart-series-17); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#f57c00" i] { stop-color: var(--shadcn-chart-series-17); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#f57c00" i] { background-color: var(--shadcn-chart-series-17) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#f57c00" i] { --checkbox-color: var(--shadcn-chart-series-17) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#d32f2f" i] { fill: var(--shadcn-chart-series-18); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#d32f2f" i] { stroke: var(--shadcn-chart-series-18); }
-.mud-chart-sankey stop[stop-color="#d32f2f" i] { stop-color: var(--shadcn-chart-series-18); }
-.mud-chart-legend-marker[style*="#d32f2f" i] { background-color: var(--shadcn-chart-series-18) !important; }
-.mud-chart-legend-checkbox[style*="#d32f2f" i] { --checkbox-color: var(--shadcn-chart-series-18) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#d32f2f" i] { fill: var(--shadcn-chart-series-18); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#d32f2f" i] { stroke: var(--shadcn-chart-series-18); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#d32f2f" i] { stop-color: var(--shadcn-chart-series-18); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#d32f2f" i] { background-color: var(--shadcn-chart-series-18) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#d32f2f" i] { --checkbox-color: var(--shadcn-chart-series-18) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#512da8" i] { fill: var(--shadcn-chart-series-19); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#512da8" i] { stroke: var(--shadcn-chart-series-19); }
-.mud-chart-sankey stop[stop-color="#512da8" i] { stop-color: var(--shadcn-chart-series-19); }
-.mud-chart-legend-marker[style*="#512da8" i] { background-color: var(--shadcn-chart-series-19) !important; }
-.mud-chart-legend-checkbox[style*="#512da8" i] { --checkbox-color: var(--shadcn-chart-series-19) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#512da8" i] { fill: var(--shadcn-chart-series-19); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#512da8" i] { stroke: var(--shadcn-chart-series-19); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#512da8" i] { stop-color: var(--shadcn-chart-series-19); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#512da8" i] { background-color: var(--shadcn-chart-series-19) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#512da8" i] { --checkbox-color: var(--shadcn-chart-series-19) !important; }
 
-:is(.mud-chart, .mud-chart-sankey) [fill="#616161" i] { fill: var(--shadcn-chart-series-20); }
-:is(.mud-chart, .mud-chart-sankey) [stroke="#616161" i] { stroke: var(--shadcn-chart-series-20); }
-.mud-chart-sankey stop[stop-color="#616161" i] { stop-color: var(--shadcn-chart-series-20); }
-.mud-chart-legend-marker[style*="#616161" i] { background-color: var(--shadcn-chart-series-20) !important; }
-.mud-chart-legend-checkbox[style*="#616161" i] { --checkbox-color: var(--shadcn-chart-series-20) !important; }
-
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [fill="#616161" i] { fill: var(--shadcn-chart-series-20); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) [stroke="#616161" i] { stroke: var(--shadcn-chart-series-20); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) stop[stop-color="#616161" i] { stop-color: var(--shadcn-chart-series-20); }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-marker[style*="#616161" i] { background-color: var(--shadcn-chart-series-20) !important; }
+:is(.mud-chart, .mud-chart-sankey):has([fill="#2979ff" i], [stroke="#2979ff" i], [style*="#2979ff" i]) .mud-chart-legend-checkbox[style*="#616161" i] { --checkbox-color: var(--shadcn-chart-series-20) !important; }
 /*
  * Heat map: with the default palette MudBlazor builds its five shades from the first five palette
  * colours, written as rgb(). They are replaced with a sequential ramp of the primary colour
@@ -3205,24 +3207,54 @@ label.mud-input-label.mud-input-error {
 .mud-chart-heat [fill="rgb(255,23,68)"] { fill: var(--mud-palette-primary); }
 .mud-chart-heat stop[style*="rgb(255,23,68)"] { stop-color: var(--mud-palette-primary) !important; }
 
-.mud-chart-heat .mud-chart-cell rect[fill="rgb(255,145,0)"] + g text,
-.mud-chart-heat .mud-chart-cell rect[fill="rgb(255,23,68)"] + g text {
+/*
+ * Cell values. MudBlazor hard-codes #000. Colours you pass in do not change with the mode, so on
+ * them the label stays a fixed near-black (palette Black, #0a0a0a in both modes). The default ramp
+ * does flip with the mode: foreground on its three light shades, primary-foreground on the two
+ * dark ones. With EnableSmoothGradient the cells are translucent overlays that blend with the
+ * background, so the label follows the mode as well.
+ */
+.mud-chart-cell text {
+    fill: var(--mud-palette-black);
+    font-variant-numeric: tabular-nums;
+}
+
+.mud-chart-heat .mud-chart-cell rect:is([fill="rgb(41,121,255)"], [fill="rgb(29,233,182)"], [fill="rgb(255,196,0)"], [fill="transparent"]) + g text {
+    fill: var(--mud-palette-text-primary);
+}
+
+.mud-chart-heat .mud-chart-cell rect:is([fill="rgb(255,145,0)"], [fill="rgb(255,23,68)"]) + g text {
     fill: var(--mud-palette-primary-text);
 }
 
-.mud-chart-heat rect[fill="#fff"] {
-    fill: var(--mud-palette-background-gray);         /* cells without data */
+.mud-chart-heat .mud-chart-cell > g > rect {
+    rx: var(--shadcn-radius-sm);                      /* cells are 5px apart, except with EnableSmoothGradient */
+    ry: var(--shadcn-radius-sm);
 }
 
-.mud-chart-cell text {
-    fill: var(--mud-palette-text-primary);            /* MudBlazor hard-codes black */
+.mud-chart-heat .mud-chart-heatmap-legend rect {
+    rx: 2px;                                          /* rounded-[2px], like the legend markers */
+    ry: 2px;
 }
 
-/* Axes and labels: text-xs fill-muted-foreground, in the theme font */
-.mud-chart svg text,
-.mud-chart-heat text,
-.mud-chart-sankey text {
+/* Cells without data: MudBlazor paints them #fff, and EnableSmoothGradient blends every cell on
+   the edge of the map towards that white. bg-muted instead. */
+.mud-chart-heat .mud-chart-cell > g > rect[fill="#fff"] {
+    fill: var(--mud-palette-background-gray);
+}
+
+.mud-chart-heat stop[style*="stop-color:#fff" i] {
+    stop-color: var(--mud-palette-background-gray) !important;
+}
+
+/* Axes and labels: text-xs fill-muted-foreground, in the theme font. Text you add through
+   CustomGraphics without a colour of its own gets the foreground instead of SVG's black. */
+:where(.mud-chart, .mud-chart-heat, .mud-chart-sankey) text {
     font-family: var(--mud-typography-default-family);
+}
+
+:where(.mud-chart svg text:not([fill])) {
+    fill: var(--mud-palette-text-primary);
 }
 
 .mud-charts-yaxis,
@@ -3239,38 +3271,69 @@ label.mud-input-label.mud-input-error {
     stroke: var(--mud-palette-lines-default);
 }
 
+/* Bar value labels: LabelList className="fill-foreground" fontSize={12} */
 .mud-chart-value-label {
     fill: var(--mud-palette-text-primary);
-    font-weight: 500;
 }
 
-/* Value labels drawn on pie, donut and rose segments: fill-background, no Material outline */
+/* Value labels drawn on pie, donut and rose segments: LabelList className="fill-background"
+   stroke="none", without MudBlazor's black outline and drop shadow */
 .mud-chart-label-value {
     fill: var(--mud-palette-background);
     stroke: none;
-    font-weight: 500;
+    filter: none;
 }
 
-/* Grid: stroke-border, 1px whatever the chart is scaled to */
+/* Grid: CartesianGrid stroke-border/50, 1px whatever the chart is scaled to */
 .mud-charts-gridlines-yaxis path,
 .mud-charts-gridlines-xaxis-lines path {
-    stroke: var(--mud-palette-lines-default);
+    stroke: color-mix(in oklab, var(--mud-palette-lines-default) 50%, transparent);
     stroke-width: 1px;
     vector-effect: non-scaling-stroke;
 }
 
-.mud-chart-donut .mud-donut-ring {
-    stroke: var(--mud-palette-background-gray);       /* fill-muted, MudBlazor hard-codes #fff */
+/* Data markers (ShowDataMarkers): MudBlazor gives them no fill, so they render black. Recharts'
+   default dot is a ring in the series colour on the chart's surface. */
+.mud-chart .mud-chart-point:not([fill]) {
+    fill: var(--mud-palette-surface);
 }
 
-/* Legend: flex gap-4 pt-3, h-2 w-2 rounded-[2px] marker, gap-1.5, text-xs */
+/* Hover: MudThemeProvider brightens the hovered series with an SVG colour matrix (×1.5 per
+   channel), which shifts hues (orange turns yellow) and washes dark-mode colours out. Recharts
+   adds no tint; the tooltip and the active dot carry the hover. Its rule sits in the body, after
+   this file, hence the extra class. */
+.mud-chart .mud-chart-serie:hover,
+.mud-chart .mud-chart-serie-hovered {
+    filter: none;
+}
+
+/* Legend: flex items-center justify-center gap-4 pt-3, items gap-1.5, h-2 w-2 rounded-[2px]
+   marker, text-xs. Items keep MudBlazor's 4px padding (pa-1, part of the click target), which
+   the gaps below account for. */
 .mud-chart .mud-chart-legend {
-    gap: 4px 16px;
-    padding: 12px 0 0;
+    gap: 0 8px;                                       /* + 2 × 4px item padding = gap-4 */
+    padding: 8px 0 0;                                 /* + 4px item padding = pt-3 */
+}
+
+.mud-chart.mud-chart-legend-bottom .mud-chart-legend {
+    margin-top: 0;
 }
 
 .mud-chart.mud-chart-legend-top .mud-chart-legend {
-    padding: 0 0 12px;
+    padding: 0 0 8px;                                 /* pb-3 */
+}
+
+.mud-chart.mud-chart-legend-left .mud-chart-legend,
+.mud-chart.mud-chart-legend-right .mud-chart-legend {
+    padding: 0;
+}
+
+.mud-chart.mud-chart-legend-left .mud-chart-legend {
+    margin-right: 8px;
+}
+
+.mud-chart.mud-chart-legend-right .mud-chart-legend {
+    margin-left: 8px;
 }
 
 .mud-chart .mud-chart-legend .mud-chart-legend-item {
@@ -3278,6 +3341,7 @@ label.mud-input-label.mud-input-error {
     align-items: center;
     gap: 6px;
     margin: 0;
+    padding: 4px;
 }
 
 .mud-chart .mud-chart-legend .mud-chart-legend-item .mud-chart-legend-marker,
@@ -3295,22 +3359,32 @@ label.mud-input-label.mud-input-error {
 
 /*
  * Tooltips (and Sankey labels) are SVG: a rect filled with the series colour, white text with a
- * black outline. shadcn's is a popover: rounded-lg border bg-background text-xs shadow-xl.
+ * black outline, and an arrow. shadcn's is a popover without an arrow: rounded-lg border
+ * border-border/50 bg-background text-xs shadow-xl, the label font-medium above muted text.
+ * The box is sized from the measured text, so it follows the weights. Its padding is a fixed
+ * 5px; scaling the box about its centre brings it close to px-2.5 py-1.5 without moving the text.
  */
 :is(.mud-chart, .mud-chart-heat, .mud-chart-sankey) .svg-tooltip {
-    filter: drop-shadow(0 8px 10px rgb(0 0 0 / 0.1));
+    filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.08)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.08));
 }
 
-:is(.mud-chart, .mud-chart-heat, .mud-chart-sankey) .svg-tooltip rect,
-:is(.mud-chart, .mud-chart-heat, .mud-chart-sankey) .svg-tooltip polygon:first-of-type {
-    fill: var(--mud-palette-background);
-    stroke: var(--mud-palette-lines-default);
+:is(.mud-chart, .mud-chart-heat, .mud-chart-sankey) .svg-tooltip rect[fill] {
+    fill: var(--mud-palette-background);              /* [fill]: outranks the palette swap above */
+    stroke: color-mix(in oklab, var(--mud-palette-lines-default) 50%, transparent);
     stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+    rx: var(--shadcn-radius-lg);
+    ry: var(--shadcn-radius-lg);
 }
 
-:is(.mud-chart, .mud-chart-heat, .mud-chart-sankey) .svg-tooltip polygon:last-of-type:not(:first-of-type) {
-    fill: var(--mud-palette-background);
-    stroke: none;
+:is(.mud-chart, .mud-chart-heat) .svg-tooltip rect[fill] {
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(1.12, 1.2);
+}
+
+:is(.mud-chart, .mud-chart-heat, .mud-chart-sankey) .svg-tooltip polygon {
+    display: none;
 }
 
 :is(.mud-chart, .mud-chart-heat, .mud-chart-sankey) .svg-tooltip text {
@@ -3318,6 +3392,28 @@ label.mud-input-label.mud-input-error {
     stroke: none;
     filter: none;
     font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
+:is(.mud-chart, .mud-chart-heat, .mud-chart-sankey) .svg-tooltip tspan + tspan {
+    fill: var(--mud-palette-text-secondary);
+    font-weight: 400;
+}
+
+/* Sankey node and edge labels reuse the tooltip. They are drawn all at once, so they read as
+   labels (LabelList): no shadow, regular weight, rounded-md for their smaller size. */
+.mud-chart-sankey .svg-tooltip {
+    filter: none;
+}
+
+.mud-chart-sankey .svg-tooltip rect[fill] {
+    rx: var(--shadcn-radius-md);
+    ry: var(--shadcn-radius-md);
+    transform: none;
+}
+
+.mud-chart-sankey .svg-tooltip text {
+    font-weight: 400;
 }
 
 /* ---------------------------------------------------------------------------------------------
