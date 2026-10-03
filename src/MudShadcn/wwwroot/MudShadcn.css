@@ -562,14 +562,6 @@ label.mud-input-label.mud-input-error {
     padding-right: 0 !important;
 }
 
-.mud-input-control.mud-input-number-control .mud-input-numeric-spin button .mud-icon-root {
-    font-size: 0.875rem;
-}
-
-.mud-input-helper-text {
-    margin-top: 6px;
-}
-
 /* ---------------------------------------------------------------------------------------------
    5. Checkbox, radio, switch, slider
    --------------------------------------------------------------------------------------------- */
@@ -1375,3 +1367,326 @@ label.mud-input-label.mud-input-error {
 .mud-stepper .mud-step-label-icon {
     font-weight: 500;
 }
+
+/* ---------------------------------------------------------------------------------------------
+   15. Charts — shadcn's chart-1…5 palette, muted text-xs axes, border-coloured grid lines,
+       popover-style tooltips, small square legend markers
+   --------------------------------------------------------------------------------------------- */
+/*
+ * MudBlazor paints a series with fill/stroke presentation attributes taken from
+ * ChartOptions.ChartPalette, whose default is 20 Material accent colours. Any stylesheet rule
+ * beats a presentation attribute, so the default palette is matched by value and swapped for
+ * shadcn's chart tokens: chart-1…5, then tints, shades and lighter tints of them for series 6–20.
+ * A palette you set yourself uses other values and is left alone. The legend paints its markers
+ * with an inline style, which only !important can override; those rules are limited to the default
+ * colours in the same way. --shadcn-chart-series-N exposes the mapped colours to your own CSS.
+ */
+:is(.mud-chart, .mud-chart-heat, .mud-chart-sankey) {
+    --shadcn-chart-series-1: var(--shadcn-chart-1);
+    --shadcn-chart-series-2: var(--shadcn-chart-2);
+    --shadcn-chart-series-3: var(--shadcn-chart-3);
+    --shadcn-chart-series-4: var(--shadcn-chart-4);
+    --shadcn-chart-series-5: var(--shadcn-chart-5);
+    --shadcn-chart-series-6: color-mix(in oklab, var(--shadcn-chart-1) 55%, var(--mud-palette-surface));
+    --shadcn-chart-series-7: color-mix(in oklab, var(--shadcn-chart-2) 55%, var(--mud-palette-surface));
+    --shadcn-chart-series-8: color-mix(in oklab, var(--shadcn-chart-3) 55%, var(--mud-palette-surface));
+    --shadcn-chart-series-9: color-mix(in oklab, var(--shadcn-chart-4) 55%, var(--mud-palette-surface));
+    --shadcn-chart-series-10: color-mix(in oklab, var(--shadcn-chart-5) 55%, var(--mud-palette-surface));
+    --shadcn-chart-series-11: color-mix(in oklab, var(--shadcn-chart-1) 65%, var(--mud-palette-text-primary));
+    --shadcn-chart-series-12: color-mix(in oklab, var(--shadcn-chart-2) 65%, var(--mud-palette-text-primary));
+    --shadcn-chart-series-13: color-mix(in oklab, var(--shadcn-chart-3) 65%, var(--mud-palette-text-primary));
+    --shadcn-chart-series-14: color-mix(in oklab, var(--shadcn-chart-4) 65%, var(--mud-palette-text-primary));
+    --shadcn-chart-series-15: color-mix(in oklab, var(--shadcn-chart-5) 65%, var(--mud-palette-text-primary));
+    --shadcn-chart-series-16: color-mix(in oklab, var(--shadcn-chart-1) 30%, var(--mud-palette-surface));
+    --shadcn-chart-series-17: color-mix(in oklab, var(--shadcn-chart-2) 30%, var(--mud-palette-surface));
+    --shadcn-chart-series-18: color-mix(in oklab, var(--shadcn-chart-3) 30%, var(--mud-palette-surface));
+    --shadcn-chart-series-19: color-mix(in oklab, var(--shadcn-chart-4) 30%, var(--mud-palette-surface));
+    --shadcn-chart-series-20: color-mix(in oklab, var(--shadcn-chart-5) 30%, var(--mud-palette-surface));
+}
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#2979ff" i] { fill: var(--shadcn-chart-series-1); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#2979ff" i] { stroke: var(--shadcn-chart-series-1); }
+.mud-chart-sankey stop[stop-color="#2979ff" i] { stop-color: var(--shadcn-chart-series-1); }
+.mud-chart-legend-marker[style*="#2979ff" i] { background-color: var(--shadcn-chart-series-1) !important; }
+.mud-chart-legend-checkbox[style*="#2979ff" i] { --checkbox-color: var(--shadcn-chart-series-1) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#1de9b6" i] { fill: var(--shadcn-chart-series-2); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#1de9b6" i] { stroke: var(--shadcn-chart-series-2); }
+.mud-chart-sankey stop[stop-color="#1de9b6" i] { stop-color: var(--shadcn-chart-series-2); }
+.mud-chart-legend-marker[style*="#1de9b6" i] { background-color: var(--shadcn-chart-series-2) !important; }
+.mud-chart-legend-checkbox[style*="#1de9b6" i] { --checkbox-color: var(--shadcn-chart-series-2) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#ffc400" i] { fill: var(--shadcn-chart-series-3); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#ffc400" i] { stroke: var(--shadcn-chart-series-3); }
+.mud-chart-sankey stop[stop-color="#ffc400" i] { stop-color: var(--shadcn-chart-series-3); }
+.mud-chart-legend-marker[style*="#ffc400" i] { background-color: var(--shadcn-chart-series-3) !important; }
+.mud-chart-legend-checkbox[style*="#ffc400" i] { --checkbox-color: var(--shadcn-chart-series-3) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#ff9100" i] { fill: var(--shadcn-chart-series-4); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#ff9100" i] { stroke: var(--shadcn-chart-series-4); }
+.mud-chart-sankey stop[stop-color="#ff9100" i] { stop-color: var(--shadcn-chart-series-4); }
+.mud-chart-legend-marker[style*="#ff9100" i] { background-color: var(--shadcn-chart-series-4) !important; }
+.mud-chart-legend-checkbox[style*="#ff9100" i] { --checkbox-color: var(--shadcn-chart-series-4) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#ff1744" i] { fill: var(--shadcn-chart-series-5); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#ff1744" i] { stroke: var(--shadcn-chart-series-5); }
+.mud-chart-sankey stop[stop-color="#ff1744" i] { stop-color: var(--shadcn-chart-series-5); }
+.mud-chart-legend-marker[style*="#ff1744" i] { background-color: var(--shadcn-chart-series-5) !important; }
+.mud-chart-legend-checkbox[style*="#ff1744" i] { --checkbox-color: var(--shadcn-chart-series-5) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#651fff" i] { fill: var(--shadcn-chart-series-6); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#651fff" i] { stroke: var(--shadcn-chart-series-6); }
+.mud-chart-sankey stop[stop-color="#651fff" i] { stop-color: var(--shadcn-chart-series-6); }
+.mud-chart-legend-marker[style*="#651fff" i] { background-color: var(--shadcn-chart-series-6) !important; }
+.mud-chart-legend-checkbox[style*="#651fff" i] { --checkbox-color: var(--shadcn-chart-series-6) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#00e676" i] { fill: var(--shadcn-chart-series-7); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#00e676" i] { stroke: var(--shadcn-chart-series-7); }
+.mud-chart-sankey stop[stop-color="#00e676" i] { stop-color: var(--shadcn-chart-series-7); }
+.mud-chart-legend-marker[style*="#00e676" i] { background-color: var(--shadcn-chart-series-7) !important; }
+.mud-chart-legend-checkbox[style*="#00e676" i] { --checkbox-color: var(--shadcn-chart-series-7) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#00b0ff" i] { fill: var(--shadcn-chart-series-8); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#00b0ff" i] { stroke: var(--shadcn-chart-series-8); }
+.mud-chart-sankey stop[stop-color="#00b0ff" i] { stop-color: var(--shadcn-chart-series-8); }
+.mud-chart-legend-marker[style*="#00b0ff" i] { background-color: var(--shadcn-chart-series-8) !important; }
+.mud-chart-legend-checkbox[style*="#00b0ff" i] { --checkbox-color: var(--shadcn-chart-series-8) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#26a69a" i] { fill: var(--shadcn-chart-series-9); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#26a69a" i] { stroke: var(--shadcn-chart-series-9); }
+.mud-chart-sankey stop[stop-color="#26a69a" i] { stop-color: var(--shadcn-chart-series-9); }
+.mud-chart-legend-marker[style*="#26a69a" i] { background-color: var(--shadcn-chart-series-9) !important; }
+.mud-chart-legend-checkbox[style*="#26a69a" i] { --checkbox-color: var(--shadcn-chart-series-9) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#ffca28" i] { fill: var(--shadcn-chart-series-10); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#ffca28" i] { stroke: var(--shadcn-chart-series-10); }
+.mud-chart-sankey stop[stop-color="#ffca28" i] { stop-color: var(--shadcn-chart-series-10); }
+.mud-chart-legend-marker[style*="#ffca28" i] { background-color: var(--shadcn-chart-series-10) !important; }
+.mud-chart-legend-checkbox[style*="#ffca28" i] { --checkbox-color: var(--shadcn-chart-series-10) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#ffa726" i] { fill: var(--shadcn-chart-series-11); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#ffa726" i] { stroke: var(--shadcn-chart-series-11); }
+.mud-chart-sankey stop[stop-color="#ffa726" i] { stop-color: var(--shadcn-chart-series-11); }
+.mud-chart-legend-marker[style*="#ffa726" i] { background-color: var(--shadcn-chart-series-11) !important; }
+.mud-chart-legend-checkbox[style*="#ffa726" i] { --checkbox-color: var(--shadcn-chart-series-11) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#ef5350" i] { fill: var(--shadcn-chart-series-12); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#ef5350" i] { stroke: var(--shadcn-chart-series-12); }
+.mud-chart-sankey stop[stop-color="#ef5350" i] { stop-color: var(--shadcn-chart-series-12); }
+.mud-chart-legend-marker[style*="#ef5350" i] { background-color: var(--shadcn-chart-series-12) !important; }
+.mud-chart-legend-checkbox[style*="#ef5350" i] { --checkbox-color: var(--shadcn-chart-series-12) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#7e57c2" i] { fill: var(--shadcn-chart-series-13); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#7e57c2" i] { stroke: var(--shadcn-chart-series-13); }
+.mud-chart-sankey stop[stop-color="#7e57c2" i] { stop-color: var(--shadcn-chart-series-13); }
+.mud-chart-legend-marker[style*="#7e57c2" i] { background-color: var(--shadcn-chart-series-13) !important; }
+.mud-chart-legend-checkbox[style*="#7e57c2" i] { --checkbox-color: var(--shadcn-chart-series-13) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#66bb6a" i] { fill: var(--shadcn-chart-series-14); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#66bb6a" i] { stroke: var(--shadcn-chart-series-14); }
+.mud-chart-sankey stop[stop-color="#66bb6a" i] { stop-color: var(--shadcn-chart-series-14); }
+.mud-chart-legend-marker[style*="#66bb6a" i] { background-color: var(--shadcn-chart-series-14) !important; }
+.mud-chart-legend-checkbox[style*="#66bb6a" i] { --checkbox-color: var(--shadcn-chart-series-14) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#29b6f6" i] { fill: var(--shadcn-chart-series-15); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#29b6f6" i] { stroke: var(--shadcn-chart-series-15); }
+.mud-chart-sankey stop[stop-color="#29b6f6" i] { stop-color: var(--shadcn-chart-series-15); }
+.mud-chart-legend-marker[style*="#29b6f6" i] { background-color: var(--shadcn-chart-series-15) !important; }
+.mud-chart-legend-checkbox[style*="#29b6f6" i] { --checkbox-color: var(--shadcn-chart-series-15) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#ffa000" i] { fill: var(--shadcn-chart-series-16); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#ffa000" i] { stroke: var(--shadcn-chart-series-16); }
+.mud-chart-sankey stop[stop-color="#ffa000" i] { stop-color: var(--shadcn-chart-series-16); }
+.mud-chart-legend-marker[style*="#ffa000" i] { background-color: var(--shadcn-chart-series-16) !important; }
+.mud-chart-legend-checkbox[style*="#ffa000" i] { --checkbox-color: var(--shadcn-chart-series-16) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#f57c00" i] { fill: var(--shadcn-chart-series-17); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#f57c00" i] { stroke: var(--shadcn-chart-series-17); }
+.mud-chart-sankey stop[stop-color="#f57c00" i] { stop-color: var(--shadcn-chart-series-17); }
+.mud-chart-legend-marker[style*="#f57c00" i] { background-color: var(--shadcn-chart-series-17) !important; }
+.mud-chart-legend-checkbox[style*="#f57c00" i] { --checkbox-color: var(--shadcn-chart-series-17) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#d32f2f" i] { fill: var(--shadcn-chart-series-18); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#d32f2f" i] { stroke: var(--shadcn-chart-series-18); }
+.mud-chart-sankey stop[stop-color="#d32f2f" i] { stop-color: var(--shadcn-chart-series-18); }
+.mud-chart-legend-marker[style*="#d32f2f" i] { background-color: var(--shadcn-chart-series-18) !important; }
+.mud-chart-legend-checkbox[style*="#d32f2f" i] { --checkbox-color: var(--shadcn-chart-series-18) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#512da8" i] { fill: var(--shadcn-chart-series-19); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#512da8" i] { stroke: var(--shadcn-chart-series-19); }
+.mud-chart-sankey stop[stop-color="#512da8" i] { stop-color: var(--shadcn-chart-series-19); }
+.mud-chart-legend-marker[style*="#512da8" i] { background-color: var(--shadcn-chart-series-19) !important; }
+.mud-chart-legend-checkbox[style*="#512da8" i] { --checkbox-color: var(--shadcn-chart-series-19) !important; }
+
+:is(.mud-chart, .mud-chart-sankey) [fill="#616161" i] { fill: var(--shadcn-chart-series-20); }
+:is(.mud-chart, .mud-chart-sankey) [stroke="#616161" i] { stroke: var(--shadcn-chart-series-20); }
+.mud-chart-sankey stop[stop-color="#616161" i] { stop-color: var(--shadcn-chart-series-20); }
+.mud-chart-legend-marker[style*="#616161" i] { background-color: var(--shadcn-chart-series-20) !important; }
+.mud-chart-legend-checkbox[style*="#616161" i] { --checkbox-color: var(--shadcn-chart-series-20) !important; }
+
+/*
+ * Heat map: with the default palette MudBlazor builds its five shades from the first five palette
+ * colours, written as rgb(). They are replaced with a sequential ramp of the primary colour
+ * (low → high), which reads as shadcn's neutral monochrome rather than a rainbow.
+ */
+.mud-chart-heat [fill="rgb(41,121,255)"] { fill: color-mix(in oklab, var(--mud-palette-primary) 10%, var(--mud-palette-surface)); }
+.mud-chart-heat stop[style*="rgb(41,121,255)"] { stop-color: color-mix(in oklab, var(--mud-palette-primary) 10%, var(--mud-palette-surface)) !important; }
+.mud-chart-heat [fill="rgb(29,233,182)"] { fill: color-mix(in oklab, var(--mud-palette-primary) 30%, var(--mud-palette-surface)); }
+.mud-chart-heat stop[style*="rgb(29,233,182)"] { stop-color: color-mix(in oklab, var(--mud-palette-primary) 30%, var(--mud-palette-surface)) !important; }
+.mud-chart-heat [fill="rgb(255,196,0)"] { fill: color-mix(in oklab, var(--mud-palette-primary) 50%, var(--mud-palette-surface)); }
+.mud-chart-heat stop[style*="rgb(255,196,0)"] { stop-color: color-mix(in oklab, var(--mud-palette-primary) 50%, var(--mud-palette-surface)) !important; }
+.mud-chart-heat [fill="rgb(255,145,0)"] { fill: color-mix(in oklab, var(--mud-palette-primary) 75%, var(--mud-palette-surface)); }
+.mud-chart-heat stop[style*="rgb(255,145,0)"] { stop-color: color-mix(in oklab, var(--mud-palette-primary) 75%, var(--mud-palette-surface)) !important; }
+.mud-chart-heat [fill="rgb(255,23,68)"] { fill: var(--mud-palette-primary); }
+.mud-chart-heat stop[style*="rgb(255,23,68)"] { stop-color: var(--mud-palette-primary) !important; }
+
+.mud-chart-heat .mud-chart-cell rect[fill="rgb(255,145,0)"] + g text,
+.mud-chart-heat .mud-chart-cell rect[fill="rgb(255,23,68)"] + g text {
+    fill: var(--mud-palette-primary-text);
+}
+
+.mud-chart-heat rect[fill="#fff"] {
+    fill: var(--mud-palette-background-gray);         /* cells without data */
+}
+
+.mud-chart-cell text {
+    fill: var(--mud-palette-text-primary);            /* MudBlazor hard-codes black */
+}
+
+/* Axes and labels: text-xs fill-muted-foreground, in the theme font */
+.mud-chart svg text,
+.mud-chart-heat text,
+.mud-chart-sankey text {
+    font-family: var(--mud-typography-default-family);
+}
+
+.mud-charts-yaxis,
+.mud-charts-xaxis,
+.mud-charts-yaxis text,
+.mud-charts-xaxis text,
+.mud-chart-axis-label,
+.mud-chart-axis-value,
+.mud-chart-heatmap-legend text {
+    fill: var(--mud-palette-text-secondary);
+}
+
+.mud-chart-heatmap-legend line {
+    stroke: var(--mud-palette-lines-default);
+}
+
+.mud-chart-value-label {
+    fill: var(--mud-palette-text-primary);
+    font-weight: 500;
+}
+
+/* Value labels drawn on pie, donut and rose segments: fill-background, no Material outline */
+.mud-chart-label-value {
+    fill: var(--mud-palette-background);
+    stroke: none;
+    font-weight: 500;
+}
+
+/* Grid: stroke-border, 1px whatever the chart is scaled to */
+.mud-charts-gridlines-yaxis path,
+.mud-charts-gridlines-xaxis-lines path {
+    stroke: var(--mud-palette-lines-default);
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+}
+
+.mud-chart-donut .mud-donut-ring {
+    stroke: var(--mud-palette-background-gray);       /* fill-muted, MudBlazor hard-codes #fff */
+}
+
+/* Legend: flex gap-4 pt-3, h-2 w-2 rounded-[2px] marker, gap-1.5, text-xs */
+.mud-chart .mud-chart-legend {
+    gap: 4px 16px;
+    padding: 12px 0 0;
+}
+
+.mud-chart.mud-chart-legend-top .mud-chart-legend {
+    padding: 0 0 12px;
+}
+
+.mud-chart .mud-chart-legend .mud-chart-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+}
+
+.mud-chart .mud-chart-legend .mud-chart-legend-item .mud-chart-legend-marker,
+.mud-chart-legend-marker {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+}
+
+.mud-chart .mud-chart-legend .mud-typography,
+.mud-chart .mud-chart-legend .mud-checkbox .mud-typography {
+    font-size: 0.75rem;
+    line-height: 1rem;
+}
+
+/*
+ * Tooltips (and Sankey labels) are SVG: a rect filled with the series colour, white text with a
+ * black outline. shadcn's is a popover: rounded-lg border bg-background text-xs shadow-xl.
+ */
+:is(.mud-chart, .mud-chart-heat, .mud-chart-sankey) .svg-tooltip {
+    filter: drop-shadow(0 8px 10px rgb(0 0 0 / 0.1));
+}
+
+:is(.mud-chart, .mud-chart-heat, .mud-chart-sankey) .svg-tooltip rect,
+:is(.mud-chart, .mud-chart-heat, .mud-chart-sankey) .svg-tooltip polygon:first-of-type {
+    fill: var(--mud-palette-background);
+    stroke: var(--mud-palette-lines-default);
+    stroke-width: 1px;
+}
+
+:is(.mud-chart, .mud-chart-heat, .mud-chart-sankey) .svg-tooltip polygon:last-of-type:not(:first-of-type) {
+    fill: var(--mud-palette-background);
+    stroke: none;
+}
+
+:is(.mud-chart, .mud-chart-heat, .mud-chart-sankey) .svg-tooltip text {
+    fill: var(--mud-palette-text-primary);
+    stroke: none;
+    filter: none;
+    font-weight: 500;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   16. Buttons: FAB, FAB menu, toggle icon button, links
+   --------------------------------------------------------------------------------------------- */
+
+/* (end of section 16) */
+
+/* ---------------------------------------------------------------------------------------------
+   17. Form inputs: autocomplete, select, field, file upload, numeric field, rating
+   --------------------------------------------------------------------------------------------- */
+
+/* (end of section 17) */
+
+/* ---------------------------------------------------------------------------------------------
+   18. Pickers: date range, time, colour
+   --------------------------------------------------------------------------------------------- */
+
+/* (end of section 18) */
+
+/* ---------------------------------------------------------------------------------------------
+   19. Data: data grid, table extras, tree view
+   --------------------------------------------------------------------------------------------- */
+
+/* (end of section 19) */
+
+/* ---------------------------------------------------------------------------------------------
+   20. Layout and navigation: stepper, timeline, carousel, split panel, toolbar
+   --------------------------------------------------------------------------------------------- */
+
+/* (end of section 20) */
+
+/* ---------------------------------------------------------------------------------------------
+   21. Feedback and overlays: overlay, badge, avatar group, highlighter, drop zone
+   --------------------------------------------------------------------------------------------- */
+
+/* (end of section 21) */
