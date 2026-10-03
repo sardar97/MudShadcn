@@ -28,6 +28,7 @@
                 <Description>
                     MudBlazor's stylesheet first, then MudShadcn's: it overrides MudBlazor rules at equal specificity, so it has to load second.
                     You do not need MudBlazor's Roboto font link.
+                    <code class="docs-code">MudShadcn.css</code>, next to it, is the same stylesheet with its comments, for reading.
                 </Description>
             </SectionHeader>
             <CodeBlock Language="html" Code="@Stylesheets" />
@@ -78,7 +79,7 @@
 
     private const string Stylesheets = """
         <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
-        <link rel="stylesheet" href="_content/MudShadcn/MudShadcn.css" />
+        <link rel="stylesheet" href="_content/MudShadcn/MudShadcn.min.css" />
         ...
         <script src="_content/MudBlazor/MudBlazor.min.js"></script>
         """;

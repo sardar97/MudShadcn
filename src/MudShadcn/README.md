@@ -37,13 +37,15 @@ builder.Services.AddMudShadcn();
 
 ```html
 <link rel="stylesheet" href="@Assets["_content/MudBlazor/MudBlazor.min.css"]" />
-<link rel="stylesheet" href="@Assets["_content/MudShadcn/MudShadcn.css"]" />
+<link rel="stylesheet" href="@Assets["_content/MudShadcn/MudShadcn.min.css"]" />
 ...
 <script src="@Assets["_content/MudBlazor/MudBlazor.min.js"]"></script>
 ```
 
-The order matters: `MudShadcn.css` overrides MudBlazor rules at equal specificity and has to come
-second. You do not need MudBlazor's Roboto font link.
+The order matters: MudShadcn's stylesheet overrides MudBlazor rules at equal specificity and has to
+come second. You do not need MudBlazor's Roboto font link. `MudShadcn.min.css` is `MudShadcn.css`
+without comments and whitespace (about 14 KB instead of 26 KB over Brotli); link `MudShadcn.css`
+instead when you want to read the rules in the browser's dev tools.
 
 **3. `_Imports.razor`**
 
