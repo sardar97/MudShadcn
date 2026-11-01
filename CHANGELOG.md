@@ -8,6 +8,10 @@ major version is a new MudShadcn major version.
 
 ## [Unreleased]
 
+## [1.1.0] — 2026-11-01
+
+Written against MudBlazor 9.12.0, for .NET 10.
+
 ### Changed
 - **MudBlazor 9.12.0** (was 9.10.0). The showcase is re-ported from MudBlazor 9.12.0's docs, with
   its new examples (divider with content, avatar text variant, culture formats, async switch).
@@ -60,5 +64,6 @@ The first public release. Written against MudBlazor 9.10.0, for .NET 10.
 - **Showcase** at <https://mudshadcn.pages.dev>: every page and example of mudblazor.com's component
   documentation, in the same menu and order, running on MudShadcn, in light and dark mode.
 
-[Unreleased]: https://github.com/sardar97/MudShadcn/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/sardar97/MudShadcn/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/sardar97/MudShadcn/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/sardar97/MudShadcn/releases/tag/v1.0.0
