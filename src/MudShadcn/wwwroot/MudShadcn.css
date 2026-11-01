@@ -807,6 +807,18 @@ div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-start {
     padding: 4px;
 }
 
+/* InputGroupButton size="icon-xs" in an addon with has-[>button]:mr-[-0.45rem]: MudBlazor's -12px
+   edge margin was sized for its 48px buttons and leaves a 24px one hanging over the border. */
+.mud-input-adornment .mud-icon-button.mud-icon-button-edge-end {
+    margin-right: -8px;
+    margin-inline-end: -8px;
+}
+
+.mud-input-adornment .mud-icon-button.mud-icon-button-edge-start {
+    margin-left: -8px;
+    margin-inline-start: -8px;
+}
+
 .mud-input-adornment .mud-icon-button:hover .mud-icon-root,
 .mud-input-adornment .mud-icon-button:focus-visible .mud-icon-root {
     color: var(--mud-palette-text-primary);
@@ -3584,6 +3596,13 @@ label.mud-input-label.mud-input-error {
 .mud-input-adornment .mud-icon-button:has(svg > path[d="M7 10l5 5 5-5z"]):hover,
 .mud-input-adornment .mud-icon-button:has(svg > path[d="M7 14l5-5 5 5z"]):hover {
     background-color: transparent;                    /* part of the trigger, not a ghost button */
+}
+
+/* Autocomplete draws the chevron as an edge-end icon button: line it up with the select's, px-3. */
+.mud-input-adornment .mud-icon-button.mud-icon-button-edge-end:has(svg > path[d="M7 10l5 5 5-5z"]),
+.mud-input-adornment .mud-icon-button.mud-icon-button-edge-end:has(svg > path[d="M7 14l5-5 5 5z"]) {
+    margin-right: -4px;
+    margin-inline-end: -4px;
 }
 
 /*
