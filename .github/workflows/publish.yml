@@ -3,11 +3,21 @@ name: Publish to NuGet
 # Publishes the NuGet package, and creates a matching GitHub Release, whenever a version tag
 # (v1.2.3, v1.1.0-beta.1, …) is pushed. The tag is the single source of truth for the version.
 #
+# It can also be run by hand (Actions → Publish to NuGet → Run workflow) with a version, for when
+# pushing a tag is not possible: it then releases the commit it runs on, and the GitHub Release step
+# creates the v<version> tag there. The version must equal <Version> in MudShadcn.csproj.
+#
 # This is the ONLY thing that publishes the package. The showcase deploys separately (push to the
 # `docs` branch → Cloudflare Pages); see RELEASE.md.
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to release, without the v (e.g. 1.2.0). Must equal <Version> in MudShadcn.csproj.
+        required: true
+        type: string
 
 # contents: write lets the workflow create the GitHub Release. id-token: write lets it ask GitHub
 # for the OIDC token that nuget.org's Trusted Publishing exchanges for a one-hour API key, so no
@@ -33,10 +43,24 @@ jobs:
         with:
           global-json-file: global.json
 
-      # refs/tags/v1.0.0-beta.1 -> 1.0.0-beta.1
-      - name: Resolve version from tag
+      # refs/tags/v1.0.0-beta.1 -> 1.0.0-beta.1; a manual run takes the version it was given.
+      - name: Resolve version
         id: version
-        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            VERSION="${INPUT_VERSION#v}"
+            PROJECT_VERSION="$(sed -nE 's#.*<Version>([^<]+)</Version>.*#\1#p' src/MudShadcn/MudShadcn.csproj)"
+            if [ "$VERSION" != "$PROJECT_VERSION" ]; then
+              echo "::error::Version $VERSION does not match <Version>$PROJECT_VERSION</Version> in MudShadcn.csproj."
+              exit 1
+            fi
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
 
       # Quality gate: the same build and check as CI, so a red tag never reaches nuget.org.
       - name: Build
@@ -78,17 +102,19 @@ jobs:
           printf '\nNuGet: https://www.nuget.org/packages/MudShadcn/%s\n' "$VERSION" >> release-notes.md
 
       # Creates the GitHub Release for the tag (or updates it on a re-run), with the package
-      # attached. A version with a hyphen (1.1.0-beta.1) is marked as a pre-release.
+      # attached. A version with a hyphen (1.1.0-beta.1) is marked as a pre-release. On a manual run
+      # the tag does not exist yet, and --target creates it on the commit that was released.
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           PRERELEASE=""
           case "$VERSION" in *-*) PRERELEASE="--prerelease" ;; esac
-          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            gh release edit "$GITHUB_REF_NAME" --notes-file release-notes.md
-            gh release upload "$GITHUB_REF_NAME" artifacts/* --clobber
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" --notes-file release-notes.md
+            gh release upload "$TAG" artifacts/* --clobber
           else
-            gh release create "$GITHUB_REF_NAME" artifacts/* --title "v$VERSION" --notes-file release-notes.md $PRERELEASE
+            gh release create "$TAG" artifacts/* --target "$GITHUB_SHA" --title "v$VERSION" --notes-file release-notes.md $PRERELEASE
           fi

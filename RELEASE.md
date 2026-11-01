@@ -172,6 +172,12 @@ is a new MudShadcn major version (see `UPDATING.md`). The git tag is the publish
 pushes the `.nupkg` and its symbols (`.snupkg`) to nuget.org, and creates a GitHub Release with the
 notes from `CHANGELOG.md` and the package files attached.
 
+**Without pushing a tag:** in GitHub, **Actions → Publish to NuGet → Run workflow** on `master`,
+with the version (`1.1.0`, no `v`). It refuses a version that differs from `<Version>` in the
+csproj, then does the same build, checks and push, and the GitHub Release step creates the
+`v1.1.0` tag on the commit it released. Use it when a tag cannot be pushed from where you work;
+afterwards `git fetch --tags` brings the tag down.
+
 **Check:** <https://www.nuget.org/packages/MudShadcn> shows the new version (indexing takes a few
 minutes) and the repository's **Releases** page shows `v1.1.0`.
 
