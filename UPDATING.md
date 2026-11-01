@@ -152,7 +152,10 @@ Check in particular, because these have the most fragile overrides:
 - Snackbar: bordered neutral surface, action button legible.
 - Buttons: 36px, no shadow, no ripple, ring on keyboard focus.
 - Charts: shadcn's chart colours (orange, teal, dark blue in light mode; blue, green, amber in
-  dark), muted axis labels, bordered tooltips.
+  dark), muted axis labels, bordered tooltips, rounded bars and 2px lines. The test app's chart
+  cards use `MudShadcnChartOptions`: check that the option names it sets (`BarWidthRatio`,
+  `BarSpacingRatio`, `MaxNumYAxisTicks`, `InterpolationOption`, `LineDisplayType`,
+  `DonutRingRatio`) still exist and still give wide bars, smooth lines and a 40% donut ring.
 - The page's inline `<style>` still contains `--mud-palette-primary`, `--mud-elevation-1` and
   `--mud-default-borderradius` with MudShadcn's values
   (`curl -s http://localhost:5152/ | grep -oE -- '--mud-elevation-1:[^;]+'`).
