@@ -1,6 +1,6 @@
 /*
  * MudShadcn.css — shadcn/ui look for MudBlazor.
- * Load AFTER _content/MudBlazor/MudBlazor.min.css. Written against MudBlazor 9.10.0.
+ * Load AFTER _content/MudBlazor/MudBlazor.min.css. Written against MudBlazor 9.12.0.
  *
  * How the pieces fit:
  *   - MudThemeProvider writes every --mud-palette-*, --mud-typography-*, --mud-elevation-* and
@@ -2965,6 +2965,18 @@ label.mud-input-label.mud-input-error {
     border-color: var(--mud-palette-lines-default);
 }
 
+/* Divider with content (MudBlazor 9.12+): FieldSeparator's label, text-sm text-muted-foreground px-2 */
+.mud-divider-with-content-text {
+    padding: 0 8px;                                   /* px-2 */
+    font-size: 0.875rem;                              /* text-sm */
+    line-height: 1.25rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+.mud-divider-with-content-vertical > .mud-divider-with-content-text {
+    padding: 8px 0;                                   /* py-2 */
+}
+
 /* Pagination: gap-1, ghost size-9 links, the active page as variant="outline", rounded-md throughout */
 .mud-pagination {
     gap: 4px;                                         /* gap-1 */
@@ -3848,6 +3860,71 @@ label.mud-input-label.mud-input-error {
 .mud-picker-calendar .mud-day.mud-range.mud-range-selection:not(:hover):not(.mud-range-start-selected) {
     background-image: linear-gradient(var(--shadcn-hover), var(--shadcn-hover));
     background-clip: padding-box;
+}
+
+/*
+ * Hovering a day before the first pick (MudBlazor 9.12+ previews backwards ranges): the hovered day
+ * is range_start and the first pick, the anchor, becomes range_end, so both swap sides.
+ */
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection.mud-range-selection-before:hover {
+    border-inline-start: 4px solid transparent;
+    border-inline-end: 0;
+    border-start-start-radius: calc(var(--shadcn-radius-md) + 4px) var(--shadcn-radius-md);
+    border-end-start-radius: calc(var(--shadcn-radius-md) + 4px) var(--shadcn-radius-md);
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+}
+
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection.mud-range-selection-before:hover,
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection.mud-range-selection-before:hover:nth-child(7n+1 of .mud-day) {
+    background-image:
+        radial-gradient(circle at 0 100%, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        radial-gradient(circle at 0 0, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        linear-gradient(var(--shadcn-hover), var(--shadcn-hover));
+    background-position: right 4px top, right 4px bottom, right;
+    background-size: var(--shadcn-radius-md) var(--shadcn-radius-md), var(--shadcn-radius-md) var(--shadcn-radius-md), 4px 100%;
+    background-repeat: no-repeat;
+}
+
+.mud-picker-calendar:has(.mud-range-selection-before:hover) .mud-day.mud-range.mud-range-selection-anchor {
+    border-inline-start: 0;
+    border-inline-end: 4px solid transparent;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+    border-start-end-radius: calc(var(--shadcn-radius-md) + 4px) var(--shadcn-radius-md);
+    border-end-end-radius: calc(var(--shadcn-radius-md) + 4px) var(--shadcn-radius-md);
+    background-image:
+        radial-gradient(circle at 100% 100%, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        radial-gradient(circle at 100% 0, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        linear-gradient(var(--shadcn-hover), var(--shadcn-hover));
+    background-position: left 4px top, left 4px bottom, left;
+}
+
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection.mud-range-selection-before:hover:dir(rtl),
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection.mud-range-selection-before:hover:nth-child(7n+1 of .mud-day):dir(rtl) {
+    background-image:
+        radial-gradient(circle at 100% 100%, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        radial-gradient(circle at 100% 0, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        linear-gradient(var(--shadcn-hover), var(--shadcn-hover));
+    background-position: left 4px top, left 4px bottom, left;
+}
+
+.mud-picker-calendar:has(.mud-range-selection-before:hover) .mud-day.mud-range.mud-range-selection-anchor:dir(rtl) {
+    background-image:
+        radial-gradient(circle at 0 100%, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        radial-gradient(circle at 0 0, transparent calc(var(--shadcn-radius-md) - 0.5px), var(--shadcn-hover) var(--shadcn-radius-md)),
+        linear-gradient(var(--shadcn-hover), var(--shadcn-hover));
+    background-position: right 4px top, right 4px bottom, right;
+}
+
+/* ...and with no band beside them (row edge, hidden neighbour) they are plain squares. */
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection.mud-range-selection-before:hover:nth-child(7n of .mud-day),
+.mud-picker-calendar .mud-day.mud-range.mud-range-selection.mud-range-selection-before:hover:has(+ .mud-hidden),
+.mud-picker-calendar:has(.mud-range-selection-before:hover) .mud-day.mud-range.mud-range-selection-anchor:nth-child(7n+1 of .mud-day),
+.mud-picker-calendar:has(.mud-range-selection-before:hover) .mud-hidden + .mud-day.mud-range.mud-range-selection-anchor {
+    border-inline: 4px solid transparent;
+    border-radius: calc(var(--shadcn-radius-md) + 4px) / var(--shadcn-radius-md);
+    background-image: none;
 }
 
 /*

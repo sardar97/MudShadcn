@@ -8,6 +8,19 @@ major version is a new MudShadcn major version.
 
 ## [Unreleased]
 
+### Changed
+- **MudBlazor 9.12.0** (was 9.10.0). The showcase is re-ported from MudBlazor 9.12.0's docs, with its
+  new examples (divider with content, avatar text variant, culture formats, async switch).
+
+### Added
+- **Divider with content** (`<MudDivider>or</MudDivider>`, new in MudBlazor 9.12): the label is
+  shadcn's separator text, `text-sm text-muted-foreground px-2`, horizontal and vertical.
+
+### Fixed
+- **Date range picker:** hovering a day before the first pick (MudBlazor 9.12 previews backwards
+  ranges) drew the hovered day as the end of the range and the first pick as its start, with a gap
+  and the band on the wrong side. They now swap sides, also right to left and at row edges.
+
 ## [1.0.0] — 2026-10-03
 
 The first public release. Written against MudBlazor 9.10.0, for .NET 10.
