@@ -1,7 +1,13 @@
+using System.Globalization;
 using MudShadcn;
 using MudShadcn.TestApp.Components;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// The sample data is shadcn's, in US dollars. Without this, a host with no locale (a container,
+// CI) formats the amounts with the invariant culture's "¤" sign.
+CultureInfo.DefaultThreadCurrentCulture = CultureInfo.GetCultureInfo("en-US");
+CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("en-US");
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
