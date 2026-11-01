@@ -37,7 +37,7 @@ third-party CSS and the image page's deliberate fallback 404). Still to do:
 The hovered day and the first pick now swap sides when hovering a day before the first pick
 (section 18 of the stylesheet). Not verified yet:
 
-- [ ] Right to left (`dir="rtl"` on the layout): the `:dir(rtl)` rules for the band.
+- [x] Right to left (`dir="rtl"`): checked, the band and corners mirror correctly.
 - [ ] `ShowAdjacentMonthDays="false"` with the hovered day or the anchor next to a hidden day, and
       at the start/end of a week row (the "plain square" rules).
 - [ ] Touch: the rules key off `:hover`. MudBlazor 9.12 also sets the preview position on click;
