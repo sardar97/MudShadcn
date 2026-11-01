@@ -25,7 +25,7 @@ public sealed class DocsComponent
 }
 
 /// <summary>
-/// The components menu of mudblazor.com, copied from MudBlazor.Docs' <c>MenuService</c> (9.10.0)
+/// The components menu of mudblazor.com, copied from MudBlazor.Docs' <c>MenuService</c> (9.12.0)
 /// with the same entries, child types and sort: top-level entries and the entries of each group are
 /// ordered by name, exactly as <c>DocsComponents.GetComponentsSortedByName</c> does.
 /// </summary>

@@ -12,7 +12,7 @@ license: MIT
 metadata:
   package: MudShadcn
   version: "1.0.0"
-  mudblazor: "9.10.0"
+  mudblazor: "9.12.0"
   homepage: https://mudshadcn.pages.dev
   nuget: https://www.nuget.org/packages/MudShadcn
   repository: https://github.com/sardar97/MudShadcn
@@ -25,7 +25,7 @@ metadata:
 MudShadcn (MIT) restyles [MudBlazor](https://mudblazor.com) to look like
 [shadcn/ui](https://ui.shadcn.com). It is a `MudTheme` and one stylesheet. It adds **no components**:
 the app keeps using MudBlazor's components and API, and they render with shadcn's neutral palette,
-flat bordered surfaces, radius scale, focus rings and sizes. Written against MudBlazor 9.10.0, for
+flat bordered surfaces, radius scale, focus rings and sizes. Written against MudBlazor 9.12.0, for
 .NET 10.
 
 This file is self-contained. The full documentation is the package README, also served as

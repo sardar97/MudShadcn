@@ -49,7 +49,7 @@
       consumers, including its static web assets (_content/MudBlazor/*), so a consuming app
       only references MudShadcn. Do not add PrivateAssets here.
     -->
-    <PackageReference Include="MudBlazor" Version="9.10.0" />
+    <PackageReference Include="MudBlazor" Version="9.12.0" />
   </ItemGroup>
 
   <!--

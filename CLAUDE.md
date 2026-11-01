@@ -7,7 +7,7 @@ it adds no components of its own and must never wrap, fork or replace MudBlazor'
 
 ## Layout
 
-- `src/MudShadcn/` — the package (Razor class library, `net10.0`, MudBlazor 9.10.0).
+- `src/MudShadcn/` — the package (Razor class library, `net10.0`, MudBlazor 9.12.0).
   - `MudShadcnTheme.cs` — palette, typography, radius, elevation. Hex values.
   - `ShadcnTokens.cs` — shadcn's original OKLCH tokens, light and dark.
   - `wwwroot/MudShadcn.css` — structural overrides and the `--shadcn-*` tokens. Edit only this;
@@ -86,7 +86,7 @@ rule. Look the rule up before writing one; do not guess class names.
 
 ```bash
 # one rule per line, greppable
-curl -sL https://api.nuget.org/v3-flatcontainer/mudblazor/9.10.0/mudblazor.9.10.0.nupkg -o mud.nupkg
+curl -sL https://api.nuget.org/v3-flatcontainer/mudblazor/9.12.0/mudblazor.9.12.0.nupkg -o mud.nupkg
 unzip -o -q mud.nupkg 'staticwebassets/MudBlazor.min.css' -d mud
 tr '}' '\n' < mud/staticwebassets/MudBlazor.min.css > rules.txt
 grep -E '^\.mud-card-header' rules.txt

@@ -1,6 +1,6 @@
 # MudShadcn
 
-> MudShadcn gives every MudBlazor component the shadcn/ui look: a MudTheme and one stylesheet, in light and dark mode. It adds no components and forks nothing: an app keeps writing ordinary MudBlazor, with MudBlazor's full API, and it renders with shadcn/ui's neutral palette, flat bordered surfaces, radius scale, focus rings and sizes. Charts get shadcn's chart colours. MudBlazor comes along as a dependency, so MudShadcn is the only package an app references. Written against MudBlazor 9.10.0, for .NET 10. MIT licensed.
+> MudShadcn gives every MudBlazor component the shadcn/ui look: a MudTheme and one stylesheet, in light and dark mode. It adds no components and forks nothing: an app keeps writing ordinary MudBlazor, with MudBlazor's full API, and it renders with shadcn/ui's neutral palette, flat bordered surfaces, radius scale, focus rings and sizes. Charts get shadcn's chart colours. MudBlazor comes along as a dependency, so MudShadcn is the only package an app references. Written against MudBlazor 9.12.0, for .NET 10. MIT licensed.
 
 Install from NuGet as `MudShadcn`, call `builder.Services.AddMudShadcn()`, link `_content/MudBlazor/MudBlazor.min.css` and then `_content/MudShadcn/MudShadcn.min.css`, and put one `<MudShadcnProvider />` in the layout. This site is a Blazor WebAssembly app, so a plain HTTP fetch of a page returns an empty shell: read the plain-text resources below instead.
 

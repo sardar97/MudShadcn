@@ -2,7 +2,7 @@
 
 The component pages and examples under `Pages/Components/`, the sample data under `ExamplesData/`
 and the photos under `wwwroot/images/` are taken from the MudBlazor documentation site
-(<https://github.com/MudBlazor/MudBlazor>, tag `v9.10.0`: `src/MudBlazor.Docs/Pages/Components`,
+(<https://github.com/MudBlazor/MudBlazor>, tag `v9.12.0`: `src/MudBlazor.Docs/Pages/Components`,
 `src/MudBlazor.Examples.Data`, `src/MudBlazor.Docs.Wasm/wwwroot/images`). They are copied by
 `sync-mudblazor-docs.sh`, which also lists every edit the port makes: page links rewritten to be
 relative or to point at mudblazor.com, one example's internal localizer swapped for the public

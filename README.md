@@ -287,7 +287,8 @@ inline style or a component parameter decides something, MudBlazor's version sta
 
 | MudShadcn | MudBlazor | .NET |
 | --- | --- | --- |
-| 1.x | 9.10.0 | 10 (`net10.0`) |
+| 1.1.x | 9.12.0 | 10 (`net10.0`) |
+| 1.0.x | 9.10.0 | 10 (`net10.0`) |
 
 MudShadcn follows [Semantic Versioning](https://semver.org); moving to a new MudBlazor major version is
 a new MudShadcn major version. What changed in each release is in the

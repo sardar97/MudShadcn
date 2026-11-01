@@ -78,7 +78,7 @@ stylesheet and update the selector. Existence is not enough, though. Diff the sh
 working in the scratchpad, not the repo:
 
 ```bash
-OLD=9.10.0; NEW=<new version>
+OLD=9.12.0; NEW=<new version>
 for v in $OLD $NEW; do
   curl -sL https://api.nuget.org/v3-flatcontainer/mudblazor/$v/mudblazor.$v.nupkg -o mud-$v.nupkg
   unzip -o -q mud-$v.nupkg 'staticwebassets/MudBlazor.min.css' -d mud-$v
