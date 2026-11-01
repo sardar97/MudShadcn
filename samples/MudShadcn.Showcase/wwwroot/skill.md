@@ -243,6 +243,19 @@ Use MudBlazor's charts without `ChartOptions.ChartPalette`: the default palette 
 maps use a ramp of the primary colour. A palette you set is used as given. Series colours are
 available to CSS as `--shadcn-chart-series-1` … `--shadcn-chart-series-20`.
 
+For shadcn's proportions (wide bars 4px apart, smooth lines, filled areas, about five axis ticks, a
+40% donut ring), pass `MudShadcnChartOptions` and set `MatchBoundsToSize="true"`:
+
+```razor
+<MudChart T="double" ChartType="ChartType.Line" ChartSeries="@_series" ChartLabels="@_months"
+          ChartOptions="@_options" MatchBoundsToSize="true" Height="260px" />
+
+@code {
+    private readonly LineChartOptions _options = MudShadcnChartOptions.Line();
+    // also Bar(), StackedBar(), Area() (LineChartOptions) and Donut()
+}
+```
+
 ## 6. Things that look wrong but are expected
 
 - Icons are Material icons (MudBlazor's), not Lucide. Checkbox, radio, switch and the select arrow

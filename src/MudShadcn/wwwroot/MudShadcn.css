@@ -3316,6 +3316,19 @@ label.mud-input-label.mud-input-error {
     vector-effect: non-scaling-stroke;
 }
 
+/* Bars: <Bar radius={4}>. MudBlazor draws each bar as one thick butt-capped stroke; clipping it to
+   its own stroke box with rounded corners turns it into the rounded rectangle. Stacked segments
+   stay square, as shadcn's stacked bars are only rounded at the ends of the stack. */
+.mud-chart .mud-charts-bar-series > path.mud-chart-bar {
+    clip-path: inset(0 round 4px);
+}
+
+/* Lines: <Line strokeWidth={2}>. Matched by MudBlazor's default LineStrokeWidth (3), so a width
+   you set in the chart options is left alone. */
+.mud-chart path.mud-chart-line[stroke-width="3"] {
+    stroke-width: 2px;
+}
+
 /* Data markers (ShowDataMarkers): MudBlazor gives them no fill, so they render black. Recharts'
    default dot is a ring in the series colour on the chart's surface. */
 .mud-chart .mud-chart-point:not([fill]) {

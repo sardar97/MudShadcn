@@ -9,14 +9,22 @@ major version is a new MudShadcn major version.
 ## [Unreleased]
 
 ### Changed
-- **MudBlazor 9.12.0** (was 9.10.0). The showcase is re-ported from MudBlazor 9.12.0's docs, with its
-  new examples (divider with content, avatar text variant, culture formats, async switch).
+- **MudBlazor 9.12.0** (was 9.10.0). The showcase is re-ported from MudBlazor 9.12.0's docs, with
+  its new examples (divider with content, avatar text variant, culture formats, async switch).
+- Built with the .NET 10.0.403 SDK; the showcase runs on .NET 10.0.14 and FluentValidation 12.2.0.
 
 ### Added
+- **`MudShadcnChartOptions`**: `Bar()`, `StackedBar()`, `Line()`, `Area()` and `Donut()` return
+  MudBlazor's chart options set up like shadcn's charts, for what only options can change: wide bars
+  4px apart, smooth lines, a filled area, about five axis ticks and a thicker donut ring.
+- **Charts closer to shadcn's** with no options: bars have rounded corners (`radius={4}`) and lines
+  are 2px instead of MudBlazor's 3px.
 - **Divider with content** (`<MudDivider>or</MudDivider>`, new in MudBlazor 9.12): the label is
   shadcn's separator text, `text-sm text-muted-foreground px-2`, horizontal and vertical.
 
 ### Fixed
+- **Autocomplete:** the chevron sat 8px further right than the select's; icon buttons at the end of
+  an input (password toggle, clear, picker icons) no longer hang over the border.
 - **Date range picker:** hovering a day before the first pick (MudBlazor 9.12 previews backwards
   ranges) drew the hovered day as the end of the range and the first pick as its start, with a gap
   and the band on the wrong side. They now swap sides, also right to left and at row edges.

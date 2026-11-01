@@ -79,10 +79,11 @@ mud_css = open(mud_css_path, encoding="utf-8").read()
 # confirmed in the rendered HTML; re-confirm any that the check below starts reporting as missing.
 MARKUP_ONLY_CLASSES = {
     ".mud-avatar-filled-default", ".mud-chart-axis-value", ".mud-chart-heat", ".mud-chart-label-value",
-    ".mud-chart-point", ".mud-chart-serie", ".mud-chart-serie-hovered", ".mud-charts-gridlines-xaxis-lines",
-    ".mud-charts-gridlines-yaxis", ".mud-checkbox-true", ".mud-chip-color-default", ".mud-fab-filled-default",
-    ".mud-file-upload-filelist", ".mud-pagination-text", ".mud-picker-paper", ".mud-picker-popover",
-    ".mud-snackbar-action-button", ".mud-step-label-content-secondary-text", ".mud-toggle-item-selected",
+    ".mud-chart-point", ".mud-chart-serie", ".mud-chart-serie-hovered", ".mud-charts-bar-series",
+    ".mud-charts-gridlines-xaxis-lines", ".mud-charts-gridlines-yaxis", ".mud-checkbox-true",
+    ".mud-chip-color-default", ".mud-fab-filled-default", ".mud-file-upload-filelist",
+    ".mud-pagination-text", ".mud-picker-paper", ".mud-picker-popover", ".mud-snackbar-action-button",
+    ".mud-step-label-content-secondary-text", ".mud-toggle-item-selected",
 }
 # Variables MudThemeProvider writes that MudBlazor's own stylesheet never reads.
 PROVIDER_ONLY_VARIABLES = {"--mud-palette-black"}

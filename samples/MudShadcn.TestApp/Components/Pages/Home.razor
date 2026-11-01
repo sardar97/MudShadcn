@@ -99,10 +99,56 @@
 </DemoSection>
 
 
-<DemoSection Title="Charts" Description="charts.">
-    <div class="demo-row">
-        <MudChart T="double" ChartType="ChartType.Bar" ChartSeries="@_series" ChartLabels="@_xAxisLabels"
-                  ChartOptions="@_options" Width="100%" Height="350px" />
+<DemoSection Title="Charts" Description="MudChart in shadcn's chart colours, axes, grid, legend and tooltip. MudShadcnChartOptions adds shadcn's bar widths, curves and donut ring.">
+    <div class="demo-charts">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Bar Chart - Multiple</MudText>
+                    <MudText Typo="Typo.body2">January - June 2024</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudChart T="double" ChartType="ChartType.Bar" ChartSeries="@_visitors" ChartLabels="@_months"
+                          ChartOptions="@_barOptions" Width="100%" Height="260px" MatchBoundsToSize="true" />
+            </MudCardContent>
+        </MudCard>
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Line Chart - Multiple</MudText>
+                    <MudText Typo="Typo.body2">January - June 2024</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudChart T="double" ChartType="ChartType.Line" ChartSeries="@_visitors" ChartLabels="@_months"
+                          ChartOptions="@_lineOptions" Width="100%" Height="260px" MatchBoundsToSize="true" />
+            </MudCardContent>
+        </MudCard>
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Area Chart</MudText>
+                    <MudText Typo="Typo.body2">Showing total visitors for the last 6 months</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudChart T="double" ChartType="ChartType.Line" ChartSeries="@_desktop" ChartLabels="@_months"
+                          ChartOptions="@_areaOptions" Width="100%" Height="260px" MatchBoundsToSize="true" />
+            </MudCardContent>
+        </MudCard>
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Pie Chart - Donut</MudText>
+                    <MudText Typo="Typo.body2">January - June 2024</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudChart T="double" ChartType="ChartType.Donut" ChartSeries="@_browsers" ChartLabels="@_browserNames"
+                          ChartOptions="@_donutOptions" Width="100%" Height="260px" MatchBoundsToSize="true" />
+            </MudCardContent>
+        </MudCard>
     </div>
 </DemoSection>
 
@@ -110,13 +156,29 @@
     private string _alignment = "left";
     private IReadOnlyCollection<string> _frameworks = ["Blazor"];
     
-    private readonly BarChartOptions _options = new() { ShowValues = true };
+    // shadcn's chart examples: chartData and the browser shares of "Pie Chart - Donut".
+    private readonly string[] _months = ["January", "February", "March", "April", "May", "June"];
 
-    private readonly List<ChartSeries<double>> _series =
+    private readonly List<ChartSeries<double>> _visitors =
     [
-        new() { Name = "United States", Data = new double[] { 40, 20, 25, 27, 46 } },
-        new() { Name = "Germany", Data = new double[] { 19, 24, 35, 13, 28 } },
+        new() { Name = "Desktop", Data = new double[] { 186, 305, 237, 73, 209, 214 } },
+        new() { Name = "Mobile", Data = new double[] { 80, 200, 120, 190, 130, 140 } },
     ];
 
-    private readonly string[] _xAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May" };
+    private readonly List<ChartSeries<double>> _desktop =
+    [
+        new() { Name = "Desktop", Data = new double[] { 186, 305, 237, 73, 209, 214 } },
+    ];
+
+    private readonly string[] _browserNames = ["Chrome", "Safari", "Firefox", "Edge", "Other"];
+
+    private readonly List<ChartSeries<double>> _browsers =
+    [
+        new() { Name = "Visitors", Data = new double[] { 275, 200, 287, 173, 190 } },
+    ];
+
+    private readonly BarChartOptions _barOptions = MudShadcnChartOptions.Bar();
+    private readonly LineChartOptions _lineOptions = MudShadcnChartOptions.Line();
+    private readonly LineChartOptions _areaOptions = MudShadcnChartOptions.Area();
+    private readonly DonutChartOptions _donutOptions = MudShadcnChartOptions.Donut();
 }

@@ -159,8 +159,33 @@ Charts need no options. MudBlazor's default chart palette is replaced with shadc
 `chart-5` (each with its own light and dark value), followed by tints and shades of them for series
 6 to 20; heat maps get a ramp of the primary colour. Axis labels are muted, grid lines take the
 border colour, tooltips and Sankey labels look like shadcn's chart tooltip, and legend markers are
-small squares. If you set `ChartPalette` yourself, your colours are used as given. The colours
-series receive are available to your CSS as `--shadcn-chart-series-1` to `--shadcn-chart-series-20`.
+small squares. Bars have shadcn's rounded corners and lines are 2px. If you set `ChartPalette`
+yourself, your colours are used as given. The colours series receive are available to your CSS as
+`--shadcn-chart-series-1` to `--shadcn-chart-series-20`.
+
+Some of shadcn's look is computed into the SVG by MudBlazor, so it comes from chart options rather
+than CSS: wide bars 4px apart, smooth `type="natural"` lines, a filled area, about five axis ticks
+and a thicker donut ring. `MudShadcnChartOptions` returns MudBlazor's own option objects set up that
+way, and `MatchBoundsToSize` keeps the axis text at 12px however wide the chart is:
+
+```razor
+<MudChart T="double" ChartType="ChartType.Bar" ChartSeries="@_series" ChartLabels="@_months"
+          ChartOptions="@_options" MatchBoundsToSize="true" Height="260px" />
+
+@code {
+    private readonly BarChartOptions _options = MudShadcnChartOptions.Bar();
+}
+```
+
+| Method | MudBlazor options | shadcn chart |
+| --- | --- | --- |
+| `Bar()` | `BarWidthRatio = 0.8`, `BarSpacingRatio = 0.08`, 5 ticks | `<Bar radius={4}>`, `barGap={4}` |
+| `StackedBar()` | `BarWidthRatio = 0.8`, 5 ticks | stacked `<Bar stackId>` |
+| `Line()` | `LineStrokeWidth = 2`, `NaturalSpline`, 5 ticks | `<Line type="natural" strokeWidth={2}>` |
+| `Area()` | `LineDisplayType.Area`, `LineStrokeWidth = 1`, `NaturalSpline`, 5 ticks | `<Area type="natural">` |
+| `Donut()` | `DonutRingRatio = 0.4` | `<Pie innerRadius={60}>` |
+
+Each call returns a new object, so change anything else on it as usual.
 
 ### Customising
 
@@ -278,8 +303,10 @@ inline style or a component parameter decides something, MudBlazor's version sta
   colours (a palette of your own that happens to start with `#2979FF` gets that one colour mapped).
 - Tooltips are MudBlazor's SVG title and subtitle in shadcn's tooltip box: there is no colour
   indicator, no row per series and no cursor band.
-- Bars are drawn as thick strokes, so their corners stay square. Line width, fill opacity and
-  marker size are `ChartOptions` parameters (MudBlazor's lines are 3px; shadcn's are 2px).
+- Bars are drawn as thick strokes and rounded by clipping, so the corner radius is 4 SVG units:
+  it scales with a chart that is not `MatchBoundsToSize`. Stacked bars keep square segments.
+- The 2px line width replaces MudBlazor's default `LineStrokeWidth` (3) only; any other width you
+  set is kept.
 - Labels on pie, donut and rose segments use the background colour, as in shadcn's examples, which
   is low-contrast on light segments.
 
