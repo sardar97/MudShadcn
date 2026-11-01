@@ -54,10 +54,9 @@ supplies bar width, curves, area fill, five ticks and the donut ring.
 - [ ] Stacked bars: shadcn rounds only the ends of a stack (`radius={[0, 0, 4, 4]}` on the bottom
       series, `[4, 4, 0, 0]` on the top one). Find a way to round the outer segment of each stack
       (MudBlazor draws them as `.mud-charts-stackedbar-series > path`); keep the inner joins square.
-- [ ] `tools/verify-mudblazor.sh`: also check MudBlazor's default `LineStrokeWidth` is still 3 and
-      that grouped bars are still single stroked paths in `.mud-charts-bar-series`, since the 2px
-      line rule matches `path.mud-chart-line[stroke-width="3"]` and the bar rounding clips the
-      stroke box. Both stop applying silently if MudBlazor changes them.
+- [ ] `tools/verify-mudblazor.sh` now checks the default `LineStrokeWidth` (3) the 2px line rule
+      matches. Still unchecked: that grouped bars are single stroked paths in
+      `.mud-charts-bar-series`, which the bar rounding (a clip to the stroke box) relies on.
 - [ ] Data markers (`ShowDataMarkers`): shadcn's "Line Chart - Dots" draws filled dots in the series
       colour (`r=4`, active `r=6`); ours are rings on the surface colour.
 - [ ] Bar corner radius is 4 SVG units, so it scales on a chart without `MatchBoundsToSize`.

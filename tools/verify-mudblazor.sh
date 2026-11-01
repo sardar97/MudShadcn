@@ -6,7 +6,8 @@
 #   2. the chart colours the stylesheet recolours are still MudBlazor's defaults: the 20-colour
 #      ChartOptions.ChartPalette and the five heat-map shades built from it;
 #   3. the default checkbox, radio and select/autocomplete icons the stylesheet redraws still have
-#      the SVG paths its selectors match.
+#      the SVG paths its selectors match;
+#   4. the default line width the chart rules match (stroke-width="3") is still MudBlazor's.
 #
 # Usage:
 #   tools/verify-mudblazor.sh           # the MudBlazor version MudShadcn references
@@ -57,6 +58,7 @@ var icons = new Dictionary<string, string>
 for (var i = 0; i < palette.Length; i++) Console.WriteLine($"palette\t{i + 1}\t{palette[i]}");
 for (var i = 0; i < heat.Length; i++) Console.WriteLine($"heat\t{i + 1}\t{heat[i]}");
 foreach (var (name, svg) in icons) Console.WriteLine($"icon\t{name}\t{svg}");
+Console.WriteLine(FormattableString.Invariant($"chart\tLineStrokeWidth\t{new LineChartOptions().LineStrokeWidth}"));
 EOF
 if ! (cd "$WORK/probe" && dotnet run probe.cs) > "$WORK/defaults.tsv" 2> "$WORK/probe.log"; then
     # The defaults are read through MudBlazor's API (BarChartOptions.ChartPalette,
@@ -88,7 +90,7 @@ MARKUP_ONLY_CLASSES = {
 # Variables MudThemeProvider writes that MudBlazor's own stylesheet never reads.
 PROVIDER_ONLY_VARIABLES = {"--mud-palette-black"}
 
-defaults = {"palette": {}, "heat": {}, "icon": {}}
+defaults = {"palette": {}, "heat": {}, "icon": {}, "chart": {}}
 for line in open(defaults_path, encoding="utf-8"):
     kind, key, value = line.rstrip("\n").split("\t", 2)
     defaults[kind][key] = value
@@ -138,6 +140,12 @@ for name, paths in icon_paths.items():
     drawn = [p for p in paths if p != "M0 0h24v24H0z"]
     ok = any(any(p.startswith(v) if pre else p == v for pre, v in selectors) for p in drawn)
     check(ok, f"{name} is matched by a selector")
+
+print("4. Chart line width")
+line_widths = sorted(set(re.findall(r'path\.mud-chart-line\[stroke-width="([^"]+)"\]', css)))
+default_width = defaults["chart"].get("LineStrokeWidth")
+check(line_widths == [default_width], f"the 2px line rule matches MudBlazor's default LineStrokeWidth ({default_width})"
+      + ("" if line_widths == [default_width] else f": stylesheet matches {line_widths}"))
 
 if failures:
     print(f"\n{len(failures)} check(s) failed. See UPDATING.md, step 3.")

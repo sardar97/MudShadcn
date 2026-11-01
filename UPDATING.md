@@ -69,6 +69,8 @@ It downloads the new MudBlazor and checks that:
 - the default checkbox, radio and select/autocomplete icons still have the SVG paths the inputs
   sections match (`path[d^="…"]`) to redraw them as shadcn's controls. If they changed, the
   Material glyphs come back.
+- MudBlazor's default `LineStrokeWidth` is still the value the chart section's 2px line rule
+  matches (`path.mud-chart-line[stroke-width="3"]`).
 
 It reads the defaults through MudBlazor's API with a small C# probe. If that no longer compiles, the
 API changed: update the probe in the script as well.
