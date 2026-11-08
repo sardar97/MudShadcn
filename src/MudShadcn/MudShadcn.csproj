@@ -14,7 +14,7 @@
     <PackageId>MudShadcn</PackageId>
     <Title>MudShadcn: the shadcn/ui look for MudBlazor</Title>
     <!-- The release workflow packs with the tag's version; keep this equal to it (RELEASE.md). -->
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <Authors>Sardar Qaslany</Authors>
     <Product>MudShadcn</Product>
     <Copyright>Copyright (c) 2026 Sardar Qaslany</Copyright>

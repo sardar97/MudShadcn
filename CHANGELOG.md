@@ -8,6 +8,10 @@ major version is a new MudShadcn major version.
 
 ## [Unreleased]
 
+## [1.1.1] — 2026-11-08
+
+Written against MudBlazor 9.12.0, for .NET 10.
+
 ### Fixed
 - **Buttons** no longer shrink in a crowded flex row and cut off their label: like shadcn's
   (`shrink-0`), a button keeps its size and the row has to make room.
@@ -73,6 +77,7 @@ The first public release. Written against MudBlazor 9.10.0, for .NET 10.
 - **Showcase** at <https://mudshadcn.pages.dev>: every page and example of mudblazor.com's component
   documentation, in the same menu and order, running on MudShadcn, in light and dark mode.
 
-[Unreleased]: https://github.com/sardar97/MudShadcn/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/sardar97/MudShadcn/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/sardar97/MudShadcn/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/sardar97/MudShadcn/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/sardar97/MudShadcn/releases/tag/v1.0.0
