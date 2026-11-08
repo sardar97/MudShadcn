@@ -241,7 +241,13 @@ body {
     opacity: 0.5;                                     /* disabled:opacity-50 */
 }
 
+/*
+ * shrink-0: MudBlazor's buttons clip their content (overflow: hidden) and may shrink in a flex
+ * row; without MudBlazor's 64px minimum and with whitespace-nowrap, a squeezed button would cut
+ * its label off. Like shadcn's, a button keeps its size and the row has to make room.
+ */
 .mud-button {
+    flex-shrink: 0;                                   /* shrink-0 */
     min-width: 0;
     height: 36px;                                     /* h-9 */
     padding: 8px 16px;                                /* px-4 py-2 */
@@ -623,11 +629,17 @@ body {
     border-end-end-radius: inherit;
 }
 
+/*
+ * MudBlazor lays the items out as equal grid columns, so an item cannot grow to fit its label the
+ * way shadcn's w-fit flex group does. The label wraps (as in MudBlazor) instead of being cut off
+ * by the whitespace-nowrap that .mud-button sets.
+ */
 .mud-toggle-group > .mud-toggle-item.mud-button-root {
     height: auto;
     min-height: 36px;                                 /* h-9 */
     padding: 6px 12px;                                /* px-3 */
     box-shadow: none;                                 /* data-[spacing=0]:shadow-none */
+    white-space: normal;
 }
 
 .mud-toggle-group > .mud-toggle-item.mud-toggle-item-size-small {
@@ -4030,13 +4042,18 @@ label.mud-input-label.mud-input-error {
     background-color: var(--shadcn-hover);
 }
 
+/*
+ * The 12px inset around the field and the wider controls give way when the picker is squeezed to
+ * MudBlazor's 310px minimum (a phone-width card), so the A input is not cut off.
+ */
 .mud-picker-color-picker {
-    margin: 12px 12px 0;
+    margin: 12px auto 0;
     border-radius: var(--shadcn-radius-md);
 }
 
 .mud-picker-color-controls {
     width: 336px;
+    max-width: 100%;
     padding: 16px 12px 12px;
 }
 
