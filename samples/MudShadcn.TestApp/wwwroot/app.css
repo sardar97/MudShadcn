@@ -13,7 +13,7 @@ h1:focus {
 
 .demo-charts {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr));   /* one column on a phone */
     gap: 16px;
 }
 
