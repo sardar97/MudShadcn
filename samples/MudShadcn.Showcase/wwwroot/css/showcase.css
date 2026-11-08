@@ -318,7 +318,9 @@ h1:focus {
 
 .docs-section-content-toolbar {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    gap: 4px;
     min-height: 44px;
     padding: 6px 8px 0;
 }
@@ -329,6 +331,8 @@ h1:focus {
 
 .docs-section-files {
     display: inline-flex;
+    flex-wrap: wrap;
+    min-width: 0;
     gap: 2px;
     padding: 3px;
     border-radius: var(--shadcn-radius-lg);
@@ -351,8 +355,50 @@ h1:focus {
     box-shadow: var(--shadcn-shadow-sm);
 }
 
+/*
+ * An example wider than the frame (a fixed-size chart, a row that does not wrap) scrolls inside
+ * the frame instead of widening the page. "safe center" falls back to start alignment when the
+ * content overflows, so nothing ends up past the left edge where it cannot be scrolled to.
+ */
+.docs-section-content-inner {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+/*
+ * A scrolling frame also clips what opens outside it: the upward FAB menu would be cut off at the
+ * frame's top edge. The FAB menu examples fit, so their frames do not scroll.
+ */
+.docs-section-content-inner:has(.mud-fab-menu-container) {
+    overflow-x: visible;
+}
+
+.docs-section-content-center {
+    justify-content: safe center;
+}
+
+/*
+ * Let a direct child shrink to the frame, as it would in a normal block, so components that
+ * handle their own overflow (stepper nav, tabs, tables) get the chance to. :where() keeps this
+ * at zero specificity: a min-width a component sets for itself still wins.
+ */
+:where(.docs-section-content-inner.d-flex) > * {
+    min-width: 0;
+}
+
+/*
+ * Children are spaced by vertical margins and a column gap, not side margins: a width: 100% child
+ * (an app bar, a full-width divider) plus side margins would stick out of the frame and make it
+ * scroll. The side inset is in the frame's padding (SectionContent.razor).
+ */
 .docs-section-content-inner > *:not(.mud-grid) {
-    margin: 8px;
+    margin: 8px 0;
+}
+
+.docs-section-content-inner.d-flex {
+    column-gap: 16px;
 }
 
 .docs-section-content.show-code {
@@ -432,6 +478,12 @@ h1:focus {
     direction: ltr;
 }
 
+/* A snippet MudBlazor's docs embed straight in the page, outside an example's source box. */
+:not(.docs-section-source-container) > .mud-codeblock {
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
 .mud-codeblock .html + .csharp {
     margin-top: 20px;
 }
@@ -483,6 +535,7 @@ h1:focus {
     font-weight: 500;
     line-height: 1.4;
     direction: ltr;
+    overflow-wrap: anywhere;                          /* long attribute values wrap on a phone */
 }
 
 /* ---------------------------------------------------------------------------------------------

@@ -8,6 +8,15 @@ major version is a new MudShadcn major version.
 
 ## [Unreleased]
 
+### Fixed
+- **Buttons** no longer shrink in a crowded flex row and cut off their label: like shadcn's
+  (`shrink-0`), a button keeps its size and the row has to make room.
+- **Toggle group:** a label longer than its equal-width column wraps instead of being cut off.
+- **Color picker:** squeezed to MudBlazor's 310px minimum (a card on a phone), the inputs are no
+  longer clipped; the inset around the colour field and the controls' extra width give way.
+- **Showcase on phones:** an example wider than the screen scrolls inside its frame instead of
+  widening the page; the code toolbar and file tabs wrap, and long code lines scroll.
+
 ## [1.1.0] — 2026-11-01
 
 Written against MudBlazor 9.12.0, for .NET 10.

@@ -78,12 +78,14 @@
         .Build();
 
     private string InnerClassname => new CssBuilder("docs-section-content-inner")
-        .AddClass("relative d-flex flex-grow-1 flex-wrap justify-center align-center", !Block)
+        .AddClass("docs-section-content-center relative d-flex flex-grow-1 flex-wrap align-center", !Block)
         .AddClass("d-block mx-auto", Block)
         .AddClass("mud-width-full", Block && FullWidth)
-        .AddClass("pa-8", !_hasCode && !IsApiSection)
-        .AddClass("px-8 pb-8 pt-2", _hasCode && !IsApiSection)
-        .AddClass("pa-2", IsApiSection)
+        // The side padding is 8px more than the top and bottom: it includes the 8px side inset each
+        // child had as a margin (showcase.css), which made full-width children stick out of the frame.
+        .AddClass("px-6 px-sm-10 py-4 py-sm-8", !_hasCode && !IsApiSection)
+        .AddClass("px-6 px-sm-10 pb-4 pb-sm-8 pt-2", _hasCode && !IsApiSection)
+        .AddClass("px-4 py-2", IsApiSection)
         .Build();
 
     private string SourceClassname => new CssBuilder("docs-section-source")
