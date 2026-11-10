@@ -8,7 +8,7 @@
     return;
 }
 
-<MudShadcnProvider Theme="ShowcaseTheme.Theme" IsDarkMode="_isDarkMode" IsDarkModeChanged="OnDarkModeChanged" FollowSystemDarkMode="_followSystem" />
+<MudShadcnProvider Theme="ShowcaseTheme.Theme" Enabled="_shadcn" IsDarkMode="_isDarkMode" IsDarkModeChanged="OnDarkModeChanged" FollowSystemDarkMode="_followSystem" />
 
 <MudLayout Class="docs-layout">
     <MudAppBar Elevation="0" Class="docs-appbar">
@@ -18,6 +18,8 @@
             <Logo />
             <span>MudShadcn</span>
         </a>
+        <a href="releases" class="docs-version d-none d-md-flex" title="Release notes"
+           aria-label="@($"MudShadcn version {BuildInfo.MudShadcnVersion}, release notes")">v@(BuildInfo.MudShadcnVersion)</a>
         <nav class="docs-topnav d-none d-md-flex" aria-label="Main">
             <MudButton Href="getting-started/installation" Variant="Variant.Text" Class="@TopLinkClass("getting-started")">Get Started</MudButton>
             <MudButton Href="docs/overview" Variant="Variant.Text" Class="@TopLinkClass("docs", "components")">Docs</MudButton>
@@ -25,6 +27,29 @@
         </nav>
         <MudSpacer />
         <DocsSearch />
+        @* The look: a button that names it where there is room, an icon below that. *@
+        <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Dense="true">
+            <ActivatorContent>
+                <MudButton Variant="Variant.Outlined" EndIcon="@Icons.Material.Filled.ExpandMore" Class="docs-look-button" OnClick="@context.ToggleAsync"
+                           aria-label="@LookLabel" aria-haspopup="menu">@LookName(_shadcn)</MudButton>
+                <MudIconButton Icon="@Icons.Material.Outlined.Palette" Color="Color.Inherit" Class="docs-look-icon" OnClick="@context.ToggleAsync"
+                               title="@LookLabel" aria-label="@LookLabel" aria-haspopup="menu" />
+            </ActivatorContent>
+            <ChildContent>
+                @foreach (var shadcn in Looks)
+                {
+                    <MudMenuItem OnClick="@(() => SetLookAsync(shadcn))" aria-current="@(shadcn == _shadcn ? "true" : null)">
+                        <div class="d-flex align-center justify-space-between gap-6" style="min-width:7rem">
+                            @LookName(shadcn)
+                            @if (shadcn == _shadcn)
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.Check" Size="Size.Small" />
+                            }
+                        </div>
+                    </MudMenuItem>
+                }
+            </ChildContent>
+        </MudMenu>
         <MudTooltip Text="@(_isDarkMode ? "Switch to light mode" : "Switch to dark mode")">
             <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Outlined.LightMode : Icons.Material.Outlined.DarkMode)" Color="Color.Inherit"
                            OnClick="ToggleDarkModeAsync" aria-label="Toggle dark mode" />
@@ -56,12 +81,21 @@
     private bool _ready;
     private bool _isDarkMode;
     private bool _followSystem = true;
+    private bool _shadcn = true;
     private string _section = "";
+
+    // The looks the dropdown offers, as MudShadcnProvider's Enabled: the shadcn look, and MudBlazor's own.
+    private static readonly bool[] Looks = [true, false];
+
+    private static string LookName(bool shadcn) => shadcn ? "shadcn" : "MudBlazor";
+
+    private string LookLabel => $"Look: {LookName(_shadcn)}. Choose the shadcn look or MudBlazor's own";
 
     protected override async Task OnInitializedAsync()
     {
         NavigationManager.LocationChanged += OnLocationChanged;
         _section = Section();
+        _shadcn = await ThemePreference.GetShadcnAsync();
 
         // An explicit choice wins over the OS setting (MudShadcnProvider follows the OS by default).
         if (await ThemePreference.GetAsync() is { } dark)
@@ -80,6 +114,18 @@
         _isDarkMode = !_isDarkMode;
         _followSystem = false;
         await ThemePreference.SetAsync(_isDarkMode);
+    }
+
+    // MudShadcnProvider's Enabled: the same pages in MudBlazor's own look, to compare.
+    private async Task SetLookAsync(bool shadcn)
+    {
+        if (_shadcn == shadcn)
+        {
+            return;
+        }
+
+        _shadcn = shadcn;
+        await ThemePreference.SetShadcnAsync(shadcn);
     }
 
     private string Section() => NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split('/', '#', '?')[0];

@@ -77,6 +77,9 @@ h1:focus {
    --------------------------------------------------------------------------------------------- */
 .docs-appbar.mud-appbar {
     background-color: color-mix(in oklab, var(--mud-palette-background) 92%, transparent);
+    /* The bar is the page's colour, so its text is too: MudBlazor's own theme (the look switch)
+       has white app bar text, for its coloured bar. */
+    color: var(--mud-palette-text-primary);
     backdrop-filter: blur(8px);
     z-index: calc(var(--mud-zindex-appbar) + 1);
 }
@@ -85,11 +88,28 @@ h1:focus {
     gap: 4px;
 }
 
+/* MudShadcn's 36px icon button, repeated here so the bar keeps it in MudBlazor's own look (the
+   look switch), where an icon button is 48px: the bar has to fit a 360px phone in both looks. */
+.docs-appbar .mud-icon-button {
+    padding: 8px;
+}
+
+.docs-appbar .mud-icon-button .mud-icon-root {
+    font-size: 1.25rem;
+}
+
+/* Below 340px the five buttons leave no room for the name; the logo stays. */
+@media (max-width: 339.98px) {
+    .docs-brand span {
+        display: none;
+    }
+}
+
 .docs-brand {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-inline-end: 16px;
+    margin-inline-end: 4px;
     color: var(--mud-palette-text-primary);
     font-size: 1rem;
     font-weight: 600;
@@ -100,6 +120,43 @@ h1:focus {
 
 .docs-logo {
     flex: none;
+}
+
+/* The package version next to the name: a small outline badge that opens the release notes. */
+.docs-version {
+    align-items: center;
+    margin-inline-end: 12px;
+    padding: 1px 6px;
+    border: 1px solid var(--mud-palette-lines-default);
+    border-radius: var(--shadcn-radius-sm, 4px);
+    color: var(--mud-palette-text-secondary);
+    font: 500 0.6875rem/1rem "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color var(--shadcn-transition, 150ms);
+}
+
+.docs-version:hover {
+    color: var(--mud-palette-text-primary);
+}
+
+/* The look dropdown's button: wide enough for the longer name, so it does not move the bar. Below
+   1100px the bar has no room for it next to the search box, and an icon opens the dropdown. */
+.docs-look-button.mud-button-root {
+    display: none;
+    min-width: 7.5rem;
+    justify-content: space-between;
+    margin-inline-end: 4px;
+}
+
+@media (min-width: 1100px) {
+    .docs-look-button.mud-button-root {
+        display: inline-flex;
+    }
+
+    .docs-look-icon.mud-icon-button {
+        display: none;
+    }
 }
 
 .docs-topnav {
@@ -153,6 +210,13 @@ h1:focus {
 
 .docs-search:focus-within .docs-kbd {
     display: none;
+}
+
+/* Below the desktop layout the search box is narrower: the placeholder needs the hint's room. */
+@media (max-width: 959.98px) {
+    .docs-kbd {
+        display: none;
+    }
 }
 
 /* ---------------------------------------------------------------------------------------------
@@ -290,6 +354,18 @@ h1:focus {
 .docs-section-description.mud-typography {
     margin-bottom: 20px;
     line-height: 1.5rem;
+}
+
+/* A bulleted list in a guide page (Use Cases). */
+.docs-list {
+    margin: 0 0 16px;
+    padding-inline-start: 20px;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+}
+
+.docs-list li {
+    margin-bottom: 8px;
 }
 
 .docs-section-header.mt-12 .mud-typography-h6,

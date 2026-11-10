@@ -4,15 +4,17 @@
 @* For the examples mudblazor.com shows in an iframe (a whole MudLayout of their own). *@
 @if (_ready)
 {
-    <MudShadcnProvider Theme="ShowcaseTheme.Theme" IsDarkMode="_isDarkMode" FollowSystemDarkMode="_followSystem" />
+    <MudShadcnProvider Theme="ShowcaseTheme.Theme" Enabled="_shadcn" IsDarkMode="_isDarkMode" FollowSystemDarkMode="_followSystem" />
     @Body
 }
 
 @code {
-    private bool _ready, _isDarkMode, _followSystem = true;
+    private bool _ready, _isDarkMode, _followSystem = true, _shadcn = true;
 
     protected override async Task OnInitializedAsync()
     {
+        _shadcn = await ThemePreference.GetShadcnAsync();
+
         if (await ThemePreference.GetAsync() is { } dark)
         {
             _isDarkMode = dark;

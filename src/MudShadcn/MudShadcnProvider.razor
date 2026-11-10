@@ -1,14 +1,20 @@
 @namespace MudShadcn
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+@inject ILogger<MudShadcnProvider> Logger
 
 <MudThemeProvider @ref="_themeProvider"
-                  Theme="@(Theme ?? MudShadcnTheme.Default)"
+                  Theme="@(Enabled ? Theme ?? MudShadcnTheme.Default : MudBlazorTheme ?? MudBlazorDefaultTheme)"
                   IsDarkMode="@IsDarkMode"
                   IsDarkModeChanged="@SetDarkModeAsync"
                   ObserveSystemDarkModeChange="@FollowSystemDarkMode"
                   DefaultScrollbar="@DefaultScrollbar" />
 
-@* Rendered after MudThemeProvider's own <style>, so MudShadcn.css sees the tokens of the active mode. *@
-<style>@((MarkupString)ShadcnTokens.ToCss(IsDarkMode))</style>
+@if (Enabled)
+{
+    @* Rendered after MudThemeProvider's own <style>, so MudShadcn.css sees the tokens of the active mode. *@
+    <style>@((MarkupString)ShadcnTokens.ToCss(IsDarkMode))</style>
+}
 
 @if (IncludeProviders)
 {
@@ -18,11 +24,35 @@
 }
 
 @code {
+    // The page's <link> to MudShadcn's stylesheet: the package's own file (plain, minified or
+    // fingerprinted), or a link the app marked with data-mudshadcn because it serves a copy.
+    private const string StylesheetSelector =
+        "link[data-mudshadcn],link[rel~=\"stylesheet\"][href*=\"_content/MudShadcn/MudShadcn\"]";
+
+    private static readonly MudTheme MudBlazorDefaultTheme = new();
+
     private MudThemeProvider? _themeProvider;
+    private bool _stylesheetOff;    // whether this provider has switched the page's stylesheet off
 
     /// <summary>The theme to apply. Defaults to <see cref="MudShadcnTheme.Default"/>.</summary>
     [Parameter]
     public MudTheme? Theme { get; set; }
+
+    /// <summary>
+    /// When <c>false</c>, the app has MudBlazor's own look: the provider applies
+    /// <see cref="MudBlazorTheme"/>, switches MudShadcn's stylesheet off in the page and stops
+    /// emitting the <c>--shadcn-*</c> tokens. Set it back to <c>true</c> (the default) for the
+    /// shadcn look. It can change at any time, so an app can offer both looks.
+    /// </summary>
+    [Parameter]
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>
+    /// The theme applied while <see cref="Enabled"/> is <c>false</c>. Defaults to MudBlazor's
+    /// default theme; pass the <see cref="MudTheme"/> your app used before MudShadcn to keep it.
+    /// </summary>
+    [Parameter]
+    public MudTheme? MudBlazorTheme { get; set; }
 
     /// <summary>Whether the dark palette is active. Supports <c>@bind-IsDarkMode</c>.</summary>
     [Parameter]
@@ -52,11 +82,62 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // First, so a page that starts with MudBlazor's look spends as little time as possible
+        // with MudBlazor's palette on MudShadcn's shapes.
+        if (_stylesheetOff == Enabled)
+        {
+            await SetStylesheetOffAsync(!Enabled);
+        }
+
         if (firstRender && FollowSystemDarkMode && _themeProvider is not null)
         {
             await SetDarkModeAsync(await _themeProvider.GetSystemDarkModeAsync());
         }
     }
+
+    /// <summary>
+    /// Leaves the page as the provider found it: the stylesheet applies again, as it does on a
+    /// page that has no provider.
+    /// </summary>
+    public async ValueTask DisposeAsync()
+    {
+        if (_stylesheetOff)
+        {
+            await SetStylesheetOffAsync(false);
+        }
+    }
+
+    // CSSStyleSheet.disabled: the stylesheet stays loaded and in its place among the page's
+    // stylesheets, so switching is immediate both ways and nothing is fetched again.
+    private async Task SetStylesheetOffAsync(bool off)
+    {
+        _stylesheetOff = off;   // before the first await: a render in the meantime must not start a second switch
+        try
+        {
+            await using var link = await JS.InvokeAsync<IJSObjectReference?>("document.querySelector", StylesheetSelector);
+            if (link is null)
+            {
+                LogStylesheetNotSwitched("no such <link> in the page");
+                return;
+            }
+
+            await link.SetValueAsync("sheet.disabled", off);
+        }
+        catch (JSException e)
+        {
+            LogStylesheetNotSwitched(e.Message);
+        }
+        catch (Exception e) when (e is JSDisconnectedException or OperationCanceledException)
+        {
+            // The circuit is gone, and the page with it.
+        }
+    }
+
+    private void LogStylesheetNotSwitched(string reason) => Logger.LogWarning(
+        "MudShadcnProvider could not switch MudShadcn's stylesheet {State} ({Reason}). Enabled=\"false\" needs the page to "
+        + "link it as _content/MudShadcn/MudShadcn.min.css or MudShadcn.css; add the data-mudshadcn attribute to the <link> "
+        + "if the app serves the stylesheet from another address.",
+        _stylesheetOff ? "off" : "back on", reason);
 
     private async Task SetDarkModeAsync(bool value)
     {

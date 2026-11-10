@@ -1,6 +1,6 @@
 @inherits LayoutComponentBase
 
-<MudShadcnProvider @bind-IsDarkMode="_isDarkMode" />
+<MudShadcnProvider @bind-IsDarkMode="_isDarkMode" Enabled="_shadcn" />
 
 <MudLayout>
     <MudAppBar Elevation="0" Dense="true">
@@ -9,6 +9,28 @@
         <MudText Typo="Typo.subtitle2" Class="ml-2">MudShadcn</MudText>
         <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Class="ml-2">MudBlazor @MudBlazorVersion</MudChip>
         <MudSpacer />
+        <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Dense="true">
+            <ActivatorContent>
+                <MudButton Variant="Variant.Outlined" Size="Size.Small" EndIcon="@Icons.Material.Filled.ExpandMore" Class="d-none d-sm-flex mr-1" OnClick="@context.ToggleAsync"
+                           aria-label="Choose the look" aria-haspopup="menu">@LookName(_shadcn)</MudButton>
+                <MudIconButton Icon="@Icons.Material.Outlined.Palette" Color="Color.Inherit" Class="d-flex d-sm-none" OnClick="@context.ToggleAsync"
+                               aria-label="Choose the look" aria-haspopup="menu" />
+            </ActivatorContent>
+            <ChildContent>
+                @foreach (var shadcn in Looks)
+                {
+                    <MudMenuItem OnClick="@(() => _shadcn = shadcn)" aria-current="@(shadcn == _shadcn ? "true" : null)">
+                        <div class="d-flex align-center justify-space-between gap-6" style="min-width:7rem">
+                            @LookName(shadcn)
+                            @if (shadcn == _shadcn)
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.Check" Size="Size.Small" />
+                            }
+                        </div>
+                    </MudMenuItem>
+                }
+            </ChildContent>
+        </MudMenu>
         <MudTooltip Text="@(_isDarkMode ? "Switch to light" : "Switch to dark")">
             <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Outlined.LightMode : Icons.Material.Outlined.DarkMode)"
                            Color="Color.Inherit" OnClick="@(() => _isDarkMode = !_isDarkMode)" aria-label="Toggle dark mode" />
@@ -49,4 +71,10 @@
 
     private bool _drawerOpen = true;
     private bool _isDarkMode;
+    private bool _shadcn = true;
+
+    // MudShadcnProvider's Enabled: the shadcn look, or MudBlazor's own.
+    private static readonly bool[] Looks = [true, false];
+
+    private static string LookName(bool shadcn) => shadcn ? "shadcn" : "MudBlazor";
 }
