@@ -3,12 +3,14 @@ using MudBlazor;
 namespace MudShadcn;
 
 /// <summary>
-/// The shadcn/ui default (neutral) theme expressed as a <see cref="MudTheme"/>.
+/// shadcn/ui's themes expressed as a <see cref="MudTheme"/>: the default (neutral) one, or any
+/// combination <see href="https://ui.shadcn.com/create">shadcn/create</see> offers
+/// (<see cref="ShadcnThemeOptions"/>).
 /// </summary>
 /// <remarks>
-/// Hex values are the sRGB conversions of shadcn's OKLCH tokens (see <see cref="ShadcnTokens"/>).
-/// The neutral greys convert exactly; the two destructive reds sit marginally outside sRGB and
-/// are gamut-clipped, which is also what an sRGB display shows for the original OKLCH value.
+/// The palettes are the sRGB conversions of shadcn's OKLCH tokens (see <see cref="ShadcnTokens"/>),
+/// computed when a theme is created. The greys convert exactly; saturated colours that sit outside
+/// sRGB are gamut-clipped, which is also what an sRGB display shows for the original OKLCH value.
 /// </remarks>
 public static class MudShadcnTheme
 {
@@ -23,180 +25,177 @@ public static class MudShadcnTheme
         "Arial", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji",
     ];
 
+    private static readonly ShadcnThemeOptions DefaultOptions = new();
+
     /// <summary>A shared default instance. Use <see cref="Create()"/> if you intend to mutate it.</summary>
-    public static MudTheme Default { get; } = Create();
+    public static ShadcnTheme Default { get; } = Create();
 
     /// <summary>Creates a fresh shadcn-styled theme you can customise further.</summary>
-    public static MudTheme Create() => Create(DefaultFontFamily);
+    public static ShadcnTheme Create() => Create(DefaultOptions);
 
     /// <summary>Creates a fresh shadcn-styled theme using the given font stack.</summary>
-    public static MudTheme Create(string[] fontFamily) => new()
+    public static ShadcnTheme Create(string[] fontFamily) => Create(new ShadcnThemeOptions { FontFamily = fontFamily });
+
+    /// <summary>
+    /// Creates a fresh theme from what shadcn/create lets you choose: style, base colour, theme
+    /// colour, chart colour, radius, fonts and the look of menus.
+    /// </summary>
+    public static ShadcnTheme Create(ShadcnThemeOptions options)
     {
-        PaletteLight = CreatePaletteLight(),
-        PaletteDark = CreatePaletteDark(),
-        Typography = CreateTypography(fontFamily),
-        LayoutProperties = new LayoutProperties
+        ArgumentNullException.ThrowIfNull(options);
+
+        var radius = RadiusOf(options.Radius);
+        var theme = new ShadcnTheme(options, radius.Css)
         {
-            // rounded-md = calc(var(--radius) * 0.8) = 0.5rem: buttons, inputs, menus.
-            // Larger surfaces (cards, dialogs) get their own radius in MudShadcn.css.
-            DefaultBorderRadius = "0.5rem",
-            AppbarHeight = "56px",
-            DrawerWidthLeft = "256px",  // shadcn --sidebar-width: 16rem
-            DrawerWidthRight = "256px",
-            DrawerMiniWidthLeft = "48px",   // shadcn --sidebar-width-icon: 3rem
-            DrawerMiniWidthRight = "48px",
-        },
-        Shadows = CreateShadows(),
+            Typography = CreateTypography(options.FontFamily ?? DefaultFontFamily, options.HeadingFontFamily),
+            LayoutProperties = new LayoutProperties
+            {
+                // rounded-md = calc(var(--radius) * 0.8), 0.5rem by default: buttons, inputs, menus.
+                // Larger surfaces (cards, dialogs) get their own radius in MudShadcn.css.
+                DefaultBorderRadius = radius.Rem == 0 ? "0" : FormattableString.Invariant($"{radius.Rem * 0.8:0.###}rem"),
+                AppbarHeight = "56px",
+                DrawerWidthLeft = "256px",  // shadcn --sidebar-width: 16rem
+                DrawerWidthRight = "256px",
+                DrawerMiniWidthLeft = "48px",   // shadcn --sidebar-width-icon: 3rem
+                DrawerMiniWidthRight = "48px",
+            },
+            Shadows = CreateShadows(),
+        };
+
+        theme.PaletteLight = FillPalette(new PaletteLight(), theme.TokensLight, options, dark: false);
+        theme.PaletteDark = FillPalette(new PaletteDark(), theme.TokensDark, options, dark: true);
+        return theme;
+    }
+
+    /// <summary>The default (neutral) light palette.</summary>
+    public static PaletteLight CreatePaletteLight() =>
+        FillPalette(new PaletteLight(), ShadcnTokens.Light, DefaultOptions, dark: false);
+
+    /// <summary>The default (neutral) dark palette.</summary>
+    public static PaletteDark CreatePaletteDark() =>
+        FillPalette(new PaletteDark(), ShadcnTokens.Dark, DefaultOptions, dark: true);
+
+    // shadcn/create's RADII (apps/v4/registry/config.ts).
+    private static (string Css, double Rem) RadiusOf(ShadcnRadius radius) => radius switch
+    {
+        ShadcnRadius.None => ("0", 0),
+        ShadcnRadius.Small => ("0.45rem", 0.45),
+        ShadcnRadius.Large => ("0.875rem", 0.875),
+        _ => (ShadcnTokens.Radius, 0.625),
     };
 
-    public static PaletteLight CreatePaletteLight() => new()
+    /// <summary>
+    /// shadcn's tokens on MudBlazor's palette. The trailing comments name the token or, where shadcn
+    /// has none, the step of the base colour's Tailwind scale (neutral-200, stone-200, …).
+    /// </summary>
+    private static T FillPalette<T>(T palette, IEnumerable<KeyValuePair<string, string>> tokens, ShadcnThemeOptions options, bool dark)
+        where T : Palette
     {
-        Black = "#0a0a0a",
-        White = "#ffffff",
+        var token = tokens.ToDictionary(t => t.Key, t => t.Value);
+        OklchColor Color(string name) => OklchColor.Parse(token[name]);
+        string Hex(string name) => Color(name).ToHex();
+        string Scale(int step) => OklchColor.Parse(ShadcnThemeData.Scale(options.BaseColor, step)).ToHex();
 
-        Primary = "#171717",                 // --primary
-        PrimaryContrastText = "#fafafa",     // --primary-foreground
-        PrimaryDarken = "#2e2e2e",           // primary/90 over background (shadcn hover)
-        PrimaryLighten = "#404040",
-        Secondary = "#f5f5f5",               // --secondary
-        SecondaryContrastText = "#171717",   // --secondary-foreground
-        SecondaryDarken = "#ebebeb",
-        SecondaryLighten = "#fafafa",
-        Tertiary = "#737373",                // --muted-foreground, as a usable neutral accent
-        TertiaryContrastText = "#fafafa",
-        Error = "#e7000b",                   // --destructive
-        ErrorContrastText = "#ffffff",
-        // shadcn defines no info/success/warning. These are Tailwind's blue/green/amber-600/500,
-        // the scale shadcn's own docs draw from when adding such tokens.
-        Info = "#155dfc",
-        InfoContrastText = "#ffffff",
-        Success = "#00a63e",
-        SuccessContrastText = "#ffffff",
-        Warning = "#fe9a00",
-        WarningContrastText = "#0a0a0a",
-        Dark = "#171717",
-        DarkContrastText = "#fafafa",
+        var background = Color("background");
+        var foreground = Color("foreground");
+        var primary = Color("primary");
+        var secondary = Color("secondary");
+        var muted = Color("muted");
 
-        TextPrimary = "#0a0a0a",             // --foreground
-        TextSecondary = "#737373",           // --muted-foreground
-        TextDisabled = "#0a0a0a80",          // disabled:opacity-50
-        ActionDefault = "#737373",
-        ActionDisabled = "#0a0a0a4d",
-        ActionDisabledBackground = "#0a0a0a14",
+        palette.Black = Scale(950);
+        palette.White = "#ffffff";
 
-        Background = "#ffffff",              // --background
-        BackgroundGray = "#f5f5f5",          // --muted
-        Surface = "#ffffff",                 // --card / --popover
-        DrawerBackground = "#fafafa",        // --sidebar
-        DrawerText = "#0a0a0a",              // --sidebar-foreground
-        DrawerIcon = "#0a0a0a",
-        AppbarBackground = "#ffffff",
-        AppbarText = "#0a0a0a",
+        palette.Primary = primary.ToHex();                             // --primary
+        palette.PrimaryContrastText = Hex("primary-foreground");       // --primary-foreground
+        palette.PrimaryDarken = primary.Over(background, 0.9);         // primary/90 over background (shadcn hover)
+        palette.PrimaryLighten = options.Theme != ShadcnColor.Base
+            ? primary.Under((255, 255, 255), 0.2)                      // a theme colour: a fifth of the way to white
+            : Scale(dark ? 100 : 700);
+        palette.Secondary = secondary.ToHex();                         // --secondary
+        palette.SecondaryContrastText = Hex("secondary-foreground");   // --secondary-foreground
+        palette.SecondaryDarken = dark ? secondary.Over(background, 0.8) : secondary.Under((0, 0, 0), 0.04);
+        palette.SecondaryLighten = Scale(dark ? 700 : 50);
+        palette.Tertiary = Hex("muted-foreground");                    // --muted-foreground, as a usable neutral accent
+        palette.TertiaryContrastText = Scale(dark ? 900 : 50);
+        palette.Error = Hex("destructive");                            // --destructive
+        palette.ErrorContrastText = "#ffffff";
+        // shadcn defines no info/success/warning. These are Tailwind's blue/green/amber-600/500
+        // (500/400 in dark mode), the scale shadcn's own docs draw from when adding such tokens.
+        palette.Info = dark ? "#2b7fff" : "#155dfc";
+        palette.InfoContrastText = "#ffffff";
+        palette.Success = dark ? "#00c950" : "#00a63e";
+        palette.SuccessContrastText = dark ? "#0a0a0a" : "#ffffff";
+        palette.Warning = dark ? "#ffb900" : "#fe9a00";
+        palette.WarningContrastText = "#0a0a0a";
+        // Dark mode: the 500 step (shadcn's dark --ring for neutral) is the darkest grey that is
+        // legible both as a text or icon colour on the dark background (4.2:1) and behind white text (4.5:1).
+        palette.Dark = Scale(dark ? 500 : 900);
+        palette.DarkContrastText = Scale(50);
 
-        LinesDefault = "#e5e5e5",            // --border
-        LinesInputs = "#e5e5e5",             // --input
-        TableLines = "#e5e5e5",
-        TableStriped = "#f5f5f580",          // bg-muted/50
-        TableHover = "#f5f5f580",            // hover:bg-muted/50
-        Divider = "#e5e5e5",
-        DividerLight = "#e5e5e5",
-        Skeleton = "#f5f5f5",                // bg-accent
-        OverlayDark = "rgba(0,0,0,0.5)",     // bg-black/50
-        OverlayLight = "rgba(255,255,255,0.5)",
+        palette.TextPrimary = foreground.ToHex();                      // --foreground
+        palette.TextSecondary = Hex("muted-foreground");               // --muted-foreground
+        palette.TextDisabled = foreground.ToHex(0.5);                  // disabled:opacity-50
+        palette.ActionDefault = Hex("muted-foreground");
+        palette.ActionDisabled = foreground.ToHex(0.3);
+        palette.ActionDisabledBackground = foreground.ToHex(0.08);
 
-        GrayLighter = "#e5e5e5",
-        GrayLight = "#d4d4d4",
-        GrayDefault = "#a1a1a1",
-        GrayDark = "#737373",
-        GrayDarker = "#404040",
+        palette.Background = background.ToHex();                       // --background
+        palette.BackgroundGray = muted.ToHex();                        // --muted
+        palette.Surface = Hex("card");                                 // --card / --popover
+        palette.DrawerBackground = Hex("sidebar");                     // --sidebar
+        palette.DrawerText = Hex("sidebar-foreground");                // --sidebar-foreground
+        palette.DrawerIcon = Hex("sidebar-foreground");
+        palette.AppbarBackground = background.ToHex();
+        palette.AppbarText = foreground.ToHex();
+
+        palette.LinesDefault = Hex("border");                          // --border
+        palette.LinesInputs = Hex("input");                            // --input
+        palette.TableLines = Hex("border");
+        palette.TableStriped = muted.ToHex(0.5);                       // bg-muted/50
+        palette.TableHover = muted.ToHex(0.5);                         // hover:bg-muted/50
+        palette.Divider = Hex("border");
+        palette.DividerLight = Hex("border");
+        palette.Skeleton = muted.ToHex();                              // bg-muted
+        palette.OverlayDark = "rgba(0,0,0,0.5)";                       // bg-black/50
+        palette.OverlayLight = dark ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.5)";
+
+        palette.GrayLighter = Scale(dark ? 700 : 200);
+        palette.GrayLight = Scale(dark ? 600 : 300);
+        palette.GrayDefault = Scale(dark ? 500 : 400);
+        palette.GrayDark = Scale(dark ? 400 : 500);
+        palette.GrayDarker = Scale(dark ? 300 : 700);
 
         // shadcn has no ripple.
-        RippleOpacity = 0,
-        RippleOpacitySecondary = 0,
-    };
+        palette.RippleOpacity = 0;
+        palette.RippleOpacitySecondary = 0;
 
-    public static PaletteDark CreatePaletteDark() => new()
-    {
-        Black = "#0a0a0a",
-        White = "#ffffff",
-
-        Primary = "#e5e5e5",
-        PrimaryContrastText = "#171717",
-        PrimaryDarken = "#cfcfcf",           // primary/90 over background
-        PrimaryLighten = "#f5f5f5",
-        Secondary = "#262626",
-        SecondaryContrastText = "#fafafa",
-        SecondaryDarken = "#202020",
-        SecondaryLighten = "#404040",
-        Tertiary = "#a1a1a1",
-        TertiaryContrastText = "#171717",
-        Error = "#ff6467",
-        ErrorContrastText = "#ffffff",
-        Info = "#2b7fff",
-        InfoContrastText = "#ffffff",
-        Success = "#00c950",
-        SuccessContrastText = "#0a0a0a",
-        Warning = "#ffb900",
-        WarningContrastText = "#0a0a0a",
-        // neutral-500 (shadcn's dark --ring): the darkest neutral that is legible both as a text or
-        // icon colour on the dark background (4.2:1) and behind white text (4.5:1).
-        Dark = "#737373",
-        DarkContrastText = "#fafafa",
-
-        TextPrimary = "#fafafa",
-        TextSecondary = "#a1a1a1",
-        TextDisabled = "#fafafa80",
-        ActionDefault = "#a1a1a1",
-        ActionDisabled = "#fafafa4d",
-        ActionDisabledBackground = "#fafafa14",
-
-        Background = "#0a0a0a",
-        BackgroundGray = "#262626",
-        Surface = "#171717",
-        DrawerBackground = "#171717",
-        DrawerText = "#fafafa",
-        DrawerIcon = "#fafafa",
-        AppbarBackground = "#0a0a0a",
-        AppbarText = "#fafafa",
-
-        LinesDefault = "#ffffff1a",          // oklch(1 0 0 / 10%)
-        LinesInputs = "#ffffff26",           // oklch(1 0 0 / 15%)
-        TableLines = "#ffffff1a",
-        TableStriped = "#26262680",
-        TableHover = "#26262680",
-        Divider = "#ffffff1a",
-        DividerLight = "#ffffff1a",
-        Skeleton = "#262626",
-        OverlayDark = "rgba(0,0,0,0.5)",
-        OverlayLight = "rgba(255,255,255,0.1)",
-
-        GrayLighter = "#404040",
-        GrayLight = "#525252",
-        GrayDefault = "#737373",
-        GrayDark = "#a1a1a1",
-        GrayDarker = "#d4d4d4",
-
-        RippleOpacity = 0,
-        RippleOpacitySecondary = 0,
-    };
+        return palette;
+    }
 
     /// <summary>
     /// Tailwind's type scale as shadcn uses it: <c>text-sm</c> (0.875rem / 1.25rem) is the
     /// default body size, headings follow shadcn's Typography page.
     /// </summary>
-    public static Typography CreateTypography(string[] fontFamily)
+    public static Typography CreateTypography(string[] fontFamily) => CreateTypography(fontFamily, null);
+
+    /// <summary>
+    /// As <see cref="CreateTypography(string[])"/>, with a font stack of their own for the headings
+    /// (shadcn/create's heading font). <c>null</c> uses <paramref name="fontFamily"/>.
+    /// </summary>
+    public static Typography CreateTypography(string[] fontFamily, string[]? headingFontFamily)
     {
         const string tight = "-0.025em"; // tracking-tight
+        var heading = headingFontFamily ?? fontFamily;
 
         return new Typography
         {
             Default = new DefaultTypography { FontFamily = fontFamily, FontSize = "0.875rem", FontWeight = "400", LineHeight = "1.4286", LetterSpacing = "normal" },
-            H1 = new H1Typography { FontFamily = fontFamily, FontSize = "2.25rem", FontWeight = "800", LineHeight = "1.1111", LetterSpacing = tight },
-            H2 = new H2Typography { FontFamily = fontFamily, FontSize = "1.875rem", FontWeight = "600", LineHeight = "1.2", LetterSpacing = tight },
-            H3 = new H3Typography { FontFamily = fontFamily, FontSize = "1.5rem", FontWeight = "600", LineHeight = "1.3333", LetterSpacing = tight },
-            H4 = new H4Typography { FontFamily = fontFamily, FontSize = "1.25rem", FontWeight = "600", LineHeight = "1.4", LetterSpacing = tight },
-            H5 = new H5Typography { FontFamily = fontFamily, FontSize = "1.125rem", FontWeight = "600", LineHeight = "1.5556", LetterSpacing = "normal" },
-            H6 = new H6Typography { FontFamily = fontFamily, FontSize = "1rem", FontWeight = "600", LineHeight = "1.5", LetterSpacing = "normal" },
+            H1 = new H1Typography { FontFamily = heading, FontSize = "2.25rem", FontWeight = "800", LineHeight = "1.1111", LetterSpacing = tight },
+            H2 = new H2Typography { FontFamily = heading, FontSize = "1.875rem", FontWeight = "600", LineHeight = "1.2", LetterSpacing = tight },
+            H3 = new H3Typography { FontFamily = heading, FontSize = "1.5rem", FontWeight = "600", LineHeight = "1.3333", LetterSpacing = tight },
+            H4 = new H4Typography { FontFamily = heading, FontSize = "1.25rem", FontWeight = "600", LineHeight = "1.4", LetterSpacing = tight },
+            H5 = new H5Typography { FontFamily = heading, FontSize = "1.125rem", FontWeight = "600", LineHeight = "1.5556", LetterSpacing = "normal" },
+            H6 = new H6Typography { FontFamily = heading, FontSize = "1rem", FontWeight = "600", LineHeight = "1.5", LetterSpacing = "normal" },
             Subtitle1 = new Subtitle1Typography { FontFamily = fontFamily, FontSize = "1rem", FontWeight = "500", LineHeight = "1.5", LetterSpacing = "normal" },
             Subtitle2 = new Subtitle2Typography { FontFamily = fontFamily, FontSize = "0.875rem", FontWeight = "500", LineHeight = "1.4286", LetterSpacing = "normal" },
             Body1 = new Body1Typography { FontFamily = fontFamily, FontSize = "0.875rem", FontWeight = "400", LineHeight = "1.4286", LetterSpacing = "normal" },

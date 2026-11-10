@@ -1,6 +1,7 @@
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @inject ThemePreference ThemePreference
+@inject ShowcaseTheme ShowcaseTheme
 @implements IDisposable
 
 @if (!_ready)
@@ -8,7 +9,9 @@
     return;
 }
 
-<MudShadcnProvider Theme="ShowcaseTheme.Theme" Enabled="_shadcn" IsDarkMode="_isDarkMode" IsDarkModeChanged="OnDarkModeChanged" FollowSystemDarkMode="_followSystem" />
+@* The readable style sheets, like MudShadcn.css in index.html. An app keeps the default (.min.css). *@
+<MudShadcnProvider Theme="ShowcaseTheme.Theme" Enabled="Design.Shadcn" IsDarkMode="_isDarkMode" IsDarkModeChanged="OnDarkModeChanged" FollowSystemDarkMode="_followSystem"
+                   StyleHrefFormat="_content/MudShadcn/styles/{0}.css" />
 
 <MudLayout Class="docs-layout">
     <MudAppBar Elevation="0" Class="docs-appbar">
@@ -31,17 +34,23 @@
         <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Dense="true">
             <ActivatorContent>
                 <MudButton Variant="Variant.Outlined" EndIcon="@Icons.Material.Filled.ExpandMore" Class="docs-look-button" OnClick="@context.ToggleAsync"
-                           aria-label="@LookLabel" aria-haspopup="menu">@LookName(_shadcn)</MudButton>
+                           aria-label="@LookLabel" aria-haspopup="menu">@Design.LookName</MudButton>
                 <MudIconButton Icon="@Icons.Material.Outlined.Palette" Color="Color.Inherit" Class="docs-look-icon" OnClick="@context.ToggleAsync"
                                title="@LookLabel" aria-label="@LookLabel" aria-haspopup="menu" />
             </ActivatorContent>
             <ChildContent>
-                @foreach (var shadcn in Looks)
+                @* shadcn's styles, by shadcn's names, then MudBlazor's own look. *@
+                @foreach (var look in Looks)
                 {
-                    <MudMenuItem OnClick="@(() => SetLookAsync(shadcn))" aria-current="@(shadcn == _shadcn ? "true" : null)">
+                    var current = look.Shadcn == Design.Shadcn && (!look.Shadcn || look.Style == Design.Style);
+                    @if (!look.Shadcn)
+                    {
+                        <MudDivider Class="my-1" />
+                    }
+                    <MudMenuItem OnClick="@(() => SetLookAsync(look))" aria-current="@(current ? "true" : null)">
                         <div class="d-flex align-center justify-space-between gap-6" style="min-width:7rem">
-                            @LookName(shadcn)
-                            @if (shadcn == _shadcn)
+                            @look.LookName
+                            @if (current)
                             {
                                 <MudIcon Icon="@Icons.Material.Filled.Check" Size="Size.Small" />
                             }
@@ -81,24 +90,28 @@
     private bool _ready;
     private bool _isDarkMode;
     private bool _followSystem = true;
-    private bool _shadcn = true;
     private string _section = "";
 
-    // The looks the dropdown offers, as MudShadcnProvider's Enabled: the shadcn look, and MudBlazor's own.
-    private static readonly bool[] Looks = [true, false];
+    // The looks the dropdown offers: every shadcn style, and MudBlazor's own (MudShadcnProvider's Enabled).
+    private static readonly ShowcaseDesign[] Looks =
+    [
+        .. Enum.GetValues<ShadcnStyle>().Select(style => new ShowcaseDesign { Style = style }),
+        new ShowcaseDesign { Shadcn = false },
+    ];
 
-    private static string LookName(bool shadcn) => shadcn ? "shadcn" : "MudBlazor";
+    private ShowcaseDesign Design => ShowcaseTheme.Design;
 
-    private string LookLabel => $"Look: {LookName(_shadcn)}. Choose the shadcn look or MudBlazor's own";
+    private string LookLabel => $"Look: {Design.LookName}. Choose a shadcn style or MudBlazor's own look";
 
     protected override async Task OnInitializedAsync()
     {
         NavigationManager.LocationChanged += OnLocationChanged;
+        ShowcaseTheme.Changed += OnThemeChanged;
         _section = Section();
-        _shadcn = await ThemePreference.GetShadcnAsync();
+        await ShowcaseTheme.LoadAsync();
 
         // An explicit choice wins over the OS setting (MudShadcnProvider follows the OS by default).
-        if (await ThemePreference.GetAsync() is { } dark)
+        if ((ShowcaseTheme.ModeFromAddress ?? await ThemePreference.GetAsync()) is { } dark)
         {
             _isDarkMode = dark;
             _followSystem = false;
@@ -116,17 +129,9 @@
         await ThemePreference.SetAsync(_isDarkMode);
     }
 
-    // MudShadcnProvider's Enabled: the same pages in MudBlazor's own look, to compare.
-    private async Task SetLookAsync(bool shadcn)
-    {
-        if (_shadcn == shadcn)
-        {
-            return;
-        }
-
-        _shadcn = shadcn;
-        await ThemePreference.SetShadcnAsync(shadcn);
-    }
+    // The look only: the colours, radius and fonts chosen in the Theme Generator stay.
+    private Task SetLookAsync(ShowcaseDesign look) =>
+        ShowcaseTheme.SetAsync(look.Shadcn ? Design with { Shadcn = true, Style = look.Style } : Design with { Shadcn = false });
 
     private string Section() => NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split('/', '#', '?')[0];
 
@@ -138,5 +143,11 @@
         StateHasChanged();
     }
 
-    public void Dispose() => NavigationManager.LocationChanged -= OnLocationChanged;
+    private void OnThemeChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+        ShowcaseTheme.Changed -= OnThemeChanged;
+    }
 }

@@ -19,5 +19,6 @@ builder.Services.AddScoped(_ => new HttpClient(new ExamplesApiHandler { InnerHan
 builder.Services.AddMudShadcn();
 builder.Services.AddSingleton<MenuService>();
 builder.Services.AddScoped<ThemePreference>();
+builder.Services.AddScoped<ShowcaseTheme>();
 
 await builder.Build().RunAsync();

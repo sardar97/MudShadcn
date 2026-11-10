@@ -2,9 +2,12 @@ namespace MudShadcn;
 
 /// <summary>
 /// The shadcn/ui default ("neutral") theme tokens, taken verbatim from the shadcn/ui theming
-/// docs (Default Theme CSS). These are emitted as <c>--shadcn-*</c> CSS custom properties by
-/// <see cref="MudShadcnProvider"/> so MudShadcn.css — and your own CSS — can use the real
+/// docs (Default Theme CSS). <see cref="MudShadcnProvider"/> emits a theme's tokens as
+/// <c>--shadcn-*</c> CSS custom properties so MudShadcn.css — and your own CSS — can use the real
 /// OKLCH values, including the ones MudBlazor's palette has no slot for (ring, input, sidebar).
+/// These are the tokens of the default theme; a theme made with other
+/// <see cref="ShadcnThemeOptions"/> carries its own (<see cref="ShadcnTheme.TokensLight"/>,
+/// <see cref="ShadcnTheme.TokensDark"/>).
 /// </summary>
 public static class ShadcnTokens
 {
@@ -88,12 +91,59 @@ public static class ShadcnTokens
         ["destructive-background"] = "oklch(0.704 0.191 22.216 / 60%)",     // dark:bg-destructive/60
     };
 
-    internal static string ToCss(bool dark)
+    /// <summary>
+    /// The tokens for <paramref name="options"/>, put together the way shadcn/create does it: the base
+    /// colour's set, then what the theme colour overrides, then the chart colours.
+    /// </summary>
+    internal static Dictionary<string, string> Build(ShadcnThemeOptions options, bool dark)
+    {
+        var tokens = ShadcnThemeData.Base(options.BaseColor, dark);
+        if (options.Theme != ShadcnColor.Base)
+        {
+            foreach (var (name, value) in ShadcnThemeData.Accent(options.Theme, dark))
+            {
+                tokens[name] = value;
+            }
+        }
+
+        // null: the five colours of shadcn's original theme, which the registry's themes no longer have.
+        IReadOnlyDictionary<string, string> charts = options.ChartColor switch
+        {
+            null => dark ? Dark : Light,
+            ShadcnColor.Base => ShadcnThemeData.Base(options.BaseColor, dark),
+            { } color => ShadcnThemeData.Accent(color, dark),
+        };
+        for (var i = 1; i <= 5; i++)
+        {
+            tokens[$"chart-{i}"] = charts[$"chart-{i}"];
+        }
+
+        // Not shadcn tokens: per-mode values shadcn expresses with `dark:` utility variants.
+        tokens["input-background"] = dark ? OklchColor.WithOpacity(tokens["input"], 0.3) : "transparent";   // dark:bg-input/30
+        tokens["destructive-background"] = dark ? OklchColor.WithOpacity(tokens["destructive"], 0.6) : tokens["destructive"];   // dark:bg-destructive/60
+
+        // shadcn/create's bold menu accent: the item under the pointer is painted in the primary colour.
+        if (options.MenuAccent == ShadcnMenuAccent.Bold)
+        {
+            tokens["menu-accent"] = tokens["primary"];
+            tokens["menu-accent-foreground"] = tokens["primary-foreground"];
+        }
+
+        return tokens;
+    }
+
+    internal static string ToCss(bool dark) => ToCss(dark ? Dark : Light, dark, Radius);
+
+    internal static string ToCss(IEnumerable<KeyValuePair<string, string>> tokens, bool dark, string radius)
     {
         // color-scheme as next-themes sets it for shadcn: native scrollbars and form controls, and
         // CSS light-dark(), follow the active mode.
         var sb = new System.Text.StringBuilder(":root{color-scheme:").Append(dark ? "dark" : "light").Append(';');
-        foreach (var (name, value) in dark ? Dark : Light)
+        if (radius != Radius)
+        {
+            sb.Append("--shadcn-radius:").Append(radius).Append(';');
+        }
+        foreach (var (name, value) in tokens)
         {
             sb.Append("--shadcn-").Append(name).Append(':').Append(value).Append(';');
         }

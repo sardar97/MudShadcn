@@ -9,6 +9,17 @@ major version is a new MudShadcn major version.
 ## [Unreleased]
 
 ### Added
+- **shadcn's colour themes:** `MudShadcnTheme.Create(new ShadcnThemeOptions { … })` makes a theme
+  from what [shadcn/create](https://ui.shadcn.com/create) lets you choose, under shadcn's names: a
+  `BaseColor` (Neutral, Stone, Zinc, Mauve, Olive, Mist, Taupe), a `Theme` colour for primary
+  buttons and selected controls (Amber to Yellow, 17 of them), a `ChartColor`, a `Radius` (None,
+  Small, Medium, Large), a font and a heading font. The palettes are computed from shadcn's OKLCH
+  tokens, and the tokens MudBlazor has no slot for (ring, input, sidebar, charts) follow the theme
+  too: the provider emits the `--shadcn-*` set of the theme it is given. The values come from
+  shadcn's registry and Tailwind's palette through `tools/generate-shadcn-themes.mjs`.
+- **`ShadcnTheme`:** the themes `MudShadcnTheme` makes are a `MudTheme` subclass that carries the
+  shadcn tokens (`TokensLight`, `TokensDark`), the `Radius` and the `Style`. Change a token there
+  the way you change a palette colour.
 - **A switch back to MudBlazor's own look:** `MudShadcnProvider` has an `Enabled` parameter. Set it
   to `false` while the app runs and the provider applies MudBlazor's default theme (or the one
   passed as the new `MudBlazorTheme` parameter), switches MudShadcn's stylesheet off in the page
@@ -31,6 +42,9 @@ major version is a new MudShadcn major version.
   cards (bar, stacked bar, line, line with dots, area and donut) with the code of each.
 
 ### Changed
+- **`MudShadcnTheme.Create()`, `Create(string[])` and `Default` return `ShadcnTheme`** instead of
+  `MudTheme`. It is a `MudTheme`, so code that assigns or passes the result keeps working; code
+  compiled against an earlier MudShadcn has to be rebuilt.
 - **Documentation on MudBlazor versions:** the README, the Installation page and the agent skill now
   say plainly that MudBlazor is a separate package NuGet installs alongside MudShadcn, and that the
   MudBlazor version MudShadcn names is a minimum, not a lock. They no longer tell you to remove

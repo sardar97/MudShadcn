@@ -481,5 +481,6 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
-# Generated on build from MudShadcn.css (see src/MudShadcn/MudShadcn.csproj)
+# Generated on build from MudShadcn.css and styles/*.css (see src/MudShadcn/MudShadcn.csproj)
 src/MudShadcn/wwwroot/MudShadcn.min.css
+src/MudShadcn/wwwroot/styles/*.min.css

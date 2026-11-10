@@ -65,25 +65,26 @@
   </ItemGroup>
 
   <!--
-    wwwroot/MudShadcn.min.css: MudShadcn.css without comments and redundant whitespace, generated on
-    every build that changes the source (it is git-ignored; edit MudShadcn.css only). The first build
-    after a clean checkout creates the file after the static web assets were globbed, so it is
-    registered explicitly, the way MudBlazor registers its own generated stylesheet.
+    wwwroot/MudShadcn.min.css and wwwroot/styles/<style>.min.css: the stylesheets without comments and
+    redundant whitespace, generated on every build that changes a source (they are git-ignored; edit
+    the .css files only). The first build after a clean checkout creates the files after the static
+    web assets were globbed, so they are registered explicitly, the way MudBlazor registers its own
+    generated stylesheet.
   -->
-  <PropertyGroup>
-    <_MudShadcnCss>$(MSBuildProjectDirectory)/wwwroot/MudShadcn.css</_MudShadcnCss>
-    <_MudShadcnMinCss>$(MSBuildProjectDirectory)/wwwroot/MudShadcn.min.css</_MudShadcnMinCss>
-  </PropertyGroup>
+  <ItemGroup>
+    <_MudShadcnCss Include="$(MSBuildProjectDirectory)/wwwroot/MudShadcn.css" />
+    <_MudShadcnCss Include="$(MSBuildProjectDirectory)/wwwroot/styles/*.css" Exclude="$(MSBuildProjectDirectory)/wwwroot/styles/*.min.css" />
+  </ItemGroup>
 
   <Target Name="MinifyMudShadcnCss" BeforeTargets="ResolveProjectStaticWebAssets" Condition="'$(DesignTimeBuild)' != 'true'"
-          Inputs="$(_MudShadcnCss);$(MSBuildProjectFullPath)" Outputs="$(_MudShadcnMinCss)">
-    <MinifyCss Source="$(_MudShadcnCss)" Destination="$(_MudShadcnMinCss)" />
+          Inputs="@(_MudShadcnCss);$(MSBuildProjectFullPath)" Outputs="@(_MudShadcnCss->'%(RootDir)%(Directory)%(Filename).min.css')">
+    <MinifyCss Source="%(_MudShadcnCss.FullPath)" Destination="%(_MudShadcnCss.RootDir)%(_MudShadcnCss.Directory)%(_MudShadcnCss.Filename).min.css" />
   </Target>
 
   <Target Name="RegisterMudShadcnMinCss" BeforeTargets="ResolveProjectStaticWebAssets" DependsOnTargets="MinifyMudShadcnCss"
           Condition="'$(DesignTimeBuild)' != 'true'">
     <ItemGroup>
-      <_MudShadcnMinCssAsset Include="wwwroot/MudShadcn.min.css" Exclude="@(Content)" />
+      <_MudShadcnMinCssAsset Include="wwwroot/MudShadcn.min.css;wwwroot/styles/*.min.css" Exclude="@(Content)" />
       <Content Include="@(_MudShadcnMinCssAsset)" />
     </ItemGroup>
   </Target>

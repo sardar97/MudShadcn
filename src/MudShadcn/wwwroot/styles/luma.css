@@ -1,0 +1,7 @@
+/*
+ * luma.css — shadcn/ui's Luma style for MudShadcn. Rounded geometry, soft elevation, breathable layouts.
+ * Loaded AFTER MudShadcn.css (MudShadcnProvider links it when the theme's Style is Luma),
+ * so a rule here wins over the rule with the same selector there. Written against MudBlazor 9.12.0.
+ *
+ * Values are shadcn/ui's apps/v4/registry/styles/style-luma.css, not approximations.
+ */

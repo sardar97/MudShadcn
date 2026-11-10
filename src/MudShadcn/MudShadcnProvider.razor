@@ -4,7 +4,7 @@
 @inject ILogger<MudShadcnProvider> Logger
 
 <MudThemeProvider @ref="_themeProvider"
-                  Theme="@(Enabled ? Theme ?? MudShadcnTheme.Default : MudBlazorTheme ?? MudBlazorDefaultTheme)"
+                  Theme="@(Enabled ? ShadcnTheme : MudBlazorTheme ?? MudBlazorDefaultTheme)"
                   IsDarkMode="@IsDarkMode"
                   IsDarkModeChanged="@SetDarkModeAsync"
                   ObserveSystemDarkModeChange="@FollowSystemDarkMode"
@@ -13,7 +13,15 @@
 @if (Enabled)
 {
     @* Rendered after MudThemeProvider's own <style>, so MudShadcn.css sees the tokens of the active mode. *@
-    <style>@((MarkupString)ShadcnTokens.ToCss(IsDarkMode))</style>
+    <style>@((MarkupString)TokensCss)</style>
+
+    @* The theme's style, if it has one: a small stylesheet that comes after MudShadcn.css (which the
+       page links in its <head>) and so wins over it rule for rule. Only the active style is ever
+       fetched; the key makes a change of style replace the element instead of patching its href. *@
+    @if (StyleHref is { } href)
+    {
+        <link @key="href" rel="stylesheet" href="@href" data-mudshadcn-style="@StyleName" />
+    }
 }
 
 @if (IncludeProviders)
@@ -32,11 +40,34 @@
     private static readonly MudTheme MudBlazorDefaultTheme = new();
 
     private MudThemeProvider? _themeProvider;
+
+    private MudTheme ShadcnTheme => Theme ?? MudShadcnTheme.Default;
+
+    private string TokensCss => ShadcnTheme is ShadcnTheme theme ? theme.ToCss(IsDarkMode) : ShadcnTokens.ToCss(IsDarkMode);
+
+    // NewYork is MudShadcn.css itself.
+    private string? StyleName => ShadcnTheme is ShadcnTheme { Style: not ShadcnStyle.NewYork } theme
+        ? theme.Style.ToString().ToLowerInvariant()
+        : null;
+
+    private string? StyleHref => StyleName is { } name ? string.Format(System.Globalization.CultureInfo.InvariantCulture, StyleHrefFormat, name) : null;
     private bool _stylesheetOff;    // whether this provider has switched the page's stylesheet off
 
-    /// <summary>The theme to apply. Defaults to <see cref="MudShadcnTheme.Default"/>.</summary>
+    /// <summary>
+    /// The theme to apply. Defaults to <see cref="MudShadcnTheme.Default"/>. A theme made by
+    /// <see cref="MudShadcnTheme"/> (a <see cref="MudShadcn.ShadcnTheme"/>) brings its own shadcn
+    /// tokens, radius and style; any other <see cref="MudTheme"/> gets the default ones.
+    /// </summary>
     [Parameter]
     public MudTheme? Theme { get; set; }
+
+    /// <summary>
+    /// Where the stylesheets of the styles are, with <c>{0}</c> for the style's name in lower case
+    /// (<c>vega</c>, <c>nova</c>, …). The default is the minified file the package ships. The
+    /// address is relative to the page's <c>&lt;base href&gt;</c>, like the one of MudShadcn.css.
+    /// </summary>
+    [Parameter]
+    public string StyleHrefFormat { get; set; } = "_content/MudShadcn/styles/{0}.min.css";
 
     /// <summary>
     /// When <c>false</c>, the app has MudBlazor's own look: the provider applies

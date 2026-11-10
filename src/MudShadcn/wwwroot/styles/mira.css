@@ -1,0 +1,7 @@
+/*
+ * mira.css — shadcn/ui's Mira style for MudShadcn. Compact, made for dense interfaces.
+ * Loaded AFTER MudShadcn.css (MudShadcnProvider links it when the theme's Style is Mira),
+ * so a rule here wins over the rule with the same selector there. Written against MudBlazor 9.12.0.
+ *
+ * Values are shadcn/ui's apps/v4/registry/styles/style-mira.css, not approximations.
+ */

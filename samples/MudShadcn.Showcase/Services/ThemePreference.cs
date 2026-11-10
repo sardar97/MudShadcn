@@ -5,33 +5,41 @@ using Microsoft.JSInterop;
 namespace MudShadcn.Showcase.Services;
 
 /// <summary>
-/// Remembers the light/dark choice and the look (shadcn or MudBlazor's own) in localStorage, so
-/// they survive reloads and reach the examples that mudblazor.com renders in an iframe (they run
-/// as a separate app instance).
+/// Remembers the light/dark choice and the design (the look and the Theme Generator's choices) in
+/// localStorage, so they survive reloads and reach the examples that mudblazor.com renders in an
+/// iframe (they run as a separate app instance).
 /// </summary>
 public sealed class ThemePreference(IJSRuntime js)
 {
     private const string Key = "mudshadcn-showcase-theme";
     private const string LookKey = "mudshadcn-showcase-look";
+    private const string DesignKey = "mudshadcn-showcase-design";
 
-    /// <summary><c>false</c> if the visitor switched to MudBlazor's own look; otherwise <c>true</c>.</summary>
-    public async Task<bool> GetShadcnAsync()
+    /// <summary>The saved <see cref="ShowcaseDesign"/> in its query-string form, or <c>null</c>.</summary>
+    public async Task<string?> GetDesignAsync()
     {
         try
         {
-            return await js.InvokeAsync<string?>("localStorage.getItem", LookKey) != "mudblazor";
+            var design = await js.InvokeAsync<string?>("localStorage.getItem", DesignKey);
+            if (design is not null)
+            {
+                return design;
+            }
+
+            // Before the styles there was one choice, the look, under a key of its own.
+            return await js.InvokeAsync<string?>("localStorage.getItem", LookKey) == "mudblazor" ? "look=mudblazor" : null;
         }
         catch (JSException)
         {
-            return true; // storage blocked
+            return null; // storage blocked
         }
     }
 
-    public async Task SetShadcnAsync(bool shadcn)
+    public async Task SetDesignAsync(string design)
     {
         try
         {
-            await js.InvokeVoidAsync("localStorage.setItem", LookKey, shadcn ? "shadcn" : "mudblazor");
+            await js.InvokeVoidAsync("localStorage.setItem", DesignKey, design);
         }
         catch (JSException)
         {

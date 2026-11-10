@@ -1,6 +1,9 @@
 @inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
 
-<MudShadcnProvider @bind-IsDarkMode="_isDarkMode" Enabled="_shadcn" />
+@* The readable style sheets, so an edit shows on a reload. An app keeps the default (.min.css). *@
+<MudShadcnProvider @bind-IsDarkMode="_isDarkMode" Enabled="_shadcn" Theme="_theme" FollowSystemDarkMode="_followSystem"
+                   StyleHrefFormat="_content/MudShadcn/styles/{0}.css" />
 
 <MudLayout>
     <MudAppBar Elevation="0" Dense="true">
@@ -12,17 +15,22 @@
         <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Dense="true">
             <ActivatorContent>
                 <MudButton Variant="Variant.Outlined" Size="Size.Small" EndIcon="@Icons.Material.Filled.ExpandMore" Class="d-none d-sm-flex mr-1" OnClick="@context.ToggleAsync"
-                           aria-label="Choose the look" aria-haspopup="menu">@LookName(_shadcn)</MudButton>
+                           aria-label="Choose the look" aria-haspopup="menu">@LookName(_shadcn ? _options.Style : null)</MudButton>
                 <MudIconButton Icon="@Icons.Material.Outlined.Palette" Color="Color.Inherit" Class="d-flex d-sm-none" OnClick="@context.ToggleAsync"
                                aria-label="Choose the look" aria-haspopup="menu" />
             </ActivatorContent>
             <ChildContent>
-                @foreach (var shadcn in Looks)
+                @foreach (var look in Looks)
                 {
-                    <MudMenuItem OnClick="@(() => _shadcn = shadcn)" aria-current="@(shadcn == _shadcn ? "true" : null)">
+                    var current = look == (_shadcn ? _options.Style : null);
+                    @if (look is null)
+                    {
+                        <MudDivider Class="my-1" />
+                    }
+                    <MudMenuItem OnClick="@(() => SetLook(look))" aria-current="@(current ? "true" : null)">
                         <div class="d-flex align-center justify-space-between gap-6" style="min-width:7rem">
-                            @LookName(shadcn)
-                            @if (shadcn == _shadcn)
+                            @LookName(look)
+                            @if (current)
                             {
                                 <MudIcon Icon="@Icons.Material.Filled.Check" Size="Size.Small" />
                             }
@@ -33,7 +41,7 @@
         </MudMenu>
         <MudTooltip Text="@(_isDarkMode ? "Switch to light" : "Switch to dark")">
             <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Outlined.LightMode : Icons.Material.Outlined.DarkMode)"
-                           Color="Color.Inherit" OnClick="@(() => _isDarkMode = !_isDarkMode)" aria-label="Toggle dark mode" />
+                           Color="Color.Inherit" OnClick="ToggleDarkMode" aria-label="Toggle dark mode" />
         </MudTooltip>
     </MudAppBar>
 
@@ -71,10 +79,62 @@
 
     private bool _drawerOpen = true;
     private bool _isDarkMode;
+    private bool _followSystem = true;
     private bool _shadcn = true;
+    private ShadcnThemeOptions _options = new();
+    private ShadcnTheme _theme = MudShadcnTheme.Default;
 
-    // MudShadcnProvider's Enabled: the shadcn look, or MudBlazor's own.
-    private static readonly bool[] Looks = [true, false];
+    // The looks: every shadcn style, and (null) MudBlazor's own, which is MudShadcnProvider's Enabled="false".
+    private static readonly ShadcnStyle?[] Looks = [.. Enum.GetValues<ShadcnStyle>().Cast<ShadcnStyle?>(), null];
 
-    private static string LookName(bool shadcn) => shadcn ? "shadcn" : "MudBlazor";
+    private static string LookName(ShadcnStyle? style) => style switch
+    {
+        null => "MudBlazor",
+        ShadcnStyle.NewYork => "New York",
+        _ => style.Value.ToString(),
+    };
+
+    // A design in the address, to open (or screenshot) a page in it:
+    // ?style=nova&base=zinc&theme=blue&chart=blue&radius=small&accent=bold&menu=inverted&mode=dark&look=mudblazor
+    protected override void OnInitialized()
+    {
+        foreach (var pair in new Uri(NavigationManager.Uri).Query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var parts = pair.Split('=', 2);
+            var value = parts.Length == 2 ? Uri.UnescapeDataString(parts[1]).ToLowerInvariant() : "";
+            switch (parts[0].ToLowerInvariant())
+            {
+                case "style" when Value<ShadcnStyle>(value) is { } style: _options = _options with { Style = style }; break;
+                case "base" when Value<ShadcnBaseColor>(value) is { } color: _options = _options with { BaseColor = color }; break;
+                case "theme" when Value<ShadcnColor>(value) is { } color: _options = _options with { Theme = color }; break;
+                case "chart" when Value<ShadcnColor>(value) is { } color: _options = _options with { ChartColor = color }; break;
+                case "radius" when Value<ShadcnRadius>(value) is { } radius: _options = _options with { Radius = radius }; break;
+                case "accent" when Value<ShadcnMenuAccent>(value) is { } accent: _options = _options with { MenuAccent = accent }; break;
+                case "menu" when Value<ShadcnMenuColor>(value) is { } menu: _options = _options with { MenuColor = menu }; break;
+                case "look": _shadcn = value != "mudblazor"; break;
+                case "mode": _isDarkMode = value == "dark"; _followSystem = false; break;
+            }
+        }
+
+        _theme = MudShadcnTheme.Create(_options);
+    }
+
+    private static T? Value<T>(string text) where T : struct, Enum =>
+        Enum.TryParse<T>(text.Replace("-", ""), ignoreCase: true, out var value) && Enum.IsDefined(value) ? value : null;
+
+    private void SetLook(ShadcnStyle? style)
+    {
+        _shadcn = style is not null;
+        if (style is { } chosen && chosen != _options.Style)
+        {
+            _options = _options with { Style = chosen };
+            _theme = MudShadcnTheme.Create(_options);
+        }
+    }
+
+    private void ToggleDarkMode()
+    {
+        _isDarkMode = !_isDarkMode;
+        _followSystem = false;
+    }
 }

@@ -1,0 +1,7 @@
+/*
+ * rhea.css — shadcn/ui's Rhea style for MudShadcn. Like Luma, but compact.
+ * Loaded AFTER MudShadcn.css (MudShadcnProvider links it when the theme's Style is Rhea),
+ * so a rule here wins over the rule with the same selector there. Written against MudBlazor 9.12.0.
+ *
+ * Values are shadcn/ui's apps/v4/registry/styles/style-rhea.css, not approximations.
+ */
