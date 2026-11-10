@@ -46,9 +46,31 @@ jobs:
       - name: Pack
         run: dotnet pack src/MudShadcn -c Release --no-build -o artifacts
 
+      # The samples reference the project, so they cannot show a file missing from the .nupkg or
+      # MudBlazor no longer arriving through it. A copy of the test app that references the package
+      # just packed has to start, render and serve both stylesheets.
+      - name: Test the package as a consumer gets it
+        run: tools/test-package.sh artifacts
+
       # The same publish Cloudflare Pages runs from build.sh, so a broken showcase shows up here first.
       - name: Publish the showcase
         run: dotnet publish samples/MudShadcn.Showcase -c Release -o publish
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      # A ported docs page that uses something the showcase's Docs/ folder lacks, or something the
+      # publish trimmed away, builds fine and only fails when the page renders. Load every URL of
+      # the sitemap in a browser and fail on a script error or Blazor's error bar.
+      - name: Install Playwright
+        run: |
+          npm install --no-save --no-package-lock playwright@1.65.0
+          npx playwright install --with-deps --only-shell chromium
+
+      - name: Smoke-test the showcase in a browser
+        run: node tools/smoke-test.mjs publish/wwwroot
 
       - name: Upload the package
         uses: actions/upload-artifact@v7

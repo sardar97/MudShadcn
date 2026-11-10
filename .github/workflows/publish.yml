@@ -73,6 +73,11 @@ jobs:
       - name: Pack
         run: dotnet pack src/MudShadcn -c Release --no-build -p:Version=${{ steps.version.outputs.version }} -o artifacts
 
+      # The package about to be published, referenced the way a consumer references it: a copy of
+      # the test app restored against it has to start, render and serve both stylesheets.
+      - name: Test the package as a consumer gets it
+        run: tools/test-package.sh artifacts
+
       # Trusted Publishing: trades GitHub's OIDC token for a NuGet API key that is valid for an hour,
       # so it is requested right before the push. `user` is the nuget.org profile name that owns the
       # policy, not an email address.
