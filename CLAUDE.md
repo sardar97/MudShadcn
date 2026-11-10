@@ -3,7 +3,11 @@
 A NuGet package that makes MudBlazor look like shadcn/ui. It is a `MudTheme` plus one stylesheet;
 it adds no components of its own and must never wrap, fork or replace MudBlazor's.
 
-**Never run `git commit` (or anything that writes git history).** Sardar reviews and commits.
+**Committing is allowed** when a task is finished or Sardar asks for it: on the current branch, with
+the configured git identity, in the style of `git log` (`fix(css): Subject`). **Never add a
+`Co-Authored-By` or "Generated with" line to a commit message.** Never push, tag, merge, rebase,
+amend or force anything: Sardar does those, and the releases (`RELEASE.md`). The one exception to
+committing is a MudBlazor update, which `UPDATING.md` leaves in the working tree for review.
 
 ## Layout
 
