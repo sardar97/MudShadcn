@@ -401,6 +401,60 @@ h1:focus {
     column-gap: 16px;
 }
 
+/*
+ * A few of MudBlazor's docs examples are laid out for a wide screen: a fixed twelfth or sixth of
+ * the row per control, or two cards side by side in fixed percentages. In a narrow frame their
+ * controls end up on top of each other, because a MudShadcn button keeps its size where a
+ * MudBlazor one would shrink and wrap its label. On a phone those examples keep the width they
+ * were written for and scroll inside the frame, like a wide table. Listed by example name
+ * (data-example on the frame, set by SectionContent), so an example MudBlazor renames just drops
+ * off the list.
+ */
+@media (max-width: 600px) {
+    :is([data-example="FileUploadBasicExample"],
+        [data-example="FileUploadCustomExample"],
+        [data-example="FileUploadMiscExample"]) > .docs-section-content-inner > * {
+        min-width: 21rem;
+    }
+
+    [data-example="HeatMapExample1"] > .docs-section-content-inner > * {
+        min-width: 24rem;
+    }
+
+    [data-example="HeatMapExample2"] > .docs-section-content-inner > * {
+        min-width: 27rem;
+    }
+
+    :is([data-example="BadgeInteractiveExample"],
+        [data-example="MenuAdvancedPopoverExample"],
+        [data-example="PopoverLocationExample"],
+        [data-example="TableScrollFocusExample"]) > .docs-section-content-inner > * {
+        min-width: 33rem;
+    }
+}
+
+/* This one puts six controls in one row and needs 800px, more than the frame has even on a
+   laptop, so it is not limited to phones; the min-width does nothing in a wider frame. */
+[data-example="HeatMapExample4"] > .docs-section-content-inner > * {
+    min-width: 50rem;
+}
+
+/*
+ * mudblazor.com's card around a chart example (MudPaper Class="doc-section-component-container"),
+ * from its _docssection.scss: padded, the chart centred, and a chart wider than the card (the
+ * Sankey examples are 650px and 1000px) scrolling inside it instead of sticking out. "safe" keeps
+ * the left edge of such a chart reachable.
+ */
+.doc-section-component-container {
+    display: flex;
+    flex-direction: column;
+    align-items: safe center;
+    width: 100%;
+    padding: 16px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
 .docs-section-content.show-code {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
@@ -599,11 +653,18 @@ h1:focus {
 /* ---------------------------------------------------------------------------------------------
    Footer, previous/next
    --------------------------------------------------------------------------------------------- */
+/* Two long page names do not fit side by side on a phone: the next-page button takes its own row,
+   still at the end. */
 .docs-navigation-footer {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 8px;
     margin-top: 48px;
+}
+
+.docs-navigation-footer > .flex-grow-1 + .mud-button {
+    margin-inline-start: auto;
 }
 
 .docs-footer {

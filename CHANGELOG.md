@@ -8,6 +8,21 @@ major version is a new MudShadcn major version.
 
 ## [Unreleased]
 
+### Fixed
+- **Charts in Firefox:** the legend no longer hangs out of the chart's box and over whatever
+  follows it. MudBlazor relies on `min-height: fit-content` to let the box grow by the legend,
+  which Firefox does not apply; the box now grows there too, in every legend position.
+- **Card and dialog actions** wrap onto a second row on a narrow card instead of sticking out of
+  it (buttons keep their size since 1.1.1). Actions pushed to the end with a `MudSpacer`, such as
+  the stepper's Next, stay at the end on the row they wrap to.
+- **Chip in a button group:** the chip's close button keeps its chip size instead of taking the
+  group's 36px icon-button size.
+- **Showcase on phones:** the example frame has 8px of side padding instead of 24px, so a static
+  picker fits a 360px screen; the chart examples' card is styled as on mudblazor.com, so a Sankey
+  chart scrolls inside it instead of sticking out; the previous/next page buttons wrap; and the
+  few examples laid out for a desktop keep their width and scroll inside the frame instead of
+  piling their controls on top of each other.
+
 ## [1.1.1] — 2026-11-08
 
 Written against MudBlazor 9.12.0, for .NET 10.

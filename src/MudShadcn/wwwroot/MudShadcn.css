@@ -129,10 +129,20 @@ body {
     padding: 24px;
 }
 
+/*
+ * flex-wrap: buttons keep their size (section 3), so on a narrow card the actions take a second
+ * row instead of sticking out of it. Actions pushed to the end with a MudSpacer (the stepper's
+ * Next) stay at the end on the row they wrap to.
+ */
 .mud-card-actions,
 .mud-card-actions.mud-card-actions-padding {
+    flex-wrap: wrap;
     padding: 0 24px 24px;
     gap: 8px;
+}
+
+.mud-card-actions:has(> .flex-grow-1) {
+    justify-content: flex-end;
 }
 
 .mud-appbar {
@@ -572,28 +582,29 @@ body {
     z-index: 1;
 }
 
-/* Icon buttons in a group: size="icon" (size-9 / size-8 / size-10) */
-.mud-button-group-root .mud-button-root.mud-icon-button,
-.mud-button-group-root.mud-button-group-override-styles .mud-button-root.mud-icon-button {
+/* Icon buttons in a group: size="icon" (size-9 / size-8 / size-10). Not the close button of a
+   chip that sits in a group (file chips next to an upload button): that one stays chip-sized. */
+.mud-button-group-root .mud-button-root.mud-icon-button:not(.mud-chip-close-button),
+.mud-button-group-root.mud-button-group-override-styles .mud-button-root.mud-icon-button:not(.mud-chip-close-button) {
     box-sizing: border-box;
     height: 36px;
     min-width: 36px;
     padding: 0;
 }
 
-.mud-button-group-root:is(.mud-button-group-filled-size-small, .mud-button-group-outlined-size-small, .mud-button-group-text-size-small) .mud-button-root.mud-icon-button {
+.mud-button-group-root:is(.mud-button-group-filled-size-small, .mud-button-group-outlined-size-small, .mud-button-group-text-size-small) .mud-button-root.mud-icon-button:not(.mud-chip-close-button) {
     height: 32px;
     min-width: 32px;
     padding: 0;
 }
 
-.mud-button-group-root:is(.mud-button-group-filled-size-large, .mud-button-group-outlined-size-large, .mud-button-group-text-size-large) .mud-button-root.mud-icon-button {
+.mud-button-group-root:is(.mud-button-group-filled-size-large, .mud-button-group-outlined-size-large, .mud-button-group-text-size-large) .mud-button-root.mud-icon-button:not(.mud-chip-close-button) {
     height: 40px;
     min-width: 40px;
     padding: 0;
 }
 
-.mud-button-group-root .mud-button-root.mud-icon-button > .mud-icon-button-label > .mud-icon-root {
+.mud-button-group-root .mud-button-root.mud-icon-button:not(.mud-chip-close-button) > .mud-icon-button-label > .mud-icon-root {
     font-size: 1.25rem;
 }
 
@@ -1733,6 +1744,7 @@ label.mud-input-label.mud-input-error {
 }
 
 .mud-dialog .mud-dialog-actions {
+    flex-wrap: wrap;                                  /* as the card's actions do: buttons do not shrink */
     padding: 16px 24px 24px;
     gap: 8px;
 }
@@ -3366,6 +3378,20 @@ label.mud-input-label.mud-input-error {
 
 .mud-chart.mud-chart-legend-bottom .mud-chart-legend {
     margin-top: 0;
+}
+
+/*
+ * MudChart gives its box the Height parameter and the same height to the SVG inside, then counts
+ * on min-height: fit-content to let the box grow by the legend. Firefox accepts that value but
+ * does not apply content keywords to min-height, so there the legend hangs out of the box and
+ * over whatever follows the chart. A table box treats its height as a minimum in every engine,
+ * which gives Firefox the growth the other engines already have. MatchBoundsToSize charts
+ * (.mud-chart-fill-bounds) are meant to stay inside their bounds and are left alone.
+ */
+@supports (min-height: -moz-fit-content) {
+    .mud-chart:has(> .mud-chart):not(.mud-chart-fill-bounds) {
+        display: table;
+    }
 }
 
 .mud-chart.mud-chart-legend-top .mud-chart-legend {
