@@ -7,7 +7,9 @@
 #      ChartOptions.ChartPalette and the five heat-map shades built from it;
 #   3. the default checkbox, radio and select/autocomplete icons the stylesheet redraws still have
 #      the SVG paths its selectors match;
-#   4. the default line width the chart rules match (stroke-width="3") is still MudBlazor's.
+#   4. the default line width the chart rules match (stroke-width="3") is still MudBlazor's;
+#   5. bar, stacked bar and line charts still render the SVG the chart rules are written for: one
+#      stroked path per bar, stacked segments in stack and series order, data markers without a fill.
 #
 # Usage:
 #   tools/verify-mudblazor.sh           # the MudBlazor version MudShadcn references
@@ -36,7 +38,15 @@ sed "s/@VERSION@/$VERSION/" > "$WORK/probe/probe.cs" <<'EOF'
 #:sdk Microsoft.NET.Sdk.Razor
 #:package MudBlazor@@VERSION@
 #:property TargetFramework=net10.0
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.JSInterop;
 using MudBlazor;
+using MudBlazor.Services;
 using MudBlazor.Utilities;
 
 var palette = new BarChartOptions().ChartPalette;
@@ -59,11 +69,54 @@ for (var i = 0; i < palette.Length; i++) Console.WriteLine($"palette\t{i + 1}\t{
 for (var i = 0; i < heat.Length; i++) Console.WriteLine($"heat\t{i + 1}\t{heat[i]}");
 foreach (var (name, svg) in icons) Console.WriteLine($"icon\t{name}\t{svg}");
 Console.WriteLine(FormattableString.Invariant($"chart\tLineStrokeWidth\t{new LineChartOptions().LineStrokeWidth}"));
+
+// The SVG of a bar, a stacked bar and a line chart with data markers, rendered to a string. Three
+// series over three labels; the second series has a zero in the middle.
+var services = new ServiceCollection();
+services.AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance);
+services.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
+services.AddMudServices();
+services.AddSingleton<IJSRuntime, NoJsRuntime>();
+await using var provider = services.BuildServiceProvider();
+await using var renderer = new HtmlRenderer(provider, NullLoggerFactory.Instance);
+foreach (var type in new[] { ChartType.Bar, ChartType.StackedBar, ChartType.Line })
+{
+    var parameters = new Dictionary<string, object?>
+    {
+        ["ChartType"] = type,
+        ["ChartLabels"] = new[] { "x", "y", "z" },
+        ["ChartSeries"] = new List<ChartSeries<double>>
+        {
+            new() { Name = "A", Data = new double[] { 1, 2, 3 } },
+            new() { Name = "B", Data = new double[] { 3, 0, 1 } },
+            new() { Name = "C", Data = new double[] { 2, 2, 2 } },
+        },
+    };
+    if (type == ChartType.Line)
+    {
+        parameters["ChartOptions"] = new LineChartOptions { ShowDataMarkers = true };
+    }
+
+    var html = await renderer.Dispatcher.InvokeAsync(async () =>
+        (await renderer.RenderComponentAsync<MudChart<double>>(ParameterView.FromDictionary(parameters))).ToHtmlString());
+    Console.WriteLine($"markup\t{type}\t{html.ReplaceLineEndings(" ").Replace('\t', ' ')}");
+}
+
+// Static rendering never calls JavaScript, but the chart components ask for the service.
+sealed class NoJsRuntime : IJSRuntime
+{
+    private const DynamicallyAccessedMemberTypes Json = DynamicallyAccessedMemberTypes.PublicConstructors
+        | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties;
+
+    public ValueTask<TValue> InvokeAsync<[DynamicallyAccessedMembers(Json)] TValue>(string identifier, object?[]? args) => default;
+
+    public ValueTask<TValue> InvokeAsync<[DynamicallyAccessedMembers(Json)] TValue>(string identifier, CancellationToken cancellationToken, object?[]? args) => default;
+}
 EOF
 if ! (cd "$WORK/probe" && dotnet run probe.cs) > "$WORK/defaults.tsv" 2> "$WORK/probe.log"; then
     # The defaults are read through MudBlazor's API (BarChartOptions.ChartPalette,
-    # MudColor.GenerateMultiGradientPalette, the components' icon properties). If that API changed,
-    # the probe above needs updating along with the stylesheet.
+    # MudColor.GenerateMultiGradientPalette, the components' icon properties, MudChart's
+    # parameters). If that API changed, the probe above needs updating along with the stylesheet.
     cat "$WORK/defaults.tsv" "$WORK/probe.log" >&2
     echo "Could not read MudBlazor $VERSION's defaults: the probe in this script no longer compiles or runs." >&2
     : > "$WORK/defaults.tsv"
@@ -90,7 +143,7 @@ MARKUP_ONLY_CLASSES = {
 # Variables MudThemeProvider writes that MudBlazor's own stylesheet never reads.
 PROVIDER_ONLY_VARIABLES = {"--mud-palette-black"}
 
-defaults = {"palette": {}, "heat": {}, "icon": {}, "chart": {}}
+defaults = {"palette": {}, "heat": {}, "icon": {}, "chart": {}, "markup": {}}
 for line in open(defaults_path, encoding="utf-8"):
     kind, key, value = line.rstrip("\n").split("\t", 2)
     defaults[kind][key] = value
@@ -146,6 +199,61 @@ line_widths = sorted(set(re.findall(r'path\.mud-chart-line\[stroke-width="([^"]+
 default_width = defaults["chart"].get("LineStrokeWidth")
 check(line_widths == [default_width], f"the 2px line rule matches MudBlazor's default LineStrokeWidth ({default_width})"
       + ("" if line_widths == [default_width] else f": stylesheet matches {line_widths}"))
+
+print("5. Chart markup")
+def attributes(tag):
+    return dict(re.findall(r'([a-zA-Z-]+)="([^"]*)"', tag))
+def series(chart, group, element):
+    """The elements MudBlazor draws for a chart's series, as attribute dictionaries."""
+    match = re.search(rf'<g class="{group}">(.*?)</g>', defaults["markup"].get(chart, ""), re.S)
+    return [attributes(tag) for tag in re.findall(rf"<{element}\b[^>]*>", match.group(1))] if match else []
+def vertical_line(path):
+    """M x y1 L x y2: the single stroke MudBlazor draws a bar as. Returns x, or None."""
+    match = re.fullmatch(r"M (\S+) \S+ L (\S+) \S+", path.get("d", ""))
+    return match.group(1) if match and match.group(1) == match.group(2) else None
+order = [palette[n] for n in sorted(palette)]
+
+# Grouped bars: the rounding clips each bar to the box of its stroke.
+bars = series("Bar", "mud-charts-bar-series", "path")
+check(len(bars) == 9 and all(b.get("class") == "mud-chart-bar" and b.get("stroke-width") and b.get("fill", "none") != "none"
+                             and vertical_line(b) for b in bars),
+      "a bar is one stroked, filled path.mud-chart-bar in .mud-charts-bar-series")
+
+# Stacked bars: the end rounding reads the series from the stroke colour and relies on the order.
+segments = series("StackedBar", "mud-charts-stackedbar-series", "path")
+stacks = {}
+for segment in segments:
+    stacks.setdefault(vertical_line(segment), []).append(segment.get("stroke", "").lower())
+contiguous = [vertical_line(a) for a, b in zip(segments, segments[1:] + [{}]) if vertical_line(a) != vertical_line(b)]
+check(len(segments) == 9 and None not in stacks and all(s.get("class") == "mud-chart-bar" and s.get("fill") == "none" for s in segments),
+      'a stacked segment is one stroked path.mud-chart-bar with fill="none" in .mud-charts-stackedbar-series')
+check(len(stacks) == 3 and len(contiguous) == 3 and all(colours == order[:3] for colours in stacks.values()),
+      "stacked segments come stack after stack, each stack in series order, in the palette's colours"
+      + ("" if segments else ": no segments found"))
+
+# The stylesheet's stack rules name the palette's colours in order.
+def colours(selector_list):
+    return [c.lower() for c in re.findall(r'\[stroke="(#[0-9a-fA-F]{6})" i\]', selector_list)]
+rounded = re.search(r'path\.mud-chart-bar\[fill="none"\]:is\(([^)]*)\)\s*\{\s*--_top', css)
+rounded = colours(rounded.group(1)) if rounded else []
+beyond = re.search(r'g:not\(:has\(> path:is\(([^)]*)\)\)\) > path\.mud-chart-bar\[fill="none"\]', css)
+beyond = colours(beyond.group(1)) if beyond else []
+tops = {c.lower(): colours(later) for c, later in re.findall(
+    r'\[fill="none"\]\[stroke="(#[0-9a-fA-F]{6})" i\]:has\(\+ path:is\(([^)]*)\)\)', css)}
+bottoms = {c.lower(): colours(earlier) for earlier, c in re.findall(
+    r'path:is\(([^)]*)\) \+ path\.mud-chart-bar\[fill="none"\]\[stroke="(#[0-9a-fA-F]{6})" i\]', css)}
+count = len(rounded)
+check(count > 1 and rounded == order[:count] and beyond == order[count:]
+      and tops == {order[i]: order[i + 1:count] for i in range(count - 1)}
+      and bottoms == {order[j]: order[:j] for j in range(1, count)},
+      f"the stack rounding rules follow the palette's order (its first {count} colours)")
+
+# Data markers: the marker has no fill attribute, the hover target over it has one.
+points = series("Line", "mud-charts-line-series", "circle")
+markers = [p for p in points if "fill" not in p]
+check(len(points) == 18 and len(markers) == 9 and all("mud-chart-point" in p.get("class", "") and p.get("stroke") for p in points)
+      and all(p.get("opacity") == "0" for p in points if "fill" in p),
+      "a data marker is a circle.mud-chart-point with a stroke and no fill, under a transparent hover target")
 
 if failures:
     print(f"\n{len(failures)} check(s) failed. See UPDATING.md, step 3.")

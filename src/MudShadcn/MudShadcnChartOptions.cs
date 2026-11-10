@@ -36,11 +36,14 @@ public static class MudShadcnChartOptions
 
     /// <summary>
     /// <c>&lt;BarChart&gt;</c> with stacked bars (<c>stackId</c>): the stack fills 80% of its category.
+    /// A zero value draws nothing, as in Recharts. MudBlazor's default is a hairline segment, which
+    /// the stylesheet would take for the end of its stack when it rounds the stack's two ends.
     /// </summary>
     public static StackedBarChartOptions StackedBar() => new()
     {
         MaxNumYAxisTicks = AxisTicks,
         BarWidthRatio = 0.8,
+        ShowZeroValues = false,
     };
 
     /// <summary>

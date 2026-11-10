@@ -47,8 +47,12 @@ committing is a MudBlazor update, which `UPDATING.md` leaves in the working tree
 - `RELEASE.md` — how a release and a site deploy happen. Sardar runs them.
 - `UPDATING.md` — procedure for moving to a new MudBlazor version. Follow it when asked to update.
 - `tools/verify-mudblazor.sh` — checks the stylesheet's assumptions about MudBlazor (below).
-- `.github/workflows/ci.yml` — builds with warnings as errors, runs the verify script, packs, and
-  publishes the showcase, on every push and pull request. `publish.yml` packs and pushes to NuGet
+- `tools/test-package.sh` — packs MudShadcn into a temporary feed, points a copy of the test app at
+  the package and checks that it starts and serves both stylesheets ("Packaging" below).
+- `tools/smoke-test.mjs` — serves a published showcase and loads every URL of its sitemap in
+  Chromium (Playwright), failing on a script error, Blazor's error bar or the Not found page.
+- `.github/workflows/ci.yml` — builds with warnings as errors, runs the verify script, packs, tests
+  the package, publishes the showcase and smoke-tests it, on every push and pull request. `publish.yml` packs and pushes to NuGet
   and creates the GitHub Release when a `v*` tag is pushed. `build.sh` is what Cloudflare Pages runs
   to build the showcase from the `docs` branch.
 
@@ -60,7 +64,13 @@ dotnet run --project samples/MudShadcn.TestApp --launch-profile http    # http:/
 dotnet run --project samples/MudShadcn.Showcase --launch-profile http   # http://localhost:5153
 dotnet publish samples/MudShadcn.Showcase -c Release -o <scratchpad>/site   # static site, trimmed
 tools/verify-mudblazor.sh                                               # stylesheet vs MudBlazor
+tools/test-package.sh                                                   # the package, as a consumer gets it
+node tools/smoke-test.mjs <scratchpad>/site/wwwroot                     # every page of the published showcase
 ```
+
+The smoke test needs the `playwright` npm package where Node can resolve it from `tools/` (CI
+installs it at the repository root without saving it; do not add a `package.json` for it) and a
+Chromium: Playwright's own, or an installed Chrome with `SMOKE_BROWSER_CHANNEL=chrome`.
 
 `MudShadcn.css` is served straight from `src/` in development (in both apps), so CSS edits only
 need a browser reload. `.razor` and `.cs` edits need a rebuild and restart. There are no tests;
@@ -112,13 +122,26 @@ Do this in the scratchpad, not the repo. Things already learned the hard way:
 - Outlined input labels are pinned above the field and the legend notch is hidden. Anything that
   touches `.mud-input-label-outlined` or `.mud-input-control` margins has to keep that working,
   including `Margin.Dense`.
+- A MudBlazor rule written for one component reaches the buttons of whatever sits inside it: the
+  button group's icon size, `-1px` margin and squared corners also hit the close button of a chip
+  in the group. And MudShadcn's own `.mud-button` rule (`height: 36px; flex-shrink: 0`) applies to
+  every MudButton MudBlazor uses internally, such as the numeric field's two spin buttons, which
+  have to share the input's height. Check those when touching either.
+- The date range picker draws its preview from two numbers, not from classes: `--selected-day` on
+  `.mud-picker-calendar-content` (the day last pointed at or picked) and `--day-id` on every day.
+  The first pick (`.mud-range-selection-anchor`) follows them too, because the other day can be in
+  another month's `.mud-picker-calendar` and a touch screen has no `:hover`. Adjacent-month days
+  are hidden by default (`.mud-hidden`), so every month has band ends next to hidden days.
 - Charts colour series with SVG `fill`/`stroke` attributes from `ChartOptions.ChartPalette`. The
   charts section maps MudBlazor's default palette, by attribute value, to `--shadcn-chart-*`;
   palettes a consumer sets are left alone. If MudBlazor changes `DefaultChartOptions.ChartPalette`
-  or the heat map's shade logic, those selectors silently stop matching.
+  or the heat map's shade logic, those selectors silently stop matching. The stacked bar rounding
+  goes further and relies on the palette's order and on MudBlazor drawing the segments stack by
+  stack in series order; the verify script renders the charts to check that.
 
-After CSS changes, run `tools/verify-mudblazor.sh`: it checks the classes, variables, chart colours
-and icon paths the stylesheet relies on against the referenced MudBlazor (step 3 of `UPDATING.md`).
+After CSS changes, run `tools/verify-mudblazor.sh`: it checks the classes, variables, chart colours,
+chart markup and icon paths the stylesheet relies on against the referenced MudBlazor (step 3 of
+`UPDATING.md`).
 
 ## MudBlazor 9 API notes
 
@@ -134,8 +157,10 @@ Differences from older MudBlazor that have already caused build errors here:
 
 ## Packaging
 
-`dotnet pack src/MudShadcn -c Release -o <scratchpad>/feed`. To test the real package, copy the
-test app into the scratchpad, swap its `ProjectReference` for a `PackageReference` with a local
-`nuget.config`, and check that `_content/MudBlazor/MudBlazor.min.css` and
-`_content/MudShadcn/MudShadcn.min.css` are served. Never pack into the repo and never publish to
-nuget.org; Sardar does that.
+`dotnet pack src/MudShadcn -c Release -o <scratchpad>/feed`. To test the real package, run
+`tools/test-package.sh` (or `tools/test-package.sh <folder with the .nupkg>`): in a temporary
+folder it copies the test app, swaps its `ProjectReference` for a `PackageReference` restored from
+a local feed, publishes and starts it, and checks that the page renders and that
+`_content/MudBlazor/MudBlazor.min.css` and `_content/MudShadcn/MudShadcn.min.css` are served. CI and
+the publish workflow run it on the package they packed. Never pack into the repo and never publish
+to nuget.org; Sardar does that.

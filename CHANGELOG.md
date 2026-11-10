@@ -21,6 +21,14 @@ major version is a new MudShadcn major version.
 - **Showcase:** a dropdown in the top bar switches every page between the shadcn look and
   MudBlazor's own, to compare them, and the package version is shown next to the name (it opens
   the release notes).
+- **Stacked bar charts** have shadcn's rounded stacks: the two ends of each stack are rounded and
+  the joins between its segments stay square. The stylesheet tells the series apart by MudBlazor's
+  default chart palette, so a palette of your own (or a stack of more than ten series) keeps
+  square segments, and it assumes values that are not negative.
+- **`--shadcn-chart-bar-radius`** sets the corner radius of chart bars (4px by default) from your
+  own CSS or a chart's `Style`; `0` gives square bars.
+- **Showcase:** a Charts page (under Customization) shows `MudShadcnChartOptions` as shadcn's chart
+  cards (bar, stacked bar, line, line with dots, area and donut) with the code of each.
 
 ### Changed
 - **Documentation on MudBlazor versions:** the README, the Installation page and the agent skill now
@@ -28,16 +36,33 @@ major version is a new MudShadcn major version.
   MudBlazor version MudShadcn names is a minimum, not a lock. They no longer tell you to remove
   your own `MudBlazor` reference: referencing a newer MudBlazor yourself is how you move ahead of
   MudShadcn. The package's dependency itself has not changed.
+- **Chart data markers** (`ShowDataMarkers`) are dots filled with the series colour, as in shadcn's
+  "Line Chart - Dots", instead of rings on the surface colour.
+- **`MudShadcnChartOptions.StackedBar()`** sets `ShowZeroValues = false`: a zero value draws
+  nothing, where MudBlazor's default is a hairline segment that would end up as the rounded end
+  of its stack.
+- **Data grid:** the sort, filter and column-options buttons in a column header are 24px instead of
+  28px and the sort order number sits between their icons, so a column is about 20px narrower
+  and a grid with several sortable, filterable columns fits where it used to scroll sideways. In
+  the filter row the field keeps a usable width next to its two buttons, and the fields of the
+  filter panel are 8px apart.
 
 ### Fixed
+- **Numeric field:** the spin buttons are inside the field again. Since 1.1.1 the lower one hung
+  below it.
+- **Date range picker**, while the second date is being picked: in a picker that shows several
+  months, the first pick now turns into the end of the range when the pointer is on a day in an
+  earlier month, and the previewed band ends rounded next to the hidden days of the adjacent month.
+  The first pick also follows a finger resting on a day on a touch screen, and keeps its rounded
+  corners at the end of a week row while the pointer is still on it.
 - **Charts in Firefox:** the legend no longer hangs out of the chart's box and over whatever
   follows it. MudBlazor relies on `min-height: fit-content` to let the box grow by the legend,
   which Firefox does not apply; the box now grows there too, in every legend position.
 - **Card and dialog actions** wrap onto a second row on a narrow card instead of sticking out of
   it (buttons keep their size since 1.1.1). Actions pushed to the end with a `MudSpacer`, such as
   the stepper's Next, stay at the end on the row they wrap to.
-- **Chip in a button group:** the chip's close button keeps its chip size instead of taking the
-  group's 36px icon-button size.
+- **Chip in a button group:** the chip's close button keeps its chip size, icon size, spacing and
+  round shape instead of taking the group's 36px icon-button size and joined corners.
 - **Showcase on phones:** the example frame has 8px of side padding instead of 24px, so a static
   picker fits a 360px screen; the chart examples' card is styled as on mudblazor.com, so a Sankey
   chart scrolls inside it instead of sticking out; the previous/next page buttons wrap; and the

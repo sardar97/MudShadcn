@@ -57,7 +57,9 @@ git push origin origin/master:docs
 
 The one-time Cloudflare setup, and the package release that is separate from it, are in
 `RELEASE.md`. CI (`.github/workflows/ci.yml`) runs the same `dotnet publish` on every push to
-`master`, so a showcase that fails to build shows up there before it reaches `docs`.
+`master` and then loads every page of the result in a browser (`tools/smoke-test.mjs`), so a
+showcase that fails to build, or a page that fails to render, shows up there before it reaches
+`docs`.
 
 GitHub Pages also works, at `https://<user>.github.io/MudShadcn/`, but needs the base path and the
 `404.html` and `.nojekyll` steps above, and ignores `_headers`.

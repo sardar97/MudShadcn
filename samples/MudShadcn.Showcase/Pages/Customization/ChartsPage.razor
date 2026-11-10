@@ -1,0 +1,140 @@
+@page "/customization/charts"
+@using MudShadcn.Showcase.Pages.Customization.Examples
+
+<DocsPage>
+    <DocsPageHeader Title="Charts"
+                    SubTitle="MudShadcnChartOptions: MudBlazor chart options with the proportions of shadcn/ui's charts, shown as shadcn's chart cards." />
+    <DocsPageContent>
+        <DocsPageSection>
+            <SectionHeader Title="What the presets add">
+                <Description>
+                    Charts look like shadcn's without any options: the stylesheet gives every chart shadcn's colours, muted axes, grid,
+                    legend and tooltip, rounded bars and 2px lines. A few things MudBlazor computes into the SVG, where a stylesheet
+                    cannot reach: how wide the bars are, the curve of a line, the area fill, the number of axis ticks and the donut ring.
+                    <CodeInline>MudShadcnChartOptions</CodeInline> returns MudBlazor's own option objects with those set.
+                </Description>
+            </SectionHeader>
+            <MudSimpleTable Elevation="0" Outlined="true" Dense="true" Class="mb-4">
+                <thead>
+                    <tr><th>Method</th><th>MudBlazor options it sets</th><th>shadcn chart</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="white-space:nowrap"><code class="docs-code">Bar()</code></td>
+                        <td><code class="docs-code">BarWidthRatio = 0.8</code>, <code class="docs-code">BarSpacingRatio = 0.08</code>, 5 ticks</td>
+                        <td><code class="docs-code">&lt;Bar radius={4}&gt;</code>, <code class="docs-code">barGap={4}</code></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space:nowrap"><code class="docs-code">StackedBar()</code></td>
+                        <td><code class="docs-code">BarWidthRatio = 0.8</code>, <code class="docs-code">ShowZeroValues = false</code>, 5 ticks</td>
+                        <td><code class="docs-code">&lt;Bar stackId="a"&gt;</code></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space:nowrap"><code class="docs-code">Line()</code></td>
+                        <td><code class="docs-code">LineStrokeWidth = 2</code>, <code class="docs-code">NaturalSpline</code>, 5 ticks</td>
+                        <td><code class="docs-code">&lt;Line type="natural" strokeWidth={2}&gt;</code></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space:nowrap"><code class="docs-code">Area()</code></td>
+                        <td><code class="docs-code">LineDisplayType.Area</code>, <code class="docs-code">LineStrokeWidth = 1</code>, <code class="docs-code">NaturalSpline</code>, 5 ticks</td>
+                        <td><code class="docs-code">&lt;Area type="natural"&gt;</code></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space:nowrap"><code class="docs-code">Donut()</code></td>
+                        <td><code class="docs-code">DonutRingRatio = 0.4</code></td>
+                        <td><code class="docs-code">&lt;Pie innerRadius={60}&gt;</code></td>
+                    </tr>
+                </tbody>
+            </MudSimpleTable>
+            <MudText Typo="Typo.body2">
+                Each call returns a new object, so change anything else on it as usual. The examples below use the data of shadcn's own
+                chart examples; <em>Show code</em> on an example shows its source.
+            </MudText>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Bar">
+                <Description>
+                    <CodeInline>MudShadcnChartOptions.Bar()</CodeInline>: each category's bars fill 80% of it and sit about 4px apart. The
+                    rounded corners come from the stylesheet.
+                </Description>
+            </SectionHeader>
+            <SectionContent Code="@nameof(ShadcnBarChartExample)" ShowCode="false">
+                <div class="docs-chart-card"><ShadcnBarChartExample /></div>
+            </SectionContent>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Stacked bar">
+                <Description>
+                    <CodeInline>MudShadcnChartOptions.StackedBar()</CodeInline>: the stack fills 80% of its category. The stylesheet rounds
+                    the two ends of each stack and keeps the joins square, as shadcn does. It tells the series apart by MudBlazor's default
+                    palette, so a palette of your own keeps square segments.
+                </Description>
+            </SectionHeader>
+            <SectionContent Code="@nameof(ShadcnStackedBarChartExample)" ShowCode="false">
+                <div class="docs-chart-card"><ShadcnStackedBarChartExample /></div>
+            </SectionContent>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Line">
+                <Description><CodeInline>MudShadcnChartOptions.Line()</CodeInline>: smooth 2px lines.</Description>
+            </SectionHeader>
+            <SectionContent Code="@nameof(ShadcnLineChartExample)" ShowCode="false">
+                <div class="docs-chart-card"><ShadcnLineChartExample /></div>
+            </SectionContent>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Line with dots">
+                <Description>
+                    The same preset with MudBlazor's <CodeInline>ShowDataMarkers</CodeInline> switched on. The stylesheet draws the
+                    markers as dots in the series colour.
+                </Description>
+            </SectionHeader>
+            <SectionContent Code="@nameof(ShadcnLineDotsChartExample)" ShowCode="false">
+                <div class="docs-chart-card"><ShadcnLineDotsChartExample /></div>
+            </SectionContent>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Area">
+                <Description><CodeInline>MudShadcnChartOptions.Area()</CodeInline>: a smooth line over a fill in the series colour.</Description>
+            </SectionHeader>
+            <SectionContent Code="@nameof(ShadcnAreaChartExample)" ShowCode="false">
+                <div class="docs-chart-card"><ShadcnAreaChartExample /></div>
+            </SectionContent>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Donut">
+                <Description><CodeInline>MudShadcnChartOptions.Donut()</CodeInline>: a ring 40% of the radius (MudBlazor's default is 25%).</Description>
+            </SectionHeader>
+            <SectionContent Code="@nameof(ShadcnDonutChartExample)" ShowCode="false">
+                <div class="docs-chart-card"><ShadcnDonutChartExample /></div>
+            </SectionContent>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Sizes and MatchBoundsToSize">
+                <Description>
+                    Every example sets MudChart's own <CodeInline>MatchBoundsToSize="true"</CodeInline>. Without it MudBlazor draws a chart
+                    on a fixed 650 × 350 canvas and scales the result to the chart's box, so everything in it grows and shrinks together:
+                    the 12px axis text, the bars and the 4px corner radius of the bars. With it, the canvas is the box and one unit is one
+                    pixel, whatever the width. To change the corner radius, set <CodeInline>--shadcn-chart-bar-radius</CodeInline> on the
+                    chart or anywhere above it (<CodeInline>0</CodeInline> gives square bars).
+                </Description>
+            </SectionHeader>
+            <CodeBlock Language="razor" Code="@BarRadius" />
+        </DocsPageSection>
+    </DocsPageContent>
+</DocsPage>
+
+@code {
+    private const string BarRadius = """
+        <MudChart T="double" ChartType="ChartType.Bar" ChartSeries="@_series" ChartLabels="@_months"
+                  ChartOptions="@_options" MatchBoundsToSize="true" Height="260px"
+                  Style="--shadcn-chart-bar-radius: 8px" />
+        """;
+}

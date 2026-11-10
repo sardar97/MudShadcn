@@ -1,0 +1,24 @@
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Line Chart - Multiple</MudText>
+            <MudText Typo="Typo.body2">January - June 2024</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudChart T="double" ChartType="ChartType.Line" ChartSeries="@_series" ChartLabels="@_months"
+                  ChartOptions="@_options" Width="100%" Height="260px" MatchBoundsToSize="true" />
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private readonly LineChartOptions _options = MudShadcnChartOptions.Line();
+
+    private readonly string[] _months = ["January", "February", "March", "April", "May", "June"];
+
+    private readonly List<ChartSeries<double>> _series =
+    [
+        new() { Name = "Desktop", Data = new double[] { 186, 305, 237, 73, 209, 214 } },
+        new() { Name = "Mobile", Data = new double[] { 80, 200, 120, 190, 130, 140 } },
+    ];
+}

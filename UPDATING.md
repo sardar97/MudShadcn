@@ -71,8 +71,13 @@ It downloads the new MudBlazor and checks that:
   Material glyphs come back.
 - MudBlazor's default `LineStrokeWidth` is still the value the chart section's 2px line rule
   matches (`path.mud-chart-line[stroke-width="3"]`).
+- a bar, a stacked bar and a line chart still render the SVG the chart rules are written for. The
+  script renders them to a string: a bar is one stroked `path.mud-chart-bar`, stacked segments
+  have `fill="none"` and come stack after stack in series order (the rounding of a stack's two
+  ends depends on that order and on the palette's order), and a data marker is a
+  `circle.mud-chart-point` without a `fill` attribute.
 
-It reads the defaults through MudBlazor's API with a small C# probe. If that no longer compiles, the
+It reads the defaults, and renders the charts, through MudBlazor's API with a small C# probe. If that no longer compiles, the
 API changed: update the probe in the script as well.
 
 A missing class or variable is an override that no longer applies: find its replacement in the new
@@ -126,7 +131,8 @@ with the same name and parameters; do not edit the ported page.
 dotnet build MudShadcn.sln
 ```
 
-Must finish with 0 errors and 0 warnings. MudBlazor ships analyzers (`MUD0002` and friends) that
+Must finish with 0 errors and 0 warnings. `tools/test-package.sh` then checks that the package
+still works as a single reference. MudBlazor ships analyzers (`MUD0002` and friends) that
 report renamed or removed component parameters in the test app; treat those as errors. The test
 app has no MudBlazor reference of its own, so a successful build also re-proves that MudBlazor
 flows through MudShadcn transitively. Keep it that way.
@@ -142,6 +148,10 @@ dotnet run --project samples/MudShadcn.TestApp --launch-profile http    # http:/
 dotnet run --project samples/MudShadcn.Showcase --launch-profile http   # http://localhost:5153
 ```
 
+`tools/smoke-test.mjs` finds the pages that fail to render without opening each one: it loads every
+URL of a published showcase's sitemap in a browser (the header of the script has the commands; CI
+runs it on every push). It says nothing about how a page looks.
+
 Check in particular, because these have the most fragile overrides:
 
 - Outlined inputs: label sits above the field, no notch in the border, 36px tall, ring on focus.
@@ -153,8 +163,16 @@ Check in particular, because these have the most fragile overrides:
 - Cards and dialogs: 24px padding, not MudBlazor's 16px/8px.
 - Snackbar: bordered neutral surface, action button legible.
 - Buttons: 36px, no shadow, no ripple, ring on keyboard focus.
+- Numeric field: both spin buttons inside the field. Chips in a button group (the file upload
+  page's "Interactive file chips"): a 14px close icon with a gap before it.
+- Date range picker, with one date picked: the band and both ends when the pointer is on a later
+  day, on an earlier day, on a day in the other month of a two-month picker, and at the start and
+  end of a week row.
+- Data grid: 24px sort, filter and options buttons in the column headers; the test app's grid fits
+  its card at 1280px without scrolling sideways.
 - Charts: shadcn's chart colours (orange, teal, dark blue in light mode; blue, green, amber in
-  dark), muted axis labels, bordered tooltips, rounded bars and 2px lines. The test app's chart
+  dark), muted axis labels, bordered tooltips, rounded bars (a stacked bar at the two ends of the
+  stack only), 2px lines and data markers as dots in the series colour. The test app's chart
   cards use `MudShadcnChartOptions`: check that the option names it sets (`BarWidthRatio`,
   `BarSpacingRatio`, `MaxNumYAxisTicks`, `InterpolationOption`, `LineDisplayType`,
   `DonutRingRatio`) still exist and still give wide bars, smooth lines and a 40% donut ring.

@@ -12,8 +12,9 @@ package and a package release never forces a showcase rebuild.
 ## Branches and tags
 
 - **`master`**: development. CI builds the solution with warnings as errors, runs
-  `tools/verify-mudblazor.sh`, packs the library and publishes the showcase, on every push and pull
-  request. It never deploys or publishes.
+  `tools/verify-mudblazor.sh`, packs the library and tests the package as a consumer gets it
+  (`tools/test-package.sh`), publishes the showcase and loads every page of it in a browser
+  (`tools/smoke-test.mjs`), on every push and pull request. It never deploys or publishes.
 - **`docs`**: deploy-only; it is what the live site shows. Never commit to it directly: fast-forward
   it from `master` when the site should be updated. Cloudflare Pages watches this branch.
 - **`v*` tags** (`v1.0.0`, `v1.1.0-beta.1`, …): each tag is one NuGet release. The tag **is** the
@@ -169,8 +170,10 @@ is a new MudShadcn major version (see `UPDATING.md`). The git tag is the publish
    ```
 
 `publish.yml` then builds and checks everything again, packs the library with the tag's version,
-pushes the `.nupkg` and its symbols (`.snupkg`) to nuget.org, and creates a GitHub Release with the
-notes from `CHANGELOG.md` and the package files attached.
+tests that package in a copy of the test app (`tools/test-package.sh`: it has to start and serve
+MudBlazor's stylesheet and MudShadcn's, with MudShadcn as its only reference), pushes the `.nupkg`
+and its symbols (`.snupkg`) to nuget.org, and creates a GitHub Release with the notes from
+`CHANGELOG.md` and the package files attached.
 
 **Without pushing a tag:** in GitHub, **Actions → Publish to NuGet → Run workflow** on `master`,
 with the version (`1.1.0`, no `v`). It refuses a version that differs from `<Version>` in the

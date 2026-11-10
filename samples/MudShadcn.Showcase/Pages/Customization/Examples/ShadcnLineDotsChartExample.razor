@@ -1,0 +1,30 @@
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Line Chart - Dots</MudText>
+            <MudText Typo="Typo.body2">January - June 2024</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudChart T="double" ChartType="ChartType.Line" ChartSeries="@_series" ChartLabels="@_months"
+                  ChartOptions="@_options" Width="100%" Height="260px" MatchBoundsToSize="true" />
+    </MudCardContent>
+</MudCard>
+
+@code {
+    // A preset is an ordinary MudBlazor options object: set anything else on it.
+    private readonly LineChartOptions _options = WithDataMarkers(MudShadcnChartOptions.Line());
+
+    private readonly string[] _months = ["January", "February", "March", "April", "May", "June"];
+
+    private readonly List<ChartSeries<double>> _series =
+    [
+        new() { Name = "Desktop", Data = new double[] { 186, 305, 237, 73, 209, 214 } },
+    ];
+
+    private static LineChartOptions WithDataMarkers(LineChartOptions options)
+    {
+        options.ShowDataMarkers = true;
+        return options;
+    }
+}

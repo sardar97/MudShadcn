@@ -209,8 +209,9 @@ Charts need no options. MudBlazor's default chart palette is replaced with shadc
 `chart-5` (each with its own light and dark value), followed by tints and shades of them for series
 6 to 20; heat maps get a ramp of the primary colour. Axis labels are muted, grid lines take the
 border colour, tooltips and Sankey labels look like shadcn's chart tooltip, and legend markers are
-small squares. Bars have shadcn's rounded corners and lines are 2px. If you set `ChartPalette`
-yourself, your colours are used as given. The colours series receive are available to your CSS as
+small squares. Bars have shadcn's rounded corners (a stacked bar at the two ends of the stack),
+lines are 2px and data markers are dots in the series colour. If you set `ChartPalette` yourself,
+your colours are used as given. The colours series receive are available to your CSS as
 `--shadcn-chart-series-1` to `--shadcn-chart-series-20`.
 
 Some of shadcn's look is computed into the SVG by MudBlazor, so it comes from chart options rather
@@ -230,12 +231,14 @@ way, and `MatchBoundsToSize` keeps the axis text at 12px however wide the chart 
 | Method | MudBlazor options | shadcn chart |
 | --- | --- | --- |
 | `Bar()` | `BarWidthRatio = 0.8`, `BarSpacingRatio = 0.08`, 5 ticks | `<Bar radius={4}>`, `barGap={4}` |
-| `StackedBar()` | `BarWidthRatio = 0.8`, 5 ticks | stacked `<Bar stackId>` |
+| `StackedBar()` | `BarWidthRatio = 0.8`, `ShowZeroValues = false`, 5 ticks | stacked `<Bar stackId>` |
 | `Line()` | `LineStrokeWidth = 2`, `NaturalSpline`, 5 ticks | `<Line type="natural" strokeWidth={2}>` |
 | `Area()` | `LineDisplayType.Area`, `LineStrokeWidth = 1`, `NaturalSpline`, 5 ticks | `<Area type="natural">` |
 | `Donut()` | `DonutRingRatio = 0.4` | `<Pie innerRadius={60}>` |
 
-Each call returns a new object, so change anything else on it as usual.
+Each call returns a new object, so change anything else on it as usual. The showcase's
+[Charts page](https://mudshadcn.pages.dev/customization/charts) shows each preset as one of shadcn's
+chart cards, with its code.
 
 ### Customising
 
@@ -353,8 +356,17 @@ inline style or a component parameter decides something, MudBlazor's version sta
   colours (a palette of your own that happens to start with `#2979FF` gets that one colour mapped).
 - Tooltips are MudBlazor's SVG title and subtitle in shadcn's tooltip box: there is no colour
   indicator, no row per series and no cursor band.
-- Bars are drawn as thick strokes and rounded by clipping, so the corner radius is 4 SVG units:
-  it scales with a chart that is not `MatchBoundsToSize`. Stacked bars keep square segments.
+- Bars are drawn as thick strokes and rounded by clipping. The radius is 4 of the chart's own
+  units, like its 12px axis text: without `MatchBoundsToSize` MudBlazor draws a chart on a fixed
+  650 × 350 canvas and scales it to its box, corners included; with it, a unit is a pixel.
+  `--shadcn-chart-bar-radius` (on the chart's `Style`, or anywhere above it) changes the radius,
+  and `0` gives square bars.
+- A stacked bar is rounded at the two ends of the stack. The stylesheet finds them by the default
+  palette's colours, so a palette of your own, or more than ten series, keeps square segments. It
+  assumes values that are not negative (a stack below the axis is rounded at the wrong ends; set
+  the radius to `0` there), and a zero value is a hairline that counts as the end of its stack
+  unless `ShowZeroValues` is `false`, which `MudShadcnChartOptions.StackedBar()` sets.
+- Data markers are dots with a radius of 4, whatever the line width.
 - The 2px line width replaces MudBlazor's default `LineStrokeWidth` (3) only; any other width you
   set is kept.
 - Labels on pie, donut and rose segments use the background colour, as in shadcn's examples, which
@@ -433,6 +445,8 @@ or save it as `.claude/skills/mudshadcn/SKILL.md` in a repository to scope it to
 | [`samples/MudShadcn.Showcase`](https://github.com/sardar97/MudShadcn/tree/master/samples/MudShadcn.Showcase) | The showcase site (Blazor WebAssembly). |
 | [`samples/MudShadcn.TestApp`](https://github.com/sardar97/MudShadcn/tree/master/samples/MudShadcn.TestApp) | A Blazor Server app with one page per component category, for quick checks. |
 | [`tools/verify-mudblazor.sh`](https://github.com/sardar97/MudShadcn/blob/master/tools/verify-mudblazor.sh) | Checks the stylesheet against MudBlazor (also run by CI). |
+| [`tools/test-package.sh`](https://github.com/sardar97/MudShadcn/blob/master/tools/test-package.sh) | Packs MudShadcn and checks that an app referencing only the package starts and serves both stylesheets (also run by CI). |
+| [`tools/smoke-test.mjs`](https://github.com/sardar97/MudShadcn/blob/master/tools/smoke-test.mjs) | Loads every page of the published showcase in a browser and fails on a page that errors (also run by CI). |
 
 ```bash
 dotnet build MudShadcn.sln                                              # 0 warnings

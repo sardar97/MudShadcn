@@ -268,7 +268,10 @@ system UI font stack. shadcn's radius scale follows one variable:
 Use MudBlazor's charts without `ChartOptions.ChartPalette`: the default palette becomes shadcn's
 `chart-1` to `chart-5` (with their dark-mode values) plus tints and shades up to 20 series, and heat
 maps use a ramp of the primary colour. A palette you set is used as given. Series colours are
-available to CSS as `--shadcn-chart-series-1` … `--shadcn-chart-series-20`.
+available to CSS as `--shadcn-chart-series-1` … `--shadcn-chart-series-20`. Bars are rounded (a
+stacked bar at the two ends of its stack, with the default palette only), lines are 2px and
+`ShowDataMarkers` draws dots in the series colour. `--shadcn-chart-bar-radius` on a chart's `Style`
+changes the bar radius (`0` for square bars; use that for a stacked chart with negative values).
 
 For shadcn's proportions (wide bars 4px apart, smooth lines, filled areas, about five axis ticks, a
 40% donut ring), pass `MudShadcnChartOptions` and set `MatchBoundsToSize="true"`:

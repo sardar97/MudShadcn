@@ -899,6 +899,12 @@ h1:focus {
     border: 1px solid var(--mud-palette-lines-default);
 }
 
+/* The Charts page: shadcn's chart cards are about this wide, whatever the frame's width. */
+.docs-chart-card {
+    width: 100%;
+    max-width: 32rem;
+}
+
 .docs-radius {
     display: grid;
     place-items: center;

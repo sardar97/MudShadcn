@@ -116,6 +116,18 @@
         <MudCard>
             <MudCardHeader>
                 <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Bar Chart - Stacked + Legend</MudText>
+                    <MudText Typo="Typo.body2">January - June 2024</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudChart T="double" ChartType="ChartType.StackedBar" ChartSeries="@_visitors" ChartLabels="@_months"
+                          ChartOptions="@_stackedBarOptions" Width="100%" Height="260px" MatchBoundsToSize="true" />
+            </MudCardContent>
+        </MudCard>
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
                     <MudText Typo="Typo.h6">Line Chart - Multiple</MudText>
                     <MudText Typo="Typo.body2">January - June 2024</MudText>
                 </CardHeaderContent>
@@ -123,6 +135,18 @@
             <MudCardContent>
                 <MudChart T="double" ChartType="ChartType.Line" ChartSeries="@_visitors" ChartLabels="@_months"
                           ChartOptions="@_lineOptions" Width="100%" Height="260px" MatchBoundsToSize="true" />
+            </MudCardContent>
+        </MudCard>
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Line Chart - Dots</MudText>
+                    <MudText Typo="Typo.body2">January - June 2024</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudChart T="double" ChartType="ChartType.Line" ChartSeries="@_desktop" ChartLabels="@_months"
+                          ChartOptions="@_lineDotsOptions" Width="100%" Height="260px" MatchBoundsToSize="true" />
             </MudCardContent>
         </MudCard>
         <MudCard>
@@ -178,7 +202,15 @@
     ];
 
     private readonly BarChartOptions _barOptions = MudShadcnChartOptions.Bar();
+    private readonly StackedBarChartOptions _stackedBarOptions = MudShadcnChartOptions.StackedBar();
     private readonly LineChartOptions _lineOptions = MudShadcnChartOptions.Line();
+    private readonly LineChartOptions _lineDotsOptions = WithDataMarkers(MudShadcnChartOptions.Line());
     private readonly LineChartOptions _areaOptions = MudShadcnChartOptions.Area();
     private readonly DonutChartOptions _donutOptions = MudShadcnChartOptions.Donut();
+
+    private static LineChartOptions WithDataMarkers(LineChartOptions options)
+    {
+        options.ShowDataMarkers = true;
+        return options;
+    }
 }
