@@ -13,7 +13,10 @@ it adds no components of its own and must never wrap, fork or replace MudBlazor'
   - `wwwroot/MudShadcn.css` — structural overrides and the `--shadcn-*` tokens. Edit only this;
     `MudShadcn.min.css` next to it is generated from it on build and git-ignored.
   - `MudShadcnProvider.razor` — wraps `MudThemeProvider` + popover/dialog/snackbar providers and
-    emits the `--shadcn-*` tokens for the active mode.
+    emits the `--shadcn-*` tokens for the active mode. `Enabled="false"` gives MudBlazor's own look:
+    it finds the page's `<link>` to the stylesheet (by `_content/MudShadcn/MudShadcn` in the href, or
+    a `data-mudshadcn` attribute) and sets `sheet.disabled` through JS interop. Both sample apps
+    have a dropdown for it in the top bar.
   - `ServiceCollectionExtensions.cs` — `AddMudShadcn()`.
   - `icon.png` — the package icon (from `docs/images/logo.svg`).
 - `samples/MudShadcn.TestApp/` — Blazor Server, global InteractiveServer. One page per component

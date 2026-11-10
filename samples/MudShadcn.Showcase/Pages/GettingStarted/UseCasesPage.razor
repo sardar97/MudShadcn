@@ -1,0 +1,444 @@
+@page "/getting-started/use-cases"
+
+<DocsPage>
+    <DocsPageHeader Title="Use Cases"
+                    SubTitle="Find the set-up that matches your app: a new project, an app that already uses MudBlazor, a MudBlazor version of your choice, or both looks behind a switch." />
+    <DocsPageContent>
+        <DocsPageSection>
+            <SectionHeader Title="Find your case">
+                <Description>
+                    Every case uses the same package and the same components. What differs is which packages your project references
+                    and what you put in the layout.
+                </Description>
+            </SectionHeader>
+            <MudSimpleTable Elevation="0" Outlined="true" Dense="true">
+                <thead>
+                    <tr><th>Your situation</th><th>What you do</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>You are starting a new Blazor app</td>
+                        <td>Reference MudShadcn only. See <MudLink Href="@Anchor(NewApp)">@NewApp</MudLink>.</td>
+                    </tr>
+                    <tr>
+                        <td>Your app already uses MudBlazor</td>
+                        <td>Add MudShadcn and swap the providers. See <MudLink Href="@Anchor(ExistingApp)">@ExistingApp</MudLink>.</td>
+                    </tr>
+                    <tr>
+                        <td>You want a newer MudBlazor than the one MudShadcn installs</td>
+                        <td>Add your own MudBlazor reference. See <MudLink Href="@Anchor(NewerMudBlazor)">@NewerMudBlazor</MudLink>.</td>
+                    </tr>
+                    <tr>
+                        <td>Your MudBlazor is older than MudShadcn's minimum</td>
+                        <td>Raise it, or take the MudShadcn release that matches it. See <MudLink Href="@Anchor(OlderMudBlazor)">@OlderMudBlazor</MudLink>.</td>
+                    </tr>
+                    <tr>
+                        <td>Your users should choose between the shadcn look and MudBlazor's</td>
+                        <td>Bind <code class="docs-code">Enabled</code> to a dropdown. See <MudLink Href="@Anchor(Switch)">@Switch</MudLink>.</td>
+                    </tr>
+                    <tr>
+                        <td>You place MudBlazor's providers yourself</td>
+                        <td>See <MudLink Href="@Anchor(OwnProviders)">@OwnProviders</MudLink>.</td>
+                    </tr>
+                    <tr>
+                        <td>Blazor Web App, Blazor Server or standalone WebAssembly</td>
+                        <td>The same set-up, in a different file. See <MudLink Href="@Anchor(Hosting)">@Hosting</MudLink>.</td>
+                    </tr>
+                    <tr>
+                        <td>You want your own colours, font or radius</td>
+                        <td>Change MudShadcn's theme. See the <MudLink Href="customization/theme">Theme</MudLink> page.</td>
+                    </tr>
+                </tbody>
+            </MudSimpleTable>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="@NewApp">
+                <Description>
+                    Reference MudShadcn and nothing else. NuGet installs MudBlazor @BuildInfo.MudBlazorVersion next to it as a separate package
+                    (MudBlazor is not bundled inside MudShadcn), with its own stylesheet and script.
+                </Description>
+            </SectionHeader>
+            <CodeBlock Language="shell" Code="dotnet add package MudShadcn" />
+            <MudText Typo="Typo.body2" Class="mt-4">
+                Then follow the steps on the <MudLink Href="getting-started/installation">Installation</MudLink> page: register the services,
+                link the two stylesheets and put one <CodeInline>MudShadcnProvider</CodeInline> in the layout.
+            </MudText>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="@ExistingApp">
+                <Description>
+                    Your pages and components stay exactly as they are: MudShadcn changes how MudBlazor looks, not how you use it. Four
+                    things change in the set-up.
+                </Description>
+            </SectionHeader>
+            <MudSimpleTable Elevation="0" Outlined="true" Dense="true" Class="mb-4">
+                <thead>
+                    <tr><th>Where</th><th>Change</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Project file</td>
+                        <td>
+                            Add <code class="docs-code">MudShadcn</code>. Keep your <code class="docs-code">MudBlazor</code> reference if it is
+                            @BuildInfo.MudBlazorVersion or newer: it stays the version your app uses. You may also remove it.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><code class="docs-code">Program.cs</code></td>
+                        <td>
+                            Replace <code class="docs-code">AddMudServices()</code> with <code class="docs-code">AddMudShadcn()</code>. It takes the same
+                            options callback and adds sonner-style snackbar defaults. Keeping <code class="docs-code">AddMudServices()</code> works too.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><code class="docs-code">App.razor</code> or <code class="docs-code">index.html</code></td>
+                        <td>
+                            Add the link to MudShadcn's stylesheet after MudBlazor's. MudBlazor's Roboto font link is no longer needed.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Layout</td>
+                        <td>Replace MudBlazor's four providers with one <code class="docs-code">MudShadcnProvider</code>.</td>
+                    </tr>
+                </tbody>
+            </MudSimpleTable>
+            <CodeBlock Language="razor" Code="@ExistingAppLayout" />
+            <MudText Typo="Typo.body2" Class="mt-4">
+                A <CodeInline>MudTheme</CodeInline> of your own is no longer applied, because MudShadcn's theme takes its place. To keep it as a
+                second look your users can choose, see <MudLink Href="@Anchor(OwnTheme)">@OwnTheme</MudLink>. For shadcn's input, give your
+                inputs <CodeInline>Variant.Outlined</CodeInline>; the <MudLink Href="getting-started/installation">Installation</MudLink> page
+                lists the rest of the shadcn vocabulary.
+            </MudText>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="@VersionChosen">
+                <Description>
+                    MudBlazor is a separate NuGet package that MudShadcn depends on. MudShadcn @BuildInfo.MudShadcnVersion asks for
+                    MudBlazor @BuildInfo.MudBlazorVersion or newer. That is a minimum, not a lock: which version your app ends up with
+                    depends on what your own project references.
+                </Description>
+            </SectionHeader>
+            <MudSimpleTable Elevation="0" Outlined="true" Dense="true">
+                <thead>
+                    <tr><th>Your project references</th><th>MudBlazor your app gets</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="docs-code">MudShadcn</code> only</td>
+                        <td>@BuildInfo.MudBlazorVersion, the minimum. NuGet does not pick a newer one by itself, even when one exists.</td>
+                    </tr>
+                    <tr>
+                        <td><code class="docs-code">MudShadcn</code> and a newer <code class="docs-code">MudBlazor</code></td>
+                        <td>The version you named. A direct reference wins, with no warning.</td>
+                    </tr>
+                    <tr>
+                        <td><code class="docs-code">MudShadcn</code> and an older <code class="docs-code">MudBlazor</code></td>
+                        <td>None: the restore stops with error <code class="docs-code">NU1605</code> (package downgrade).</td>
+                    </tr>
+                </tbody>
+            </MudSimpleTable>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="@NewerMudBlazor">
+                <Description>
+                    Add your own <CodeInline>MudBlazor</CodeInline> reference next to MudShadcn's, with the version you want. You do not have to
+                    wait for a MudShadcn release to take a new MudBlazor release.
+                </Description>
+            </SectionHeader>
+            <CodeBlock Language="html" Code="@PackageReferences" />
+            <MudText Typo="Typo.body2" Class="mt-4 mb-2">What to expect on a MudBlazor newer than the minimum:</MudText>
+            <ul class="docs-list">
+                <li>
+                    <b>Your app keeps working.</b> MudShadcn does not change MudBlazor's components or their API. It uses a small part of
+                    that API itself (the theme, the providers, the chart options), and MudBlazor keeps its API stable within a major version.
+                </li>
+                <li>
+                    <b>Styling can lag for what is new.</b> The stylesheet matches MudBlazor's CSS class names. A component or variant MudBlazor
+                    adds after @BuildInfo.MudBlazorVersion keeps MudBlazor's own look until the next MudShadcn release; everything that existed
+                    before stays styled.
+                </li>
+                <li>
+                    <b>A new MudBlazor major version is different.</b> It can rename classes and change the theme API, so wait for the
+                    MudShadcn major version that names it.
+                </li>
+            </ul>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="@OlderMudBlazor">
+                <Description>
+                    If your project names a MudBlazor older than @BuildInfo.MudBlazorVersion, NuGet refuses to restore and reports a downgrade:
+                </Description>
+            </SectionHeader>
+            <CodeBlock Language="shell" Code="@DowngradeError" />
+            <MudText Typo="Typo.body2" Class="mt-4 mb-2">There are two ways out:</MudText>
+            <ul class="docs-list">
+                <li>Raise your <CodeInline>MudBlazor</CodeInline> reference to @BuildInfo.MudBlazorVersion or newer, or remove it.</li>
+                <li>
+                    Use the MudShadcn release whose minimum matches your MudBlazor. The
+                    <MudLink Href="https://github.com/sardar97/MudShadcn#versions" Target="_blank">Versions table</MudLink> in the README lists
+                    the minimum of each release.
+                </li>
+            </ul>
+            <MudText Typo="Typo.body2">
+                Do not silence <CodeInline>NU1605</CodeInline>: the theme and the stylesheet are written for @BuildInfo.MudBlazorVersion and up.
+            </MudText>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="@Switch">
+                <Description>
+                    <CodeInline>Enabled</CodeInline> on the provider turns MudShadcn off and on while the app runs. Bind it to anything that sets
+                    a <CodeInline>bool</CodeInline>. Here it is a dropdown, like the one at the top of this site. Nothing else in the set-up changes.
+                </Description>
+            </SectionHeader>
+            <CodeBlock Language="razor" Code="@SwitchDropdown" />
+            <MudText Typo="Typo.body2" Class="mt-4 mb-2">With <CodeInline>Enabled="false"</CodeInline> the provider:</MudText>
+            <ul class="docs-list">
+                <li>applies MudBlazor's default theme, or the theme you pass as <CodeInline>MudBlazorTheme</CodeInline>;</li>
+                <li>switches MudShadcn's stylesheet off in the page. It stays loaded, so switching back is immediate;</li>
+                <li>stops emitting the <CodeInline>--shadcn-*</CodeInline> tokens.</li>
+            </ul>
+            <MudText Typo="Typo.body2">
+                The app then looks as it does without MudShadcn. Dark mode and the popover, dialog and snackbar providers keep working in
+                both looks.
+            </MudText>
+
+            <DocsPageSection>
+                <SectionHeader Title="@OwnTheme">
+                    <Description>
+                        If your app had a <CodeInline>MudTheme</CodeInline> of its own, pass it as <CodeInline>MudBlazorTheme</CodeInline>. It is used
+                        while <CodeInline>Enabled</CodeInline> is <CodeInline>false</CodeInline>, so your users switch between your MudBlazor look
+                        and the shadcn look.
+                    </Description>
+                </SectionHeader>
+                <CodeBlock Language="razor" Code="@SwitchOwnTheme" />
+            </DocsPageSection>
+
+            <DocsPageSection>
+                <SectionHeader Title="Remember the choice">
+                    <Description>
+                        The provider only needs the <CodeInline>bool</CodeInline>; where you keep it is up to you. This keeps it in the browser's
+                        <CodeInline>localStorage</CodeInline>, as this site does.
+                    </Description>
+                </SectionHeader>
+                <CodeBlock Language="razor" Code="@SwitchRemember" />
+            </DocsPageSection>
+
+            <DocsPageSection>
+                <SectionHeader Title="Rules for the switch" />
+                <ul class="docs-list">
+                    <li>
+                        <b>Use <CodeInline>Enabled</CodeInline>, not an <CodeInline>@@if</CodeInline> around two providers.</b> Swapping
+                        <CodeInline>MudShadcnProvider</CodeInline> for <CodeInline>MudThemeProvider</CodeInline> changes the colours only; the
+                        stylesheet would still apply.
+                    </li>
+                    <li>
+                        <b>Keep the stylesheet link as the Installation page shows it.</b> The provider finds it by its address
+                        (<CodeInline>_content/MudShadcn/MudShadcn.min.css</CodeInline> or <CodeInline>MudShadcn.css</CodeInline>). If you serve a
+                        copy from another address, add <CodeInline>data-mudshadcn</CodeInline> to its link. When the provider cannot find the
+                        link, it logs a warning.
+                    </li>
+                    <li>
+                        <b>In your own CSS, use <CodeInline>--mud-palette-*</CodeInline></b> for anything that has to work in both looks. The
+                        <CodeInline>--shadcn-*</CodeInline> variables do not exist while <CodeInline>Enabled</CodeInline> is <CodeInline>false</CodeInline>.
+                    </li>
+                    <li>
+                        <b>Add MudBlazor's Roboto font link</b> if you offer both looks. MudBlazor's own look expects it; MudShadcn does not need it.
+                    </li>
+                    <li>
+                        <b>Snackbar defaults stay.</b> <CodeInline>AddMudShadcn()</CodeInline> sets them once at start-up (bottom right, outlined),
+                        for both looks. Call MudBlazor's <CodeInline>AddMudServices()</CodeInline> instead if you want MudBlazor's defaults.
+                    </li>
+                    <li>
+                        <b>The switch is applied when the provider becomes interactive</b>, like following the operating system's colour scheme.
+                        A prerendered page that starts with <CodeInline>Enabled="false"</CodeInline> shows MudShadcn's shapes for that moment.
+                    </li>
+                </ul>
+            </DocsPageSection>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="@OwnProviders">
+                <Description>
+                    <CodeInline>MudShadcnProvider</CodeInline> renders MudBlazor's theme, popover, dialog and snackbar providers for you. If you
+                    place those yourself, for example to set their options, let it handle the theme only:
+                </Description>
+            </SectionHeader>
+            <CodeBlock Language="razor" Code="@ProvidersYourself" />
+            <MudText Typo="Typo.body2" Class="mt-4 mb-4">
+                You can also leave <CodeInline>MudShadcnProvider</CodeInline> out and give MudBlazor's own theme provider MudShadcn's theme:
+            </MudText>
+            <CodeBlock Language="razor" Code="@NoMudShadcnProvider" />
+            <MudText Typo="Typo.body2" Class="mt-4">
+                That way you lose two things. Nothing re-emits the <CodeInline>--shadcn-*</CodeInline> tokens for dark mode, so the focus ring,
+                the input background and the destructive button keep their light values in dark mode. And there is no
+                <CodeInline>Enabled</CodeInline> switch.
+            </MudText>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="@Hosting">
+                <Description>
+                    The set-up is the same in every hosting model. Only the file that holds the two links differs. MudBlazor's stylesheet
+                    always comes first, then MudShadcn's.
+                </Description>
+            </SectionHeader>
+            <MudText Typo="Typo.subtitle2" Class="mb-2">
+                Blazor Web App (Server, WebAssembly or Auto): <CodeInline>Components/App.razor</CodeInline>
+            </MudText>
+            <CodeBlock Language="razor" Code="@WebApp" />
+            <MudText Typo="Typo.subtitle2" Class="mt-6 mb-2">
+                Standalone Blazor WebAssembly: <CodeInline>wwwroot/index.html</CodeInline>
+            </MudText>
+            <CodeBlock Language="html" Code="@Standalone" />
+            <MudText Typo="Typo.body2" Class="mt-4">
+                The provider has to be rendered interactively, like MudBlazor's own providers. With global interactivity, as above, that
+                is automatic. With per-page interactivity the layout that holds the provider is static, so popovers, dialogs, snackbars,
+                the dark mode switch and the look switch do not work: make interactivity global instead.
+            </MudText>
+        </DocsPageSection>
+    </DocsPageContent>
+</DocsPage>
+
+@code {
+    // Section titles, also used for the links in the first table.
+    private const string NewApp = "A new app";
+    private const string ExistingApp = "An app that already uses MudBlazor";
+    private const string VersionChosen = "How the MudBlazor version is chosen";
+    private const string NewerMudBlazor = "Use a newer MudBlazor";
+    private const string OlderMudBlazor = "An older MudBlazor";
+    private const string Switch = "Switch between shadcn and MudBlazor";
+    private const string OwnTheme = "Keep your own MudBlazor theme";
+    private const string OwnProviders = "Keep your own providers";
+    private const string Hosting = "Where the stylesheets go";
+
+    // SectionHeader's id: the title in lower case with dashes, after its parent section's title.
+    private static string Anchor(string title)
+    {
+        var id = title == OwnTheme ? $"{Switch}-{title}" : title;
+        return "getting-started/use-cases#" + id.Replace(" ", "-").ToLowerInvariant();
+    }
+
+    private static readonly string DowngradeError =
+        $"error NU1605: Detected package downgrade: MudBlazor from {BuildInfo.MudBlazorVersion} to <your version>.";
+
+    private const string PackageReferences = """
+        <PackageReference Include="MudShadcn" Version="..." />
+        <!-- The version you want: the minimum or anything newer. -->
+        <PackageReference Include="MudBlazor" Version="..." />
+        """;
+
+    private const string ExistingAppLayout = """
+        @* Before *@
+        <MudThemeProvider Theme="_myTheme" @bind-IsDarkMode="_isDarkMode" />
+        <MudPopoverProvider />
+        <MudDialogProvider />
+        <MudSnackbarProvider />
+
+        @* After *@
+        <MudShadcnProvider @bind-IsDarkMode="_isDarkMode" />
+        """;
+
+    private const string SwitchDropdown = """
+        <MudShadcnProvider Enabled="_shadcn" @bind-IsDarkMode="_isDarkMode" />
+
+        <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Dense="true">
+            <ActivatorContent>
+                <MudButton Variant="Variant.Outlined" EndIcon="@Icons.Material.Filled.ExpandMore" OnClick="@context.ToggleAsync">
+                    @(_shadcn ? "shadcn" : "MudBlazor")
+                </MudButton>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem OnClick="@(() => _shadcn = true)">shadcn</MudMenuItem>
+                <MudMenuItem OnClick="@(() => _shadcn = false)">MudBlazor</MudMenuItem>
+            </ChildContent>
+        </MudMenu>
+
+        @code {
+            private bool _shadcn = true;    // false = MudBlazor's own look
+            private bool _isDarkMode;
+        }
+        """;
+
+    private const string SwitchOwnTheme = """
+        <MudShadcnProvider Enabled="_shadcn" MudBlazorTheme="_myTheme" @bind-IsDarkMode="_isDarkMode" />
+
+        @code {
+            private bool _shadcn = true;
+            private bool _isDarkMode;
+
+            // The MudTheme your app had before MudShadcn.
+            private readonly MudTheme _myTheme = new()
+            {
+                PaletteLight = new PaletteLight { Primary = "#1e88e5" },
+                PaletteDark = new PaletteDark { Primary = "#90caf9" },
+            };
+        }
+        """;
+
+    private const string SwitchRemember = """
+        @inject IJSRuntime JS
+
+        <MudShadcnProvider Enabled="_shadcn" />
+
+        @code {
+            private bool _shadcn = true;
+
+            protected override async Task OnAfterRenderAsync(bool firstRender)
+            {
+                if (firstRender && await JS.InvokeAsync<string?>("localStorage.getItem", "look") == "mudblazor")
+                {
+                    _shadcn = false;
+                    StateHasChanged();
+                }
+            }
+
+            // Call this from the dropdown instead of setting the field.
+            private async Task SetLookAsync(bool shadcn)
+            {
+                _shadcn = shadcn;
+                await JS.InvokeVoidAsync("localStorage.setItem", "look", shadcn ? "shadcn" : "mudblazor");
+            }
+        }
+        """;
+
+    private const string ProvidersYourself = """
+        <MudShadcnProvider IncludeProviders="false" @bind-IsDarkMode="_isDarkMode" />
+        <MudPopoverProvider />
+        <MudDialogProvider MaxWidth="MaxWidth.Small" />
+        <MudSnackbarProvider />
+        """;
+
+    private const string NoMudShadcnProvider = """
+        <MudThemeProvider Theme="MudShadcnTheme.Default" @bind-IsDarkMode="_isDarkMode" />
+        <MudPopoverProvider />
+        <MudDialogProvider />
+        <MudSnackbarProvider />
+        """;
+
+    private const string WebApp = """
+        <head>
+            ...
+            <link rel="stylesheet" href="@Assets["_content/MudBlazor/MudBlazor.min.css"]" />
+            <link rel="stylesheet" href="@Assets["_content/MudShadcn/MudShadcn.min.css"]" />
+            <HeadOutlet @rendermode="InteractiveServer" />
+        </head>
+        <body>
+            <Routes @rendermode="InteractiveServer" />
+            <script src="@Assets["_framework/blazor.web.js"]"></script>
+            <script src="@Assets["_content/MudBlazor/MudBlazor.min.js"]"></script>
+        </body>
+        """;
+
+    private const string Standalone = """
+        <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
+        <link rel="stylesheet" href="_content/MudShadcn/MudShadcn.min.css" />
+        ...
+        <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+        """;
+}

@@ -25,8 +25,8 @@ metadata:
 MudShadcn (MIT) restyles [MudBlazor](https://mudblazor.com) to look like
 [shadcn/ui](https://ui.shadcn.com). It is a `MudTheme` and one stylesheet. It adds **no components**:
 the app keeps using MudBlazor's components and API, and they render with shadcn's neutral palette,
-flat bordered surfaces, radius scale, focus rings and sizes. Written against MudBlazor 9.12.0, for
-.NET 10.
+flat bordered surfaces, radius scale, focus rings and sizes. Written against MudBlazor 9.12.0, which
+is the minimum MudBlazor version it accepts, for .NET 10.
 
 This file is self-contained. The full documentation is the package README, also served as
 <https://mudshadcn.pages.dev/llms-full.txt>.
@@ -35,8 +35,11 @@ This file is self-contained. The full documentation is the package README, also 
 
 ## 0. Rules that are easy to break
 
-1. **Reference only `MudShadcn`.** It brings MudBlazor (and its CSS and JS) as a dependency. Remove an
-   existing `MudBlazor` `PackageReference` so the version MudShadcn was written against is used.
+1. **Referencing `MudShadcn` is enough.** NuGet installs MudBlazor (with its CSS and JS) as a separate
+   package alongside it; it is not bundled inside MudShadcn. The MudBlazor version MudShadcn names is a
+   **minimum, not a lock**: keep or add a `MudBlazor` `PackageReference` only to use a *newer*
+   MudBlazor, which then wins. An *older* one fails the restore with `NU1605`; raise it to the minimum
+   rather than removing MudShadcn.
 2. **Link MudBlazor's stylesheet first, then MudShadcn's.** MudShadcn's rules win over MudBlazor's
    only by coming later.
 3. **One `<MudShadcnProvider />` replaces** `MudThemeProvider`, `MudPopoverProvider`,
@@ -57,6 +60,19 @@ This file is self-contained. The full documentation is the package README, also 
 ```bash
 dotnet add package MudShadcn
 ```
+
+This installs MudShadcn and, as its dependency, the normal `MudBlazor` package. Which MudBlazor
+version the app ends up with:
+
+| The project references | MudBlazor used |
+| --- | --- |
+| `MudShadcn` only | MudShadcn's minimum (see the top of this file), even when a newer MudBlazor exists. |
+| `MudShadcn` and a newer `MudBlazor` | The newer one. No warning; no MudShadcn release needed. |
+| `MudShadcn` and an older `MudBlazor` | Restore error `NU1605` (package downgrade). Raise MudBlazor to the minimum. |
+
+On a MudBlazor newer than the minimum the app works as before; a component or variant MudBlazor added
+since then keeps MudBlazor's own look until the next MudShadcn release. A new MudBlazor **major**
+version needs the MudShadcn major version that names it.
 
 ## 2. Wire it up
 
@@ -134,8 +150,19 @@ dark-mode switch do not work; make interactivity global instead.
 
 `MudShadcnProvider` parameters: `Theme` (default `MudShadcnTheme.Default`), `IsDarkMode` (bindable),
 `FollowSystemDarkMode` (default `true`: starts in the OS colour scheme and follows it),
-`IncludeProviders` (default `true`), `DefaultScrollbar`. It also emits shadcn's tokens for the active
-mode as `--shadcn-*` CSS variables and sets `color-scheme` on the page.
+`IncludeProviders` (default `true`), `DefaultScrollbar`, `Enabled` (default `true`) and
+`MudBlazorTheme`. It also emits shadcn's tokens for the active mode as `--shadcn-*` CSS variables and
+sets `color-scheme` on the page.
+
+**Switching to MudBlazor's own look at runtime:** bind a field to `Enabled`
+(`<MudShadcnProvider Enabled="_shadcn" />`). With `false` the provider applies MudBlazor's default
+theme (or the `MudTheme` passed as `MudBlazorTheme`), switches MudShadcn's stylesheet off in the page
+and stops emitting `--shadcn-*`, so the app looks as it does without MudShadcn; `true` restores the
+shadcn look. Do not swap `MudShadcnProvider` for `MudThemeProvider` with an `@if` instead: the
+stylesheet would still apply. Keep the stylesheet `<link>` as shown above (the provider finds it by
+`_content/MudShadcn/MudShadcn` in its address; add `data-mudshadcn` to the link if the stylesheet is
+served from another address). CSS that must work in both looks uses `--mud-palette-*`, not
+`--shadcn-*`.
 
 Without the provider (`<MudThemeProvider Theme="MudShadcnTheme.Default" />` plus the three MudBlazor
 providers) everything works except that the focus ring, input background and destructive colour keep

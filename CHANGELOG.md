@@ -8,6 +8,27 @@ major version is a new MudShadcn major version.
 
 ## [Unreleased]
 
+### Added
+- **A switch back to MudBlazor's own look:** `MudShadcnProvider` has an `Enabled` parameter. Set it
+  to `false` while the app runs and the provider applies MudBlazor's default theme (or the one
+  passed as the new `MudBlazorTheme` parameter), switches MudShadcn's stylesheet off in the page
+  and stops emitting the `--shadcn-*` tokens; `true` restores the shadcn look. The set-up does not
+  change: the stylesheet `<link>` stays where it is. A stylesheet served from another address
+  needs `data-mudshadcn` on its link.
+- **Showcase:** a Use Cases page (under Getting Started) with the set-up for each situation: a new
+  app, an app that already uses MudBlazor, a newer or older MudBlazor version, the look switch,
+  your own providers and each hosting model.
+- **Showcase:** a dropdown in the top bar switches every page between the shadcn look and
+  MudBlazor's own, to compare them, and the package version is shown next to the name (it opens
+  the release notes).
+
+### Changed
+- **Documentation on MudBlazor versions:** the README, the Installation page and the agent skill now
+  say plainly that MudBlazor is a separate package NuGet installs alongside MudShadcn, and that the
+  MudBlazor version MudShadcn names is a minimum, not a lock. They no longer tell you to remove
+  your own `MudBlazor` reference: referencing a newer MudBlazor yourself is how you move ahead of
+  MudShadcn. The package's dependency itself has not changed.
+
 ### Fixed
 - **Charts in Firefox:** the legend no longer hangs out of the chart's box and over whatever
   follows it. MudBlazor relies on `min-height: fit-content` to let the box grow by the legend,

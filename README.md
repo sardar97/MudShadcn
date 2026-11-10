@@ -21,8 +21,9 @@ palette, flat bordered surfaces, shadcn's radius scale, 3px focus rings, labels 
 ripple, no uppercase buttons.
 
 MudShadcn is a theme and a stylesheet, nothing more. Every MudBlazor component is still the
-original MudBlazor component with its full API. MudBlazor comes along as a dependency, so
-**MudShadcn is the only package you reference**.
+original MudBlazor component with its full API. Installing MudShadcn installs MudBlazor too, as the
+separate NuGet package it is, so **MudShadcn is the only package you have to reference**. The
+MudBlazor version is still yours to choose: see [Versions](#versions).
 
 | Light | Dark |
 | --- | --- |
@@ -37,9 +38,12 @@ original MudBlazor component with its full API. MudBlazor comes along as a depen
   restyled, from buttons and inputs to the data grid, the date and time pickers and every chart type.
 - **Nothing to learn.** No new components and no fork: you write ordinary MudBlazor, and MudBlazor's
   documentation, API and upgrades still apply.
-- **One package.** MudBlazor comes along as a dependency, with its own stylesheet and script.
+- **One package.** MudBlazor comes along as a dependency, with its own stylesheet and script. It is
+  not bundled inside MudShadcn, and you can move to a newer MudBlazor without waiting for MudShadcn.
 - **Light and dark.** Both of shadcn's palettes; the app starts in the operating system's colour
   scheme and follows it, or you bind `IsDarkMode` yourself.
+- **A switch back to MudBlazor's own look.** `Enabled="false"` on the provider turns MudShadcn off
+  while the app runs, so you can offer both looks or compare them.
 - **Charts in shadcn's colours** without any options, in both modes.
 - **Your theme, not ours.** Change the palette, radius or font through `MudTheme`; the stylesheet
   reads MudBlazor's palette variables, so your colours flow through. shadcn's own tokens are there as
@@ -53,8 +57,13 @@ original MudBlazor component with its full API. MudBlazor comes along as a depen
 dotnet add package MudShadcn
 ```
 
-Do not add a separate `MudBlazor` reference. If you already have one, remove it so the version
-MudShadcn was written against is the one that gets used.
+That one command installs two packages: MudShadcn, and MudBlazor as its dependency. MudBlazor is
+not copied into MudShadcn. NuGet downloads the normal `MudBlazor` package next to it, the same one
+`dotnet add package MudBlazor` gives you, so you do not need a `MudBlazor` reference of your own.
+
+You may keep or add one, though. The MudBlazor version MudShadcn names is a **minimum, not a lock**:
+reference a newer MudBlazor yourself and that is the version your app uses, without waiting for a
+MudShadcn release. [Versions](#versions) has the details.
 
 ## Set up
 
@@ -114,6 +123,8 @@ mode too.
 | `IsDarkMode` | `false` | Bindable. |
 | `FollowSystemDarkMode` | `true` | Start in the OS colour scheme and follow changes to it. |
 | `IncludeProviders` | `true` | Set `false` if you place the popover, dialog and snackbar providers yourself. |
+| `Enabled` | `true` | Set `false` for MudBlazor's own look. See [Switching to MudBlazor's own look](#switching-to-mudblazors-own-look). |
+| `MudBlazorTheme` | MudBlazor's default theme | The `MudTheme` used while `Enabled` is `false`. |
 
 ### Without the provider
 
@@ -128,6 +139,45 @@ mode too.
 
 You lose one thing: the provider is what re-emits the `--shadcn-*` tokens for dark mode. Without it
 the focus ring, input background and destructive button keep their light-mode values in dark mode.
+
+### Switching to MudBlazor's own look
+
+`Enabled` turns MudShadcn off and on while the app runs, so you can let your users choose between
+the shadcn look and MudBlazor's, or compare the two. Nothing else in the set-up changes.
+
+```razor
+<MudShadcnProvider Enabled="_shadcn" @bind-IsDarkMode="_isDarkMode" />
+
+<MudSwitch @bind-Value="_shadcn" Label="shadcn look" Color="Color.Primary" />
+
+@code {
+    private bool _shadcn = true;
+    private bool _isDarkMode;
+}
+```
+
+With `Enabled="false"` the provider applies MudBlazor's default theme, switches MudShadcn's
+stylesheet off in the page and stops emitting the `--shadcn-*` tokens: the app looks as it does
+without MudShadcn. Dark mode and the three MudBlazor providers keep working. Back to `true`
+restores the shadcn look at once, since the stylesheet stays loaded.
+
+- **Your own MudBlazor theme.** Pass it as `MudBlazorTheme` and it is the one used while `Enabled`
+  is `false`: `<MudShadcnProvider Enabled="_shadcn" MudBlazorTheme="_myTheme" />`.
+- **Use `Enabled`, not an `@if` around two providers.** Swapping `MudShadcnProvider` for
+  `MudThemeProvider` changes the colours only; the stylesheet would still apply.
+- **Keep the stylesheet `<link>` from step 2.** The provider finds it by its address
+  (`_content/MudShadcn/MudShadcn.min.css` or `MudShadcn.css`). If you serve a copy from another
+  address, mark it: `<link rel="stylesheet" href="..." data-mudshadcn />`. When the provider cannot
+  find the link it logs a warning.
+- **In your own CSS, use `--mud-palette-*`** for anything that has to work in both looks. The
+  `--shadcn-*` variables do not exist while `Enabled` is `false`.
+- **The switch happens when the provider becomes interactive**, like following the OS colour
+  scheme. A prerendered page that starts with `Enabled="false"` shows MudShadcn's shapes for that
+  moment.
+- **Snackbar defaults stay.** `AddMudShadcn()` sets them once at start-up (bottom right, outlined),
+  for both looks. Call MudBlazor's `AddMudServices()` instead if you want MudBlazor's defaults.
+- MudBlazor's own look expects the Roboto font, which MudShadcn does not need. Add MudBlazor's
+  [font link](https://mudblazor.com/getting-started/installation) if you offer both looks.
 
 ## Using it
 
@@ -312,10 +362,43 @@ inline style or a component parameter decides something, MudBlazor's version sta
 
 ## Versions
 
-| MudShadcn | MudBlazor | .NET |
+| MudShadcn | Minimum MudBlazor | .NET |
 | --- | --- | --- |
 | 1.1.x | 9.12.0 | 10 (`net10.0`) |
 | 1.0.x | 9.10.0 | 10 (`net10.0`) |
+
+### Which MudBlazor version your app uses
+
+MudBlazor is a separate NuGet package that MudShadcn depends on. It is not inside MudShadcn, and
+the version in the table is the lowest one MudShadcn accepts, not the only one.
+
+| Your project references | MudBlazor your app gets |
+| --- | --- |
+| `MudShadcn` only | The minimum from the table. NuGet does not pick a newer one by itself, even when one exists. |
+| `MudShadcn` and a **newer** `MudBlazor` | The version you named. NuGet lets a direct reference win, with no warning. |
+| `MudShadcn` and an **older** `MudBlazor` | None: the restore stops with error `NU1605` (package downgrade). Raise MudBlazor to the minimum, or use the MudShadcn release that matches yours. |
+
+So to take a new MudBlazor release on the day it ships, add or raise your own reference next to
+MudShadcn's:
+
+```xml
+<PackageReference Include="MudShadcn" Version="..." />
+<!-- Optional: only to use a MudBlazor newer than the minimum. -->
+<PackageReference Include="MudBlazor" Version="..." />
+```
+
+What to expect on a MudBlazor newer than the minimum:
+
+- **Your app keeps working.** MudShadcn does not change MudBlazor's components or their API. It
+  uses a small part of that API itself (the theme, the providers, the chart options), and MudBlazor
+  keeps its API stable within a major version.
+- **Styling can lag for what is new.** The stylesheet matches MudBlazor's CSS class names. A
+  component or variant MudBlazor adds after the minimum keeps MudBlazor's own look until the next
+  MudShadcn release; everything that existed before stays styled.
+- **Each MudShadcn release is tested against its minimum.** CI checks every class, variable, chart
+  colour and icon the stylesheet relies on against that version.
+- **A new MudBlazor major version is different.** It can rename classes and change the theme API,
+  so wait for the MudShadcn major version that names it.
 
 MudShadcn follows [Semantic Versioning](https://semver.org); moving to a new MudBlazor major version is
 a new MudShadcn major version. What changed in each release is in the
