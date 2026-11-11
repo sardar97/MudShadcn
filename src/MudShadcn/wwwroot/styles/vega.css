@@ -200,6 +200,13 @@
     border-color: light-dark(var(--mud-palette-lines-default), var(--mud-palette-lines-inputs));
 }
 
+/* .cn-button: focus-visible:border-ring. The outline rules above tie the base's focus rule on
+   specificity and come later, so the focus border is restated. */
+.mud-button-outlined:focus-visible,
+.mud-button-outlined[class*="mud-button-outlined-"]:focus-visible {
+    border-color: var(--shadcn-ring);
+}
+
 .mud-button-root.mud-button-outlined:disabled,
 .mud-button-root.mud-fab-outlined:disabled {
     border-color: light-dark(var(--mud-palette-lines-default), var(--mud-palette-lines-inputs));
@@ -374,6 +381,11 @@ div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-start {
 /* ---------------------------------------------------------------------------------------------
    5. Checkbox, radio, switch, slider — the checked radio is a filled disc
    --------------------------------------------------------------------------------------------- */
+
+/* .cn-radio-group-item: no shadow-xs (the checkbox keeps it; the focus ring's rule is more specific) */
+.mud-radio > .mud-icon-button > svg:has(> path[d^="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18"], > path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    box-shadow: none;
+}
 
 /* .cn-radio-group-item, .cn-radio-group-indicator-icon: data-checked:bg-primary border-primary,
    a size-2 bg-primary-foreground dot (the base: input-coloured disc, primary dot) */

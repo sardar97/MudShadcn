@@ -52,7 +52,7 @@ public static class MudShadcnTheme
             {
                 // rounded-md = calc(var(--radius) * 0.8), 0.5rem by default: buttons, inputs, menus.
                 // Larger surfaces (cards, dialogs) get their own radius in MudShadcn.css.
-                DefaultBorderRadius = radius.Rem == 0 ? "0" : FormattableString.Invariant($"{radius.Rem * 0.8:0.###}rem"),
+                DefaultBorderRadius = FormattableString.Invariant($"{radius.Rem * 0.8:0.###}rem"),
                 AppbarHeight = "56px",
                 DrawerWidthLeft = "256px",  // shadcn --sidebar-width: 16rem
                 DrawerWidthRight = "256px",
@@ -78,7 +78,7 @@ public static class MudShadcnTheme
     // shadcn/create's RADII (apps/v4/registry/config.ts).
     private static (string Css, double Rem) RadiusOf(ShadcnRadius radius) => radius switch
     {
-        ShadcnRadius.None => ("0", 0),
+        ShadcnRadius.None => ("0rem", 0),   // with its unit: the stylesheet uses the scale in calc() and min()
         ShadcnRadius.Small => ("0.45rem", 0.45),
         ShadcnRadius.Large => ("0.875rem", 0.875),
         _ => (ShadcnTokens.Radius, 0.625),

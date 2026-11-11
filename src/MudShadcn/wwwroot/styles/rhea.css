@@ -1,7 +1,1298 @@
 /*
- * rhea.css — shadcn/ui's Rhea style for MudShadcn. Like Luma, but compact.
- * Loaded AFTER MudShadcn.css (MudShadcnProvider links it when the theme's Style is Rhea),
- * so a rule here wins over the rule with the same selector there. Written against MudBlazor 9.12.0.
+ * rhea.css — shadcn/ui's Rhea style for MudShadcn. A more compact Luma: pill-shaped controls, filled
+ * (tinted) inputs, soft shadows and a lighter focus ring, on smaller sizes and tighter spacing.
+ * Loaded AFTER MudShadcn.css (MudShadcnProvider links it when the theme's Style is Rhea), so a rule
+ * here wins over the rule with the same selector there. It holds only what differs from
+ * MudShadcn.css, the New York look, and its sections have that file's numbers. Written against
+ * MudBlazor 9.12.0.
  *
- * Values are shadcn/ui's apps/v4/registry/styles/style-rhea.css, not approximations.
+ * Values are shadcn/ui's apps/v4/registry/styles/style-rhea.css, not approximations. The comment
+ * before each block names the .cn-* class of that file the block comes from.
+ *
+ * Rhea is not a square style: the radius scale stays as it is and every corner is set through
+ * --shadcn-radius-* (rounded-2xl, rounded-xl, ...), so the theme's radius option keeps working.
+ *
+ * Recurring expressions:
+ *   ring-1 ring-foreground/5 dark:ring-foreground/10   light-dark(text-primary 5%, text-primary 10%)
+ *   filled input     bg-input/50 border-transparent    color-mix(in oklab, --shadcn-input 50%, transparent)
+ *   ghost hover      hover:bg-muted dark:hover:bg-muted/50    light-dark(muted, muted 50%)
+ *   outline surface  bg-background dark:bg-transparent        light-dark(background, transparent)
+ *   destructive      bg-destructive/10 dark:bg-destructive/20 text-destructive
  */
+
+:root {
+    /* focus-visible:ring-3 ring-ring/30 */
+    --shadcn-focus-ring: 0 0 0 3px color-mix(in oklab, var(--shadcn-ring) 30%, transparent);
+}
+
+/* ---------------------------------------------------------------------------------------------
+   2. Surfaces
+   --------------------------------------------------------------------------------------------- */
+
+/* .cn-card: ring-1 ring-foreground/5 dark:ring-foreground/10 shadow-sm rounded-[min(var(--radius-4xl),24px)]
+   [--card-spacing:--spacing(5)]; a ring instead of the base's border */
+.mud-card {
+    border-radius: min(var(--shadcn-radius-4xl), 24px);   /* rounded-[min(var(--radius-4xl),24px)] */
+}
+
+.mud-paper.mud-card.mud-elevation-1:not(.mud-paper-outlined):not(.mud-paper-square) {
+    border-width: 0;                                  /* no border: the ring replaces it */
+    box-shadow: 0 0 0 1px light-dark(color-mix(in oklab, var(--mud-palette-text-primary) 5%, transparent),
+                                     color-mix(in oklab, var(--mud-palette-text-primary) 10%, transparent)),
+                var(--shadcn-shadow-sm);              /* ring-1 ring-foreground/5 dark:ring-foreground/10 shadow-sm */
+}
+
+/* .cn-card, .cn-card-header, .cn-card-content, .cn-card-footer: --card-spacing 5 */
+.mud-card-header,
+.mud-card-header.mud-card-header-padding {
+    padding: 20px 20px 0;                             /* py-5 px-5 */
+}
+
+.mud-card-header:has(+ .mud-card-media) {
+    padding-bottom: 20px;                             /* gap-5 */
+}
+
+.mud-card-content,
+.mud-card-content.mud-card-content-padding {
+    padding: 20px;                                    /* py-5 px-5 */
+}
+
+.mud-card-actions,
+.mud-card-actions.mud-card-actions-padding {
+    padding: 0 20px 20px;                             /* px-5 pb-5 */
+}
+
+/* .cn-card-header: gap-1.5 */
+.mud-card-header .mud-card-header-content > .mud-typography + .mud-typography {
+    margin-top: 6px;                                  /* gap-1.5 */
+}
+
+/* .cn-card-title: text-base font-medium */
+.mud-card-header .mud-card-header-content .mud-typography-h6 {
+    font-weight: 500;                                 /* font-medium */
+    line-height: 1.5;                                 /* text-base */
+}
+
+/* .cn-accordion: overflow-hidden rounded-2xl border (a panel group without lines, Outlined="false", stays open) */
+.mud-expansion-panels:has(> .mud-expand-panel.mud-expand-panel-border) {
+    overflow: hidden;                                 /* overflow-hidden */
+    border: 1px solid var(--mud-palette-lines-default);   /* border */
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+/* .cn-accordion-item: data-open:bg-muted/50 */
+.mud-expansion-panels .mud-expand-panel.mud-panel-expanded {
+    background-color: color-mix(in oklab, var(--shadcn-muted) 50%, transparent);   /* data-open:bg-muted/50 */
+}
+
+/* .cn-accordion-trigger: gap-6 p-4 (and no ring of its own: the focus ring goes inside the box,
+   the group clips an outer one) */
+.mud-expand-panel .mud-expand-panel-header,
+.mud-expand-panel .mud-expand-panel-header.mud-expand-panel-header-gutters {
+    padding: 16px;                                    /* p-4 */
+    gap: 24px;                                        /* gap-6 */
+}
+
+.mud-expand-panel .mud-expand-panel-header:focus-visible {
+    border-radius: 0;
+    box-shadow: inset 0 0 0 3px color-mix(in oklab, var(--shadcn-ring) 30%, transparent);   /* ring-3 ring-ring/30, inset */
+}
+
+/* .cn-accordion-content: px-4 */
+.mud-expand-panel .mud-expand-panel-content,
+.mud-expand-panel .mud-expand-panel-content.mud-expand-panel-gutters {
+    padding: 0 16px 16px;                             /* px-4, pt-0 pb-4 */
+}
+
+/* .cn-sheet-content: shadow-xl */
+.mud-drawer.mud-drawer-temporary.mud-drawer--open {
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;   /* shadow-xl */
+}
+
+/* ---------------------------------------------------------------------------------------------
+   3. Buttons — h-8 px-3 rounded-2xl, no shadow, ring-3 ring-ring/30
+   --------------------------------------------------------------------------------------------- */
+
+/* .cn-button: border border-transparent bg-clip-padding rounded-2xl, active:translate-y-px */
+.mud-button,
+.mud-icon-button,
+.mud-icon-button.mud-button {                         /* an icon button with a variant: MudBlazor's own rule for it */
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+.mud-button-filled,
+.mud-button-text {
+    border: 1px solid transparent;                    /* border border-transparent */
+}
+
+.mud-button-filled {
+    background-clip: padding-box;                     /* bg-clip-padding */
+}
+
+.mud-button-root:active:not([aria-haspopup], .mud-toggle-item, .mud-chip-close-button) {
+    transform: translateY(1px);                       /* active:translate-y-px */
+}
+
+.mud-button-filled:focus-visible,
+.mud-button-text:focus-visible {
+    border-color: var(--shadcn-ring);                 /* focus-visible:border-ring */
+}
+
+/* .cn-button-size-default: h-8 gap-1.5 px-3, icon side pl-2.5 / pr-2.5 */
+.mud-button {
+    height: 32px;                                     /* h-8 */
+    gap: 6px;                                         /* gap-1.5 */
+    padding-left: 12px;                               /* px-3 */
+    padding-right: 12px;
+}
+
+.mud-button .mud-button-label {
+    gap: 6px;                                         /* gap-1.5 */
+}
+
+.mud-button-outlined,
+.mud-button-outlined[class*="mud-button-outlined-"] {
+    padding-left: 12px;                               /* px-3 */
+    padding-right: 12px;
+}
+
+.mud-button:has(> .mud-button-label > .mud-button-icon-start) {
+    padding-left: 10px;                               /* has-data-[icon=inline-start]:pl-2.5 */
+}
+
+.mud-button:has(> .mud-button-label > .mud-button-icon-end) {
+    padding-right: 10px;                              /* has-data-[icon=inline-end]:pr-2.5 */
+}
+
+/* .cn-button-size-sm: h-7 gap-1 px-3, icon side pl-2 / pr-2 */
+.mud-button-filled-size-small,
+.mud-button-outlined-size-small,
+.mud-button-text-size-small {
+    height: 28px;                                     /* h-7 */
+    gap: 4px;                                         /* gap-1 */
+}
+
+.mud-button-filled-size-small .mud-button-label,
+.mud-button-outlined-size-small .mud-button-label,
+.mud-button-text-size-small .mud-button-label {
+    gap: 4px;                                         /* gap-1 */
+}
+
+:is(.mud-button-filled-size-small, .mud-button-outlined-size-small, .mud-button-text-size-small):has(> .mud-button-label > :is(.mud-button-icon-start, .mud-button-icon-end)) {
+    padding-left: 12px;                               /* px-3 (the base's icon copy is 10px) */
+    padding-right: 12px;
+}
+
+:is(.mud-button-filled-size-small, .mud-button-outlined-size-small, .mud-button-text-size-small):has(> .mud-button-label > .mud-button-icon-start) {
+    padding-left: 8px;                                /* has-data-[icon=inline-start]:pl-2 */
+}
+
+:is(.mud-button-filled-size-small, .mud-button-outlined-size-small, .mud-button-text-size-small):has(> .mud-button-label > .mud-button-icon-end) {
+    padding-right: 8px;                               /* has-data-[icon=inline-end]:pr-2 */
+}
+
+/* .cn-button-size-lg: h-9 gap-1.5 px-4, icon side pl-3 / pr-3 */
+.mud-button-filled-size-large,
+.mud-button-outlined-size-large,
+.mud-button-text-size-large,
+.mud-button-outlined.mud-button-outlined-size-large {
+    height: 36px;                                     /* h-9 */
+    padding-left: 16px;                               /* px-4 */
+    padding-right: 16px;
+}
+
+:is(.mud-button-filled-size-large, .mud-button-outlined-size-large, .mud-button-text-size-large):has(> .mud-button-label > .mud-button-icon-start) {
+    padding-left: 12px;                               /* has-data-[icon=inline-start]:pl-3 */
+}
+
+:is(.mud-button-filled-size-large, .mud-button-outlined-size-large, .mud-button-text-size-large):has(> .mud-button-label > .mud-button-icon-end) {
+    padding-right: 12px;                              /* has-data-[icon=inline-end]:pr-3 */
+}
+
+/* .cn-button-size-icon-sm / -icon / -icon-lg: size-7 / size-8 / size-9 */
+.mud-icon-button {
+    padding: 6px;                                     /* size-8 around the 20px icon */
+}
+
+.mud-icon-button.mud-icon-button-size-large {
+    padding: 8px;                                     /* size-9 */
+}
+
+.mud-icon-button.mud-button {
+    width: 32px;                                      /* size-8 */
+    height: 32px;
+}
+
+.mud-icon-button.mud-button.mud-icon-button-size-small {
+    width: 28px;                                      /* size-7 */
+    height: 28px;
+}
+
+.mud-icon-button.mud-button.mud-icon-button-size-large {
+    width: 36px;                                      /* size-9 */
+    height: 36px;
+}
+
+/* .cn-button-variant-default: hover:bg-primary/80 */
+.mud-button-filled.mud-button-filled-primary:hover,
+.mud-button-filled.mud-button-filled-primary:focus-visible,
+.mud-button-filled.mud-button-filled-primary:active {
+    background-color: color-mix(in oklab, var(--mud-palette-primary) 80%, transparent);   /* hover:bg-primary/80 */
+}
+
+/* .cn-button-variant-secondary: hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] */
+.mud-button-filled:hover,
+.mud-button-filled:focus-visible,
+.mud-button-filled:active,
+.mud-button-filled.mud-button-filled-secondary:hover,
+.mud-button-filled.mud-button-filled-secondary:focus-visible,
+.mud-button-filled.mud-button-filled-secondary:active {
+    background-color: color-mix(in oklch, var(--mud-palette-secondary), var(--mud-palette-text-primary) 5%);
+}
+
+/* .cn-button-variant-destructive: bg-destructive/10 text-destructive hover:bg-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 */
+.mud-button-filled.mud-button-filled-error {
+    background-color: light-dark(color-mix(in oklab, var(--shadcn-destructive) 10%, transparent),
+                                 color-mix(in oklab, var(--shadcn-destructive) 20%, transparent));
+    color: var(--shadcn-destructive);                 /* text-destructive */
+}
+
+.mud-button-filled.mud-button-filled-error:hover,
+.mud-button-filled.mud-button-filled-error:focus-visible,
+.mud-button-filled.mud-button-filled-error:active {
+    background-color: light-dark(color-mix(in oklab, var(--shadcn-destructive) 20%, transparent),
+                                 color-mix(in oklab, var(--shadcn-destructive) 30%, transparent));
+}
+
+/* focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 focus-visible:border-destructive/40 */
+.mud-button-filled.mud-button-filled-error:focus-visible {
+    box-shadow: 0 0 0 3px light-dark(color-mix(in oklab, var(--shadcn-destructive) 20%, transparent),
+                                     color-mix(in oklab, var(--shadcn-destructive) 40%, transparent)) !important;
+    border-color: color-mix(in oklab, var(--shadcn-destructive) 40%, transparent);
+}
+
+.mud-button-root:disabled:is(.mud-button-filled-error, .mud-fab-filled-error) {
+    background-color: light-dark(color-mix(in oklab, var(--shadcn-destructive) 10%, transparent),
+                                 color-mix(in oklab, var(--shadcn-destructive) 20%, transparent)) !important;
+    color: var(--shadcn-destructive) !important;
+}
+
+/* .cn-button-variant-outline: border-border bg-background dark:bg-transparent hover:bg-muted dark:hover:bg-input/30, no shadow */
+.mud-button-outlined,
+.mud-button-outlined[class*="mud-button-outlined-"] {
+    border-color: var(--mud-palette-lines-default);   /* border-border */
+    background-color: light-dark(var(--mud-palette-background), transparent);
+    box-shadow: none;
+}
+
+.mud-button-outlined:hover,
+.mud-button-outlined[class*="mud-button-outlined-"]:hover {
+    background-color: light-dark(var(--shadcn-muted), color-mix(in oklab, var(--shadcn-input) 30%, transparent));
+    border-color: var(--mud-palette-lines-default);
+}
+
+/* .cn-button: focus-visible:border-ring. The outline rules above tie the base's focus rule on
+   specificity and come later, so the focus border is restated. */
+.mud-button-outlined:focus-visible,
+.mud-button-outlined[class*="mud-button-outlined-"]:focus-visible {
+    border-color: var(--shadcn-ring);
+}
+
+.mud-button-root.mud-button-outlined:disabled,
+.mud-button-root.mud-fab-outlined:disabled {
+    border-color: var(--mud-palette-lines-default);
+}
+
+/* .cn-button-variant-ghost: hover:bg-muted dark:hover:bg-muted/50 */
+.mud-button-text:hover,
+.mud-button-text:focus-visible,
+.mud-icon-button:hover,
+.mud-icon-button:focus-visible,
+.mud-button-text.mud-button-text-primary:hover,
+.mud-button-text.mud-button-text-primary:focus-visible,
+.mud-button-text.mud-button-text-primary:active,
+.mud-button-text.mud-button-text-secondary:hover,
+.mud-button-text.mud-button-text-secondary:focus-visible,
+.mud-button-text.mud-button-text-secondary:active {
+    background-color: light-dark(var(--shadcn-muted), color-mix(in oklab, var(--shadcn-muted) 50%, transparent));
+}
+
+/* .cn-toggle: hover:bg-muted, aria-pressed:bg-muted (MudToggleIconButton) */
+.mud-icon-button[aria-pressed]:hover,
+.mud-icon-button[aria-pressed]:focus-visible,
+.mud-icon-button[aria-pressed="true"]:not(.mud-button-filled) {
+    background-color: var(--shadcn-muted);
+}
+
+/* .cn-button-group: rounded-2xl; the items take the button sizes (h-8 px-3 / sm h-7 px-3 / lg h-9 px-4) */
+.mud-button-group-root,
+.mud-button-group-root .mud-button-root {
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+.mud-button-group-root.mud-button-group-override-styles .mud-button-root {
+    padding-left: 12px;                               /* px-3 */
+    padding-right: 12px;
+}
+
+.mud-button-group-root:is(.mud-button-group-filled-size-small, .mud-button-group-outlined-size-small, .mud-button-group-text-size-small) .mud-button-root {
+    height: 28px;                                     /* h-7 */
+}
+
+.mud-button-group-root:is(.mud-button-group-filled-size-large, .mud-button-group-outlined-size-large, .mud-button-group-text-size-large) .mud-button-root {
+    height: 36px;                                     /* h-9 */
+    padding-left: 16px;                               /* px-4 */
+    padding-right: 16px;
+}
+
+/* icon buttons in a group: size-8 / size-7 / size-9 */
+.mud-button-group-root .mud-button-root.mud-icon-button:not(.mud-chip-close-button),
+.mud-button-group-root.mud-button-group-override-styles .mud-button-root.mud-icon-button:not(.mud-chip-close-button) {
+    height: 32px;
+    min-width: 32px;
+}
+
+.mud-button-group-root:is(.mud-button-group-filled-size-small, .mud-button-group-outlined-size-small, .mud-button-group-text-size-small) .mud-button-root.mud-icon-button:not(.mud-chip-close-button) {
+    height: 28px;
+    min-width: 28px;
+}
+
+.mud-button-group-root:is(.mud-button-group-filled-size-large, .mud-button-group-outlined-size-large, .mud-button-group-text-size-large) .mud-button-root.mud-icon-button:not(.mud-chip-close-button) {
+    height: 36px;
+    min-width: 36px;
+    padding: 0;
+}
+
+/* the group's items are the outline button: border-border bg-background dark:bg-transparent, no shadow */
+.mud-button-group-root.mud-button-group-outlined.mud-button-group-override-styles .mud-button-root {
+    border-color: var(--mud-palette-lines-default);
+    background-color: light-dark(var(--mud-palette-background), transparent);
+}
+
+.mud-button-group-root.mud-button-group-outlined {
+    box-shadow: none !important;
+}
+
+/* hover:bg-muted; dark: outline hover:bg-input/30, ghost hover:bg-muted/50 */
+.mud-button-group-root.mud-button-group-override-styles.mud-button-group-outlined .mud-button-root:hover,
+.mud-button-group-root.mud-button-group-override-styles.mud-button-group-outlined .mud-button-root:focus-visible,
+.mud-button-group-root.mud-button-group-override-styles.mud-button-group-outlined .mud-button-root:active {
+    background-color: light-dark(var(--shadcn-muted), color-mix(in oklab, var(--shadcn-input) 30%, transparent));
+}
+
+.mud-button-group-root.mud-button-group-override-styles.mud-button-group-text .mud-button-root:hover,
+.mud-button-group-root.mud-button-group-override-styles.mud-button-group-text .mud-button-root:focus-visible,
+.mud-button-group-root.mud-button-group-override-styles.mud-button-group-text .mud-button-root:active {
+    background-color: light-dark(var(--shadcn-muted), color-mix(in oklab, var(--shadcn-muted) 50%, transparent));
+}
+
+/* .cn-toggle-group, .cn-toggle-group-item: rounded-2xl (the ends of a joined group), px-2 in it;
+   .cn-toggle-size-default / -sm / -lg: h-8 / h-7 / h-9; .cn-toggle-variant-outline: no shadow */
+.mud-toggle-group {
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+.mud-toggle-group.mud-toggle-group-outlined,
+.mud-toggle-group.mud-toggle-group-outlined[class*="mud-toggle-group-"] {
+    box-shadow: none;                                 /* no shadow-xs */
+}
+
+.mud-toggle-group > .mud-toggle-item.mud-button-root {
+    min-height: 32px;                                 /* h-8 */
+    padding-left: 8px;                                /* px-2 */
+    padding-right: 8px;
+}
+
+.mud-toggle-group > .mud-toggle-item.mud-toggle-item-size-small {
+    min-height: 28px;                                 /* h-7 */
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.mud-toggle-group > .mud-toggle-item.mud-toggle-item-size-large {
+    min-height: 36px;                                 /* h-9 */
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+/* .cn-toggle-group-item: data-[state=on]:bg-muted; .cn-toggle: hover:bg-muted hover:text-foreground */
+.mud-toggle-group > .mud-toggle-item:not(.mud-toggle-item-selected):hover {
+    background-color: var(--shadcn-muted);            /* hover:bg-muted */
+}
+
+.mud-toggle-group:not(.mud-toggle-group-outlined) > .mud-toggle-item:not(.mud-toggle-item-selected):hover {
+    color: var(--mud-palette-text-primary);           /* hover:text-foreground */
+}
+
+.mud-toggle-group > .mud-toggle-item.mud-toggle-item-selected:not(.mud-button-filled-tertiary, .mud-button-filled-info, .mud-button-filled-success, .mud-button-filled-warning, .mud-button-filled-error, .mud-button-filled-dark) {
+    background-color: var(--shadcn-muted);            /* data-[state=on]:bg-muted */
+}
+
+.mud-toggle-group > .mud-toggle-item.mud-toggle-item-selected:disabled:not(.mud-button-filled-tertiary, .mud-button-filled-info, .mud-button-filled-success, .mud-button-filled-warning, .mud-button-filled-error, .mud-button-filled-dark) {
+    background-color: var(--shadcn-muted) !important;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   4. Inputs — h-8 px-2.5 rounded-2xl, bg-input/50 on a transparent border, no shadow, Field gap-3
+   --------------------------------------------------------------------------------------------- */
+
+/* .cn-input, .cn-textarea, .cn-select-trigger, .cn-native-select, .cn-input-group:
+   bg-input/50 border-transparent rounded-2xl, no shadow-xs, no hover change */
+.mud-input.mud-input-outlined {
+    background-color: color-mix(in oklab, var(--shadcn-input) 50%, transparent);   /* bg-input/50 */
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+.mud-input.mud-input-outlined .mud-input-outlined-border,
+.mud-input.mud-input-outlined:not(.mud-disabled):not(:focus-within):hover .mud-input-outlined-border,
+.mud-input.mud-input-outlined.mud-disabled .mud-input-outlined-border {
+    border-color: transparent;                        /* border-transparent */
+    box-shadow: none;                                 /* no shadow-xs */
+}
+
+/* h-8 px-2.5 py-1 / px-2.5 py-2: 32px tall; Margin.Dense is the select's size="sm", h-7 */
+.mud-input > input.mud-input-root-outlined,
+div.mud-input-slot.mud-input-root-outlined,
+.mud-input > textarea.mud-input-root-outlined {
+    padding: 6px 10px;                                /* h-8 px-2.5 */
+}
+
+.mud-input > textarea.mud-input-root-outlined {
+    padding: 8px 10px;                                /* px-2.5 py-2 */
+}
+
+.mud-input > input.mud-input-root-outlined.mud-input-root-margin-dense,
+div.mud-input-slot.mud-input-root-outlined.mud-input-root-margin-dense {
+    padding-top: 4px;                                 /* h-7 */
+    padding-bottom: 4px;
+}
+
+/* .cn-select-trigger: px-3 (the autocomplete is a combobox input, px-2.5) */
+.mud-select:not(.mud-autocomplete, .mud-autocomplete *) .mud-input > input.mud-input-root-outlined,
+.mud-select:not(.mud-autocomplete, .mud-autocomplete *) div.mud-input-slot.mud-input-root-outlined {
+    padding-left: 12px;                               /* px-3 */
+}
+
+.mud-select:not(.mud-autocomplete, .mud-autocomplete *) .mud-input.mud-input-outlined.mud-input-adorned-end {
+    padding-right: 12px;                              /* px-3 */
+    padding-inline-end: 12px;
+}
+
+/* Numeric field with spin buttons: MudBlazor's own 14px left padding (the base leaves it) */
+.mud-input-control.mud-input-number-control.mud-input-showspin .mud-input:not(.mud-input-adorned-end).mud-input-outlined input,
+.mud-input-control.mud-input-number-control.mud-input-showspin .mud-input:not(.mud-input-adorned-end).mud-input-outlined input.mud-input-root-margin-dense {
+    padding-inline-start: 10px;                       /* px-2.5 */
+}
+
+/* .cn-input-group-addon-align-inline-start / -end: pl-2 / pr-2 */
+.mud-input.mud-input-outlined.mud-input-adorned-start { padding-left: 8px; padding-inline-start: 8px; }      /* pl-2 */
+.mud-input.mud-input-outlined.mud-input-adorned-end { padding-right: 8px; padding-inline-end: 8px; }         /* pr-2 */
+
+.mud-input > input.mud-input-root-outlined.mud-input-root-adorned-end,
+div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-end {
+    padding-inline-start: 10px;                       /* px-2.5 */
+}
+
+.mud-input > input.mud-input-root-outlined.mud-input-root-adorned-start,
+div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-start {
+    padding-inline-end: 10px;                         /* px-2.5 */
+}
+
+/* Gap between the value and its adornment: input pl-1.5 / pr-1.5 next to an addon, select gap-1.5 */
+.mud-input-adornment-start {
+    margin-right: 6px;                                /* has-[>[data-align=inline-start]]:[&>input]:pl-1.5 */
+    margin-inline-end: 6px;
+}
+
+.mud-input-adornment-end {
+    margin-left: 6px;                                 /* has-[>[data-align=inline-end]]:[&>input]:pr-1.5 */
+    margin-inline-start: 6px;
+}
+
+/* .cn-input-group-addon-align-*: has-[>button]:ml-[-0.3rem] / mr-[-0.3rem] on a pl-2 / pr-2 addon */
+.mud-input-adornment .mud-icon-button.mud-icon-button-edge-end {
+    margin-right: -0.3rem;
+    margin-inline-end: -0.3rem;
+}
+
+.mud-input-adornment .mud-icon-button.mud-icon-button-edge-start {
+    margin-left: -0.3rem;
+    margin-inline-start: -0.3rem;
+}
+
+/* .cn-input-group-button-size-icon-xs: rounded-xl */
+.mud-input-adornment .mud-icon-button {
+    border-radius: var(--shadcn-radius-xl);           /* rounded-xl */
+}
+
+/* .cn-field: gap-3 between the label, the control and the description (the base had gap-2).
+   The pinned label's room is its 14px plus the gap: 26px. */
+.mud-input-control.mud-input-outlined-with-label,
+.mud-input-control.mud-input-control-margin-dense.mud-input-outlined-with-label {
+    padding-top: 26px;                                /* 14px label + gap-3 */
+}
+
+.mud-input-control.mud-input-control-margin-normal.mud-input-outlined-with-label {
+    padding-top: 26px;
+}
+
+.mud-input-control label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined,
+.mud-input-control .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined,
+.mud-input-control .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined,
+.mud-application-layout-rtl .mud-input-control label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined,
+.mud-application-layout-rtl .mud-input-control .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined,
+.mud-application-layout-rtl .mud-input-control .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined {
+    transform: translate(0, -26px) scale(1);          /* the label sits in the 26px above the field */
+}
+
+.mud-input-control .mud-input:has(:-webkit-autofill) ~ label.mud-input-label.mud-input-label-inputcontrol.mud-input-label-outlined {
+    transform: translate(0, -26px) scale(1);
+}
+
+.mud-input-control > .mud-input-control-helper-container {
+    margin-top: 12px;                                 /* gap-3 */
+}
+
+.mud-input-control.mud-input-control-margin-dense > .mud-input-control-helper-container {
+    margin-top: 10px;                                 /* Dense is not shadcn: the base's 2px less */
+}
+
+/* ---------------------------------------------------------------------------------------------
+   5. Checkbox, radio, switch, slider — filled controls (bg-input/90), no border, no shadow
+   --------------------------------------------------------------------------------------------- */
+
+/* .cn-checkbox, .cn-radio-group-item: bg-input/90 border-transparent, no shadow-xs; the checked
+   glyphs keep the base's primary fill, so only the unchecked ones are named */
+.mud-checkbox > .mud-icon-button > svg:has(> path[d^="M19 5v14H5V5h14"]),
+.mud-list[id^="select-listbox"] .mud-list-item-icon > svg:has(> path[d^="M19 5v14H5V5h14"]),
+.mud-radio > .mud-icon-button > svg:has(> path[d^="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18"]) {
+    border-color: transparent;                        /* border-transparent */
+    background-color: color-mix(in oklab, var(--shadcn-input) 90%, transparent);   /* bg-input/90 */
+    box-shadow: none;                                 /* no shadow-xs */
+}
+
+/* .cn-checkbox: rounded-[5px] */
+.mud-checkbox > .mud-icon-button > svg:has(> path[d^="M19 5v14H5V5h14"], > path[d^="M19 3H5c-1.11 0-2"], path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"]),
+.mud-list[id^="select-listbox"] .mud-list-item-icon > svg:has(> path[d^="M19 5v14H5V5h14"], > path[d^="M19 3H5c-1.11 0-2"], path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"]) {
+    border-radius: 5px;                               /* rounded-[5px] */
+}
+
+.mud-checkbox:has(:focus-visible) .mud-icon-root {
+    border-radius: 5px;
+}
+
+.mud-radio:has(:focus-visible) .mud-icon-root {
+    border-radius: 9999px;
+}
+
+/* .cn-radio-group-item, .cn-radio-group-indicator-icon: data-checked:bg-primary, a size-2
+   bg-primary-foreground dot (the base: input-coloured disc, primary dot). Rhea's dot is size-2.5 in
+   dark mode; a gradient size cannot follow the mode, so it stays size-2. */
+.mud-radio > .mud-icon-button > svg:has(> path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    border-color: var(--mud-palette-primary);         /* data-checked:border-primary */
+    background-color: var(--mud-palette-primary);     /* data-checked:bg-primary */
+    background-image: radial-gradient(circle, var(--mud-palette-primary-text) 3.5px, transparent 4px);  /* size-2 bg-primary-foreground */
+}
+
+.mud-radio > .mud-icon-button > svg.mud-icon-size-small:has(> path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    background-image: radial-gradient(circle, var(--mud-palette-primary-text) 2.5px, transparent 3px);
+}
+
+.mud-radio > .mud-icon-button > svg.mud-icon-size-large:has(> path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    background-image: radial-gradient(circle, var(--mud-palette-primary-text) 4.5px, transparent 5px);
+}
+
+/* another Color fills with that colour; the dot takes the foreground the checkbox's check takes */
+.mud-radio > .mud-icon-button:is(.mud-secondary-text, .mud-tertiary-text, .mud-info-text, .mud-success-text, .mud-warning-text, .mud-error-text, .mud-dark-text) > svg:has(> path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) {
+    border-color: currentColor;
+    background-color: currentColor;
+}
+
+.mud-radio > .mud-icon-button.mud-secondary-text > svg:has(> path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) { background-image: radial-gradient(circle, var(--mud-palette-secondary) 3.5px, transparent 4px); }
+.mud-radio > .mud-icon-button.mud-tertiary-text > svg:has(> path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) { background-image: radial-gradient(circle, var(--mud-palette-tertiary-text) 3.5px, transparent 4px); }
+.mud-radio > .mud-icon-button.mud-info-text > svg:has(> path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) { background-image: radial-gradient(circle, var(--mud-palette-info-text) 3.5px, transparent 4px); }
+.mud-radio > .mud-icon-button.mud-success-text > svg:has(> path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) { background-image: radial-gradient(circle, var(--mud-palette-success-text) 3.5px, transparent 4px); }
+.mud-radio > .mud-icon-button.mud-warning-text > svg:has(> path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) { background-image: radial-gradient(circle, var(--mud-palette-warning-text) 3.5px, transparent 4px); }
+.mud-radio > .mud-icon-button.mud-error-text > svg:has(> path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) { background-image: radial-gradient(circle, var(--mud-palette-error-text) 3.5px, transparent 4px); }
+.mud-radio > .mud-icon-button.mud-dark-text > svg:has(> path[d^="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5"]) { background-image: radial-gradient(circle, var(--mud-palette-dark-text) 3.5px, transparent 4px); }
+
+/* .cn-switch: h-5 w-8 (sm h-4 w-6) rounded-2xl, data-unchecked:bg-input/90, no shadow-xs;
+   .cn-switch-thumb: shadow-sm, checked translate-x-[calc(100%-4px)] (a 2px border, 2px to the edge).
+   Size.Large scales the same way (h-6 w-10, size-5 thumb). */
+.mud-switch-span.mud-switch-span-small,
+.mud-switch-span.mud-switch-span-medium,
+.mud-switch-span.mud-switch-span-large,
+.mud-switch-span {
+    height: 20px;                                     /* data-[size=default]:h-5 */
+    margin: 5px 8px;
+}
+
+.mud-switch-span.mud-switch-span-small {
+    height: 16px;                                     /* data-[size=sm]:h-4 */
+    margin: 3px 8px;
+}
+
+.mud-switch-span.mud-switch-span-large {
+    height: 24px;
+    margin: 7px 8px;
+}
+
+.mud-switch-base.mud-switch-base-medium,
+.mud-switch-base.mud-switch-base-small,
+.mud-switch-base.mud-switch-base-large,
+.mud-switch-base {
+    top: 2px;                                         /* centred in the track, 2px from its edge */
+    left: 2px;
+}
+
+.mud-switch-base.mud-switch-base-small {
+    top: 2px;
+}
+
+.mud-switch-base.mud-checked {
+    transform: translateX(12px);                      /* translate-x-[calc(100%-4px)] of a size-4 thumb */
+}
+
+.mud-switch-base.mud-switch-base-small.mud-checked {
+    transform: translateX(8px);                       /* of a size-3 thumb */
+}
+
+.mud-switch-base.mud-switch-base-large.mud-checked {
+    transform: translateX(16px);                      /* of a size-5 thumb */
+}
+
+.mud-switch-button .mud-switch-thumb-small,
+.mud-switch-button .mud-switch-thumb-medium,
+.mud-switch-button .mud-switch-thumb-large {
+    box-shadow: var(--shadcn-shadow-sm);              /* shadow-sm */
+}
+
+.mud-switch-span .mud-switch-track,
+.mud-switch-span .mud-switch-base.mud-switch-disabled + .mud-switch-track {
+    background-color: color-mix(in oklab, var(--shadcn-input) 90%, transparent);   /* data-unchecked:bg-input/90 */
+    box-shadow: none;                                 /* no shadow-xs */
+}
+
+.mud-switch-span .mud-switch-base.mud-checked + .mud-switch-track {
+    background-color: var(--mud-palette-primary);     /* data-checked:bg-primary */
+}
+
+.mud-switch-span .mud-switch-base.mud-checked + .mud-switch-track.mud-secondary {
+    background-color: var(--mud-palette-secondary-text) !important;
+}
+
+.mud-switch-span .mud-switch-base:not(.mud-checked) + .mud-switch-track.mud-secondary {
+    background-color: color-mix(in oklab, var(--shadcn-input) 90%, transparent) !important;
+}
+
+.mud-switch-span:has(:focus-visible) .mud-switch-track {
+    box-shadow: var(--shadcn-focus-ring);             /* focus-visible:ring-3 ring-ring/30 */
+}
+
+/* .cn-slider-track: bg-input/90 h-1; .cn-slider-thumb: ring-1 ring-black/10 shadow-md, no border,
+   hover:ring-4 ring-ring/30. The 4px track keeps the 22px row: 9px margins. */
+.mud-slider[class*="mud-slider-"] .mud-slider-input::-webkit-slider-runnable-track {
+    height: 4px;                                      /* h-1 */
+    margin: 9px 0;
+}
+
+.mud-slider[class*="mud-slider-"] .mud-slider-input::-moz-range-track {
+    height: 4px;
+    margin: 9px 0;
+}
+
+.mud-slider:not(.mud-picker-color-slider) > .mud-slider-container::before {
+    height: 4px;                                      /* h-1 */
+    background-color: color-mix(in oklab, var(--shadcn-input) 90%, transparent);   /* bg-input/90 */
+}
+
+.mud-slider[class*="mud-slider-"] .mud-slider-filled {
+    height: 4px;                                      /* h-1 */
+}
+
+.mud-slider[class*="mud-slider-"] .mud-slider-input::-webkit-slider-thumb {
+    margin-top: -6px;                                 /* centred on the 4px track */
+    border: 0;                                        /* no border */
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.1), var(--shadcn-shadow-md);   /* ring-1 ring-black/10 shadow-md */
+}
+
+.mud-slider[class*="mud-slider-"] .mud-slider-input::-moz-range-thumb {
+    border: 0;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.1), var(--shadcn-shadow-md);
+}
+
+.mud-slider[class*="mud-slider-"] .mud-slider-input:focus-visible::-webkit-slider-thumb,
+.mud-slider[class*="mud-slider-"] .mud-slider-input:active::-webkit-slider-thumb,
+.mud-slider[class*="mud-slider-"] .mud-slider-input:hover::-webkit-slider-thumb {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--shadcn-ring) 30%, transparent) !important;   /* ring-4 ring-ring/30 */
+}
+
+.mud-slider[class*="mud-slider-"] .mud-slider-input:focus-visible::-moz-range-thumb,
+.mud-slider[class*="mud-slider-"] .mud-slider-input:active::-moz-range-thumb,
+.mud-slider[class*="mud-slider-"] .mud-slider-input:hover::-moz-range-thumb {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--shadcn-ring) 30%, transparent) !important;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   6. Popovers, menus, lists, select items — ring-1 ring-foreground/5, shadow-lg, rounded-2xl / 3xl
+   --------------------------------------------------------------------------------------------- */
+
+/* .cn-popover-content: rounded-3xl shadow-lg ring-1 ring-foreground/5 dark:ring-foreground/10.
+   .cn-dropdown-menu-content, .cn-context-menu-content, .cn-menubar-content, .cn-select-content,
+   .cn-combobox-content: rounded-2xl (the same element in MudBlazor, told apart by holding a list).
+   The base draws a 1px border; the ring sits outside the box, so the border goes. */
+.mud-popover.mud-popover-open.mud-paper:not(:empty) {
+    border: 0;
+    border-radius: var(--shadcn-radius-3xl);          /* rounded-3xl */
+    box-shadow: 0 0 0 1px light-dark(color-mix(in oklab, var(--mud-palette-text-primary) 5%, transparent),
+                                     color-mix(in oklab, var(--mud-palette-text-primary) 10%, transparent)),
+                var(--shadcn-shadow-lg) !important;   /* ring-1 ring-foreground/5 dark:ring-foreground/10 shadow-lg */
+}
+
+.mud-popover.mud-popover-open.mud-paper:not(:empty):has(.mud-list, .mud-menu-list) {
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+/* .cn-dropdown-menu-content: min-w-36. The base took 2px off for its border; the ring takes none. */
+.mud-popover .mud-menu-list {
+    min-width: 9rem;                                  /* min-w-36 */
+}
+
+/* .cn-dropdown-menu-item, .cn-select-item, ...: min-h-7 rounded-xl */
+.mud-list-item,
+.mud-menu-item {
+    border-radius: var(--shadcn-radius-xl);           /* rounded-xl */
+    min-height: 28px;                                 /* min-h-7 */
+}
+
+/* .cn-dropdown-menu-label, .cn-context-menu-label, .cn-select-label, .cn-combobox-label:
+   text-muted-foreground px-2 py-1 text-xs (the base's label is text-sm font-medium, foreground) */
+.mud-list-subheader {
+    padding: 4px 8px;                                 /* px-2 py-1 */
+    font-size: 0.75rem;                               /* text-xs */
+    font-weight: 400;
+    line-height: 1rem;
+    color: var(--mud-palette-text-secondary);         /* text-muted-foreground */
+}
+
+/* .cn-dropdown-menu-separator: bg-border/50 */
+.mud-menu-list > .mud-divider {
+    border-color: color-mix(in oklab, var(--mud-palette-lines-default) 50%, transparent);   /* bg-border/50 */
+}
+
+/* .cn-tooltip-content: rounded-xl */
+.mud-tooltip {
+    border-radius: var(--shadcn-radius-xl);           /* rounded-xl */
+}
+
+/* ---------------------------------------------------------------------------------------------
+   7. Dialog — rounded-[min(var(--radius-4xl),24px)] ring-1 shadow-xl p-6 gap-6, bg-black/30 blurred overlay
+   --------------------------------------------------------------------------------------------- */
+
+/* .cn-dialog-overlay, .cn-alert-dialog-overlay, .cn-sheet-overlay, .cn-drawer-overlay:
+   bg-black/30 supports-backdrop-filter:backdrop-blur-sm. Scoped to dialog and drawer overlays,
+   so a MudOverlay a page uses for its own purposes keeps its colour. */
+.mud-overlay.mud-overlay-dialog .mud-overlay-scrim.mud-overlay-dark,
+.mud-overlay.mud-overlay-drawer .mud-overlay-scrim.mud-overlay-dark {
+    background-color: color-mix(in oklab, black 30%, transparent);   /* bg-black/30 */
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);                       /* backdrop-blur-sm */
+}
+
+/* .cn-dialog-content, .cn-alert-dialog-content: rounded-[min(var(--radius-4xl),24px)]
+   ring-1 ring-foreground/5 dark:ring-foreground/10 shadow-xl */
+.mud-dialog {
+    border-radius: min(var(--shadcn-radius-4xl), 24px);
+    border: 0;
+    box-shadow: 0 0 0 1px light-dark(color-mix(in oklab, var(--mud-palette-text-primary) 5%, transparent),
+                                     color-mix(in oklab, var(--mud-palette-text-primary) 10%, transparent)),
+                0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);   /* ring-1 + shadow-xl */
+}
+
+.mud-dialog.mud-dialog-fullscreen {
+    box-shadow: none;
+}
+
+/* .cn-dialog-header: gap-1.5 */
+.mud-dialog .mud-dialog-title {
+    padding: 24px 24px 6px;                           /* p-6, gap-1.5 */
+}
+
+/* .cn-dialog-title: text-base leading-none font-medium */
+.mud-dialog .mud-dialog-title,
+.mud-dialog .mud-dialog-title .mud-typography {
+    font-size: 1rem;                                  /* text-base */
+    font-weight: 500;                                 /* font-medium */
+}
+
+/* .cn-alert-dialog-title: text-lg font-medium. MudMessageBox's dialog carries .mud-message-box. */
+.mud-dialog.mud-message-box .mud-dialog-title,
+.mud-dialog.mud-message-box .mud-dialog-title .mud-typography {
+    font-size: 1.125rem;                              /* text-lg */
+    line-height: 1.75rem;
+}
+
+/* .cn-dialog-close: a ghost icon-sm Button (size-7, rounded-2xl) with bg-secondary at top-4 right-4 */
+.mud-dialog .mud-dialog-title .mud-button-close {
+    top: 16px;                                        /* top-4 */
+    right: 16px;                                      /* right-4 */
+    padding: 6px;                                     /* size-7 around the size-4 icon */
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+    background-color: var(--mud-palette-secondary);   /* bg-secondary */
+    opacity: 1;
+}
+
+.mud-dialog .mud-dialog-title .mud-button-close:hover {
+    background-color: var(--mud-palette-secondary);
+}
+
+.mud-dialog.mud-dialog-rtl .mud-dialog-title .mud-button-close {
+    left: 16px;
+}
+
+/* gap-6 between the header and the footer */
+.mud-dialog .mud-dialog-actions {
+    padding: 24px;                                    /* gap-6 p-6 */
+}
+
+/* the picker as a dialog: .cn-dialog-content */
+.mud-picker-paper.mud-dialog {
+    border-radius: min(var(--shadcn-radius-4xl), 24px);
+}
+
+/* The rest of section 7 and section 8 (tabs) are in the parts below. */
+
+/* ---------------------------------------------------------------------------------------------
+   8. Tabs — rounded-2xl list, h-8, p-[3px]; triggers rounded-2xl px-1.5 py-0.5, no shadow
+   --------------------------------------------------------------------------------------------- */
+
+/* .cn-tabs-list: rounded-2xl p-[3px] group-data-horizontal/tabs:h-8 group-data-vertical/tabs:p-1 */
+.mud-tabs-tabbar .mud-tabs-tabbar-inner {
+    min-height: 32px;                                 /* h-8 */
+}
+
+.mud-tabs-tabbar.mud-tabs-rounded,
+.mud-tabs-tabbar.mud-paper-outlined,
+.mud-tabs-tabbar-content .mud-tabs-tabbar-wrapper {
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+.mud-tabs-tabbar-content .mud-tabs-tabbar-wrapper.mud-tabs-vertical {
+    padding: 4px;                                     /* group-data-vertical/tabs:p-1 */
+}
+
+/* .cn-tabs-trigger: rounded-2xl border border-transparent! px-1.5 py-0.5 (vertical px-3) */
+.mud-tab {
+    min-height: 26px;                                 /* the h-8 list less its p-[3px] */
+    padding: 2px 6px;                                 /* px-1.5 py-0.5 */
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+.mud-tabs-tabbar-wrapper.mud-tabs-vertical .mud-tab {
+    padding: 2px 12px;                                /* group-data-vertical/tabs:px-3 py-0.5 */
+}
+
+.mud-dynamic-tabs .mud-tabs-tabbar .mud-tab {
+    padding: 2px 6px;
+}
+
+/* the active trigger has no shadow, and its border stays transparent in dark mode too */
+.mud-tabs-tabbar .mud-tab.mud-tab-active,
+.mud-tabs-tabbar .mud-tab.mud-tab-active:hover {
+    border-color: transparent;                        /* border-transparent! */
+    box-shadow: none;
+}
+
+/* Tabs' focus ring is in the component, not the style: focus-visible:ring-[3px] ring-ring/50, and
+   border-transparent! beats focus-visible:border-ring */
+.mud-tab:focus-visible,
+.mud-tabs-tabbar .mud-tab.mud-tab-active:focus-visible {
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--shadcn-ring) 50%, transparent);
+    border-color: transparent;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   10. Chips (shadcn Badge) — h-5 rounded-2xl
+   --------------------------------------------------------------------------------------------- */
+
+/* .cn-badge: h-5 rounded-2xl, has-data-[icon=inline-start]:pl-1.5 */
+.mud-chip,
+.mud-chip.mud-chip-size-small,
+.mud-chip.mud-chip-size-medium,
+.mud-chip.mud-chip-size-large {
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+.mud-chip.mud-chip-size-small { height: 18px; }       /* one step under the badge (base: 20px) */
+.mud-chip.mud-chip-size-medium { height: 20px; }      /* h-5 */
+.mud-chip.mud-chip-size-large { height: 24px; }       /* one step over the badge (base: 26px) */
+
+.mud-chip:has(> .mud-chip-icon) {
+    padding-inline-start: 6px;                        /* has-data-[icon=inline-start]:pl-1.5 */
+}
+
+/* .cn-badge-variant-default: bg-primary [a]:hover:bg-primary/80 */
+.mud-chip.mud-chip-filled.mud-chip-color-primary.mud-clickable:hover:not(.mud-disabled),
+.mud-chip.mud-chip-filled.mud-chip-color-primary.mud-clickable:focus-visible:not(.mud-disabled),
+.mud-chip.mud-chip-filled.mud-chip-color-primary.mud-clickable:active:not(.mud-disabled) {
+    background-color: color-mix(in oklab, var(--mud-palette-primary) 80%, transparent);
+}
+
+/* .cn-badge-variant-destructive: bg-destructive/10 text-destructive [a]:hover:bg-destructive/20 dark:bg-destructive/20 */
+.mud-chip.mud-chip-filled.mud-chip-color-error {
+    background-color: light-dark(color-mix(in oklab, var(--shadcn-destructive) 10%, transparent),
+                                 color-mix(in oklab, var(--shadcn-destructive) 20%, transparent));
+    color: var(--shadcn-destructive);
+}
+
+.mud-chip.mud-chip-filled.mud-chip-color-error.mud-clickable:hover:not(.mud-disabled),
+.mud-chip.mud-chip-filled.mud-chip-color-error.mud-clickable:focus-visible:not(.mud-disabled),
+.mud-chip.mud-chip-filled.mud-chip-color-error.mud-clickable:active:not(.mud-disabled) {
+    background-color: light-dark(color-mix(in oklab, var(--shadcn-destructive) 20%, transparent),
+                                 color-mix(in oklab, var(--shadcn-destructive) 30%, transparent));
+}
+
+/* focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 */
+.mud-chip.mud-chip-filled.mud-chip-color-error:focus-visible {
+    box-shadow: 0 0 0 3px light-dark(color-mix(in oklab, var(--shadcn-destructive) 20%, transparent),
+                                     color-mix(in oklab, var(--shadcn-destructive) 40%, transparent));
+}
+
+/* .cn-badge-variant-outline: border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground */
+.mud-chip.mud-chip-outlined.mud-chip-color-default.mud-clickable:hover:not(.mud-disabled) {
+    background-color: var(--shadcn-muted);
+    color: var(--mud-palette-text-secondary);         /* muted-foreground */
+}
+
+.mud-chip.mud-chip-outlined.mud-chip-color-default.mud-chip-selected {
+    background-color: var(--shadcn-muted);            /* selected reads like a toggle that is on: bg-muted */
+}
+
+/* ---------------------------------------------------------------------------------------------
+   11. Navigation — sidebar menu button: rounded-xl px-3 py-2, gap-0.5, ring-3
+   --------------------------------------------------------------------------------------------- */
+
+/* .cn-sidebar-menu: gap-0.5 */
+.mud-navmenu {
+    gap: 2px;                                         /* gap-0.5 */
+}
+
+/* .cn-sidebar-menu-button: rounded-xl px-3 has-[>svg:first-child]:pl-2.5 has-[>svg:last-child]:pr-2.5 */
+.mud-nav-link {
+    padding-left: 12px;                               /* px-3 */
+    padding-right: 12px;
+    border-radius: var(--shadcn-radius-xl);           /* rounded-xl */
+}
+
+.mud-nav-link:has(> svg:first-child) {
+    padding-left: 10px;                               /* has-[>svg:first-child]:pl-2.5 */
+}
+
+.mud-nav-link:has(> svg:last-child) {
+    padding-right: 10px;                              /* has-[>svg:last-child]:pr-2.5 */
+}
+
+.mud-nav-link:focus-visible:not(.mud-nav-link-disabled) {
+    box-shadow: 0 0 0 3px var(--shadcn-sidebar-ring); /* focus-visible:ring-3 ring-sidebar-ring */
+}
+
+/* .cn-sidebar-menu-button-size-sm: h-7 px-3 */
+.mud-navmenu.mud-navmenu-dense .mud-nav-link {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+/* .cn-sidebar-menu-sub-button: rounded-xl px-3 */
+.mud-navmenu .mud-nav-group .mud-collapse-container .mud-nav-link {
+    padding-inline-start: 12px !important;            /* px-3 */
+}
+
+/* The mini drawer: the rail keeps size-8 buttons centred, whatever the nav link's own padding */
+
+/* .cn-pagination-ellipsis, the page links (ghost size-8; the current page the outline button):
+   size-8, rounded-2xl; .cn-pagination-previous / -next: pl-1.5! / pr-1.5! */
+.mud-pagination .mud-pagination-item > * {
+    min-width: 32px;                                  /* size-8 */
+    height: 32px;
+    padding: 0 6px;
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+.mud-pagination.mud-pagination-small .mud-pagination-item > * {
+    min-width: 28px;                                  /* size-7 */
+    height: 28px;
+    padding: 0 4px;
+}
+
+.mud-pagination.mud-pagination-large .mud-pagination-item > * {
+    min-width: 36px;                                  /* size-9 */
+    height: 36px;
+    padding: 0 8px;
+}
+
+/* the current page is the outline button: border-border bg-background dark:bg-transparent hover:bg-muted dark:hover:bg-input/30, no shadow */
+.mud-pagination-text .mud-pagination-item-selected .mud-button-filled.mud-button-filled-primary {
+    border-color: var(--mud-palette-lines-default);
+    background-color: light-dark(var(--mud-palette-background), transparent);
+    box-shadow: none;
+}
+
+.mud-pagination-text .mud-pagination-item-selected .mud-button-filled.mud-button-filled-primary:hover {
+    background-color: light-dark(var(--shadcn-muted), color-mix(in oklab, var(--shadcn-input) 30%, transparent));
+}
+
+/* ---------------------------------------------------------------------------------------------
+   12. Feedback — alert, snackbar (toast), progress, skeleton
+   --------------------------------------------------------------------------------------------- */
+
+/* .cn-alert: rounded-2xl has-[>svg]:gap-x-2.5 */
+.mud-alert {
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+.mud-alert .mud-alert-icon {
+    margin-inline-end: 10px;                          /* gap-x-2.5 */
+}
+
+/* .cn-toast: rounded-2xl! */
+.mud-snackbar {
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+/* .cn-progress, .cn-progress-track: bg-muted h-2 rounded-2xl (the base's h-2 and pill already match).
+   bg-muted instead of the base's bar colour at 20%: MudBlazor draws the track as a ::before at
+   opacity .2, so it is made opaque here. Color.Default only: the other colours keep their tinted track. */
+.mud-progress-linear.mud-progress-linear-color-default:not(.mud-progress-linear-buffer)::before {
+    background-color: var(--shadcn-muted);            /* bg-muted */
+    opacity: 1;
+}
+
+/* .cn-skeleton: rounded-2xl */
+.mud-skeleton {
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+/* ---------------------------------------------------------------------------------------------
+   13. Pickers — calendar: --cell-radius radius-2xl, rounded-3xl popover
+   --------------------------------------------------------------------------------------------- */
+
+/*
+ * .cn-calendar: [--cell-radius:var(--radius-2xl)] on a size-8 (32px) cell, so the day is a circle.
+ * The base draws the day, the range band and its gradients from --shadcn-radius-md, and its
+ * --shadcn-hover is the accent. Inside a picker both are redefined: --shadcn-radius-md is the
+ * cell radius, capped at half the cell (16px) because that is what the browser draws for a 32px
+ * box, and the band's corner gradients are sized from the same value; --shadcn-hover is muted
+ * (ghost hover is hover:bg-muted, as in Vega, and so are today and the band). The ghost hover is
+ * dark:hover:bg-muted/50, restated by the rule after this block.
+ */
+.mud-picker-paper {
+    --shadcn-hover: var(--shadcn-muted);              /* bg-muted */
+    --shadcn-radius-md: min(var(--shadcn-radius-2xl), 16px);   /* --cell-radius: radius-2xl */
+}
+
+/* .cn-button-variant-ghost: hover:bg-muted dark:hover:bg-muted/50 */
+.mud-picker-calendar-header-switch > .mud-icon-button:hover,
+.mud-picker-calendar-header-switch button.mud-picker-calendar-header-transition:hover,
+.mud-picker-calendar .mud-day:hover:not(.mud-selected),
+.mud-picker-year-container .mud-picker-year:hover,
+.mud-picker-month-container .mud-picker-month:hover {
+    background-color: light-dark(var(--shadcn-muted), color-mix(in oklab, var(--shadcn-muted) 50%, transparent));
+}
+
+/* The colour picker's view buttons that are not the active one (the active one is aria-expanded:bg-muted, above) */
+.mud-picker-color-toolbar .mud-icon-button:not(.mud-primary-text):hover {
+    background-color: light-dark(var(--shadcn-muted), color-mix(in oklab, var(--shadcn-muted) 50%, transparent));
+}
+
+/* .cn-popover-content: rounded-3xl ring-1 ring-foreground/5 dark:ring-foreground/10 shadow-lg
+   (the base's inline picker popover has the shadow only) */
+.mud-popover.mud-picker-popover {
+    border-radius: var(--shadcn-radius-3xl);          /* rounded-3xl */
+    box-shadow: 0 0 0 1px light-dark(color-mix(in oklab, var(--mud-palette-text-primary) 5%, transparent),
+                                     color-mix(in oklab, var(--mud-palette-text-primary) 10%, transparent)),
+                var(--shadcn-shadow-lg);              /* ring-1 + shadow-lg */
+}
+
+/* The paper inside shares the popover's corners now that the ring sits outside, not as a border */
+.mud-picker-popover .mud-paper.mud-picker-paper.mud-picker-popover-paper,
+.mud-picker .mud-picker-content,
+.mud-picker-paper {
+    border-radius: var(--shadcn-radius-3xl);          /* rounded-3xl */
+}
+
+/* Year and month views: ghost buttons, rounded-2xl */
+.mud-picker-year-container .mud-picker-year,
+.mud-picker-month-container .mud-picker-month {
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+/* the picker as a dialog (declared in section 7): .cn-dialog-content */
+.mud-picker-paper.mud-dialog {
+    border-radius: min(var(--shadcn-radius-4xl), 24px);
+}
+
+/* ---------------------------------------------------------------------------------------------
+   15. Charts — popover-style tooltip: ring-1 ring-foreground/5, rounded-xl, shadow-lg
+   --------------------------------------------------------------------------------------------- */
+
+/* .cn-chart-tooltip: bg-popover ring-1 ring-foreground/5 dark:ring-foreground/10 rounded-xl shadow-lg
+   (Sankey labels keep the base's, they are drawn all at once) */
+:is(.mud-chart, .mud-chart-heat) .svg-tooltip {
+    filter: drop-shadow(0 8px 6px rgb(0 0 0 / 0.07)) drop-shadow(0 3px 2px rgb(0 0 0 / 0.06));   /* shadow-lg */
+}
+
+:is(.mud-chart, .mud-chart-heat) .svg-tooltip rect[fill] {
+    fill: var(--mud-palette-surface);                 /* bg-popover */
+    stroke: light-dark(color-mix(in oklab, var(--mud-palette-text-primary) 5%, transparent),
+                       color-mix(in oklab, var(--mud-palette-text-primary) 10%, transparent));   /* ring-1 ring-foreground/5 dark:/10 */
+    rx: var(--shadcn-radius-xl);                      /* rounded-xl */
+    ry: var(--shadcn-radius-xl);
+}
+
+/* ---------------------------------------------------------------------------------------------
+   16. Buttons: FAB, FAB menu, toggle icon button, links
+   --------------------------------------------------------------------------------------------- */
+
+/* The FAB takes the button variants above. */
+.mud-fab.mud-fab-filled-default:hover,
+.mud-fab.mud-fab-filled-default:focus-visible,
+.mud-fab.mud-fab-filled-default:active,
+.mud-fab.mud-fab-filled-secondary:hover,
+.mud-fab.mud-fab-filled-secondary:focus-visible,
+.mud-fab.mud-fab-filled-secondary:active {
+    background-color: color-mix(in oklch, var(--mud-palette-secondary), var(--mud-palette-text-primary) 5%);
+}
+
+.mud-fab.mud-fab-filled-primary:hover,
+.mud-fab.mud-fab-filled-primary:focus-visible,
+.mud-fab.mud-fab-filled-primary:active {
+    background-color: color-mix(in oklab, var(--mud-palette-primary) 80%, transparent);    /* hover:bg-primary/80 */
+}
+
+.mud-fab.mud-fab-filled-error {
+    background-color: light-dark(color-mix(in oklab, var(--shadcn-destructive) 10%, transparent),
+                                 color-mix(in oklab, var(--shadcn-destructive) 20%, transparent));
+    color: var(--shadcn-destructive);
+}
+
+.mud-fab.mud-fab-filled-error:hover,
+.mud-fab.mud-fab-filled-error:focus-visible,
+.mud-fab.mud-fab-filled-error:active {
+    background-color: light-dark(color-mix(in oklab, var(--shadcn-destructive) 20%, transparent),
+                                 color-mix(in oklab, var(--shadcn-destructive) 30%, transparent));
+}
+
+.mud-fab.mud-fab-filled-error:focus-visible {
+    box-shadow: 0 0 0 3px light-dark(color-mix(in oklab, var(--shadcn-destructive) 20%, transparent),
+                                     color-mix(in oklab, var(--shadcn-destructive) 40%, transparent)) !important;
+}
+
+/* outline: border-border bg-background dark:bg-transparent hover:bg-muted dark:hover:bg-input/30, no
+   shadow. Opaque in dark mode too: a FAB floats over content. */
+.mud-fab-outlined,
+.mud-fab-outlined[class*="mud-fab-outlined-"] {
+    border-color: var(--mud-palette-lines-default);
+    background-image: linear-gradient(transparent, transparent);
+    box-shadow: none;
+}
+
+.mud-fab-outlined:hover,
+.mud-fab-outlined[class*="mud-fab-outlined-"]:hover,
+.mud-fab-outlined[class*="mud-fab-outlined-"]:active {
+    background-color: var(--mud-palette-background);
+    background-image: linear-gradient(light-dark(var(--shadcn-muted), color-mix(in oklab, var(--shadcn-input) 30%, transparent)),
+                                      light-dark(var(--shadcn-muted), color-mix(in oklab, var(--shadcn-input) 30%, transparent)));
+    border-color: var(--mud-palette-lines-default);
+    box-shadow: none;
+}
+
+.mud-fab-text:hover,
+.mud-fab-text:focus-visible,
+.mud-fab-text:active,
+.mud-fab-text.mud-fab-text-primary:hover,
+.mud-fab-text.mud-fab-text-primary:focus-visible,
+.mud-fab-text.mud-fab-text-primary:active,
+.mud-fab-text.mud-fab-text-secondary:hover,
+.mud-fab-text.mud-fab-text-secondary:focus-visible,
+.mud-fab-text.mud-fab-text-secondary:active {
+    background-color: light-dark(var(--shadcn-muted), color-mix(in oklab, var(--shadcn-muted) 50%, transparent));
+}
+
+/* ---------------------------------------------------------------------------------------------
+   17. Form inputs: file upload
+   --------------------------------------------------------------------------------------------- */
+
+/* .cn-empty, .cn-empty-media-icon: rounded-3xl; the icon tile rounded-xl with a size-5 icon */
+.mud-file-upload .mud-file-upload-dragarea {
+    border-radius: var(--shadcn-radius-3xl);          /* rounded-3xl */
+}
+
+.mud-file-upload .mud-file-upload-dragarea > .mud-icon-root {
+    padding: 10px;                                    /* size-5 in a size-10 tile */
+    font-size: 1.25rem;                               /* size-5 */
+    border-radius: var(--shadcn-radius-xl);           /* rounded-xl */
+}
+
+/* ---------------------------------------------------------------------------------------------
+   18. Pickers: date range, time, colour
+   --------------------------------------------------------------------------------------------- */
+
+/* The AM/PM switch is the Tabs list: rounded-2xl list and triggers */
+.mud-picker-timepicker-toolbar .mud-timepicker-ampm,
+.mud-picker-timepicker-toolbar.mud-picker-timepicker-toolbar-landscape .mud-timepicker-ampm,
+.mud-picker-toolbar.mud-picker-timepicker-toolbar .mud-timepicker-ampm .mud-button-root.mud-timepicker-button {
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+/* ---------------------------------------------------------------------------------------------
+   19. Data: pager, tree view
+   --------------------------------------------------------------------------------------------- */
+
+/* The pager's select is SelectTrigger size="sm": bg-input/50 border-transparent rounded-2xl h-7, no shadow */
+.mud-table-pagination-select .mud-input.mud-select-input {
+    height: 28px;                                     /* data-[size=sm]:h-7 */
+    border-color: transparent;
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+    background-color: color-mix(in oklab, var(--shadcn-input) 50%, transparent);   /* bg-input/50 */
+    box-shadow: none;
+}
+
+/* its page buttons are outline size-8 buttons */
+.mud-table-pagination-actions .mud-icon-button {
+    border-color: var(--mud-palette-lines-default);
+    border-radius: var(--shadcn-radius-2xl);
+    background-color: light-dark(var(--mud-palette-background), transparent);
+    box-shadow: none;
+}
+
+.mud-table-pagination-actions .mud-icon-button:hover {
+    background-color: light-dark(var(--shadcn-muted), color-mix(in oklab, var(--shadcn-input) 30%, transparent));
+}
+
+/* Tree view rows are SidebarMenuButtons: rounded-xl px-3 (pl-2.5 after the chevron) */
+.mud-treeview-item-content {
+    padding: 0 12px 0 10px;
+    border-radius: var(--shadcn-radius-xl);           /* rounded-xl */
+}
+
+/* ---------------------------------------------------------------------------------------------
+   20. Layout and navigation — carousel, stepper
+   --------------------------------------------------------------------------------------------- */
+
+/* .cn-carousel-previous / -next: outline size-8, rounded-2xl (a circle at 32px), no shadow */
+.mud-carousel > .d-flex > .mud-icon-button {
+    border-color: var(--mud-palette-lines-default);
+    border-radius: var(--shadcn-radius-2xl);
+    box-shadow: none;
+}
+
+/* the stepper's step is a Button: rounded-2xl */
+.mud-stepper .mud-stepper-nav .mud-step {
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+/* A static picker's outer box (the one with the elevation shadow) is square in MudBlazor; the paper
+   inside is rounded-3xl, so the box follows it or the shadow shows square corners. */
+.mud-picker.mud-picker-static {
+    border-radius: var(--shadcn-radius-3xl);          /* rounded-3xl */
+}
