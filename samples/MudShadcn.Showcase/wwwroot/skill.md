@@ -257,6 +257,8 @@ public static class AppTheme
         HeadingFontFamily = null,             // null: the same as FontFamily
         MenuAccent = ShadcnMenuAccent.Subtle, // Subtle, Bold
         MenuColor = ShadcnMenuColor.Default,  // Default, Inverted, DefaultTranslucent, InvertedTranslucent
+        IconLibrary = null,                   // null (default): MudBlazor's Material icons. Or ShadcnIconLibrary.Lucide,
+                                              // Tabler, HugeIcons, Phosphor, RemixIcon
     });
 }
 ```
@@ -268,6 +270,12 @@ public static class AppTheme
 - **A style is a stylesheet the provider links.** Do not add a `<link>` for
   `_content/MudShadcn/styles/*.css` yourself: `MudShadcnProvider` links the one the theme names,
   after `MudShadcn.css`. The menu options work the same way. `NewYork` needs none.
+- **An icon library is a stylesheet the provider links too.** `IconLibrary` redraws the Material
+  icons MudBlazor's components use by default (close, chevrons, pager arrows, alert icons, the
+  data grid's filter, rating stars: some fifty) with the library's icons. It recognises an icon by
+  its shape, so the same Material icon in the app's own markup is redrawn too, but any other icon
+  (`Icons.Material.Filled.Delete`) stays Material's: do not promise a full icon swap, and do not
+  replace `Icons.Material.*` constants with markup from the library to force one.
 - **To switch while the app runs,** pass another theme:
   `_theme = MudShadcnTheme.Create(_theme.Options with { Style = ShadcnStyle.Luma });`.
 - **The result is an ordinary `MudTheme`** (`ShadcnTheme` derives from it), so palette, typography
@@ -308,7 +316,8 @@ For shadcn's proportions (wide bars 4px apart, smooth lines, filled areas, about
 
 ## 6. Things that look wrong but are expected
 
-- Icons are Material icons (MudBlazor's), not Lucide. Checkbox, radio, switch and the select arrow
+- Icons are Material icons (MudBlazor's), not Lucide, unless the theme sets `IconLibrary` (above),
+  which covers MudBlazor's built-in icons only. Checkbox, radio, switch and the select arrow
   are redrawn as shadcn's controls; custom `CheckedIcon`/`UncheckedIcon` render as given.
 - `Variant.Outlined` inputs have no floating label: it sits above the field.
 - `Color.Dark` is a mid grey in dark mode, so it stays visible.

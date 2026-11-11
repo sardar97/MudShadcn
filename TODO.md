@@ -58,6 +58,9 @@ Everything was checked in Chrome and, for the parts named here, Firefox. Not in 
 - [ ] Charts: data markers set the circle's radius from CSS (`r: 2px`), and the stacked bar
       rounding uses `:has(+ …)` between SVG paths. Check "Line with dots" and "Stacked bar" on the
       showcase's Charts page.
+- [ ] The icon libraries (`styles/icons-*.css`): an icon is a `mask` on the `<svg>` MudIcon
+      renders, found with `:has(> path[d="…"])` and `:where(:not(:has(…)))`. Checked in Chrome and
+      Firefox. Check the Alert and Data Grid pages with `?icons=lucide`.
 
 ## 3. Charts
 

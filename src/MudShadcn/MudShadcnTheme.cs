@@ -38,7 +38,7 @@ public static class MudShadcnTheme
 
     /// <summary>
     /// Creates a fresh theme from what shadcn/create lets you choose: style, base colour, theme
-    /// colour, chart colour, radius, fonts and the look of menus.
+    /// colour, chart colour, radius, fonts, the look of menus and the icon library.
     /// </summary>
     public static ShadcnTheme Create(ShadcnThemeOptions options)
     {

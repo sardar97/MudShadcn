@@ -22,6 +22,17 @@ major version is a new MudShadcn major version.
   pointer in menus, selects and autocompletes in the primary colour) and `MenuColor` (`Inverted`
   makes them dark on a light page, `DefaultTranslucent` and `InvertedTranslucent` let the page show
   through, blurred). They are stylesheets the provider links too.
+- **shadcn's icon libraries:** `ShadcnThemeOptions.IconLibrary` draws the icons MudBlazor's
+  components use by default with `Lucide`, `Tabler`, `HugeIcons`, `Phosphor` or `RemixIcon`, the
+  five of [shadcn/create](https://ui.shadcn.com/create), instead of Material: the close button of
+  a dialog, an alert and a chip, the arrows of a pager, a date picker and a tree view, the icons of
+  an alert and a snackbar, the data grid's filter, the stars of a rating (some fifty icons). A
+  library is a stylesheet the provider links (`_content/MudShadcn/styles/icons-<name>.min.css`),
+  so no component and no markup changes. It recognises a Material icon by its shape, so the same
+  icon in your own markup is redrawn too; any other icon stays as it is. `null`, the default,
+  leaves MudBlazor's icons, so an existing app looks the same. The check, the dash and the select
+  arrow that `MudShadcn.css` draws itself are now the variables `--shadcn-icon-check`, `-minus`,
+  `-chevron-down` and `-chevron-up`, which a library sets.
 - **shadcn's colour themes:** `MudShadcnTheme.Create(new ShadcnThemeOptions { … })` makes a theme
   from what [shadcn/create](https://ui.shadcn.com/create) lets you choose, under shadcn's names: a
   `BaseColor` (Neutral, Stone, Zinc, Mauve, Olive, Mist, Taupe), a `Theme` colour for primary
@@ -44,7 +55,7 @@ major version is a new MudShadcn major version.
   with the version after.
 - **Showcase:** a Theme Generator page (`/customization/theme-generator`, a tab in the top bar) with
   shadcn/create's options (preset, style, base colour, theme, chart colour, heading font, font,
-  radius, menu and menu accent), shuffle and reset, a live preview of stock MudBlazor components,
+  icon library, radius, menu and menu accent), shuffle and reset, a live preview of stock MudBlazor components,
   the code to paste, and a link that opens the site in the same design. A choice applies to the
   whole site and is remembered, the Theme page prints the active theme's tokens, and the font list
   has shadcn's 24 fonts, loaded from Google Fonts only when chosen.

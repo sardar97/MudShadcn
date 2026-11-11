@@ -70,6 +70,10 @@ It downloads the new MudBlazor and checks that:
 - the default checkbox, radio and select/autocomplete icons still have the SVG paths the inputs
   sections match (`path[d^="…"]`) to redraw them as shadcn's controls. If they changed, the
   Material glyphs come back.
+- every icon library's stylesheet (`wwwroot/styles/icons-*.css`) still matches the Material icons
+  it names: each selector's path data is that of MudBlazor's icon, and no other icon of MudBlazor's
+  has the same paths. If an icon was redrawn, run `node tools/generate-shadcn-icons.mjs` after the
+  bump (step 4), which reads the icons of the version in the project file.
 - MudBlazor's default `LineStrokeWidth` is still the value the chart section's 2px line rule
   matches (`path.mud-chart-line[stroke-width="3"]`).
 - a bar, a stacked bar and a line chart still render the SVG the chart rules are written for. The
@@ -77,6 +81,17 @@ It downloads the new MudBlazor and checks that:
   have `fill="none"` and come stack after stack in series order (the rounding of a stack's two
   ends depends on that order and on the palette's order), and a data marker is a
   `circle.mud-chart-point` without a `fill` attribute.
+
+The script cannot tell which icons MudBlazor's components use by default. List them from the
+new version's source (in the scratchpad) and compare with the `ICONS` table in
+`tools/generate-shadcn-icons.mjs`: an icon that is new gets a row there, one that is gone loses its
+name.
+
+```bash
+git clone -q --depth 1 --branch v$NEW --filter=blob:none --sparse https://github.com/MudBlazor/MudBlazor.git mud-src
+git -C mud-src sparse-checkout set src/MudBlazor/Components src/MudBlazor/Base
+grep -rhoE 'Icons\.(Material|Custom)\.[A-Za-z]+\.[A-Za-z0-9_]+' mud-src/src/MudBlazor/Components mud-src/src/MudBlazor/Base | sort -u
+```
 
 It reads the defaults, and renders the charts, through MudBlazor's API with a small C# probe. If that no longer compiles, the
 API changed: update the probe in the script as well.
@@ -104,6 +119,8 @@ inline. An override only wins at equal or higher specificity, because `MudShadcn
 
 - `src/MudShadcn/MudShadcn.csproj`: the `MudBlazor` `PackageReference` version.
 - The `Written against MudBlazor x.y.z` line at the top of `MudShadcn.css`.
+- `node tools/generate-shadcn-icons.mjs`, which rewrites the icon libraries' stylesheets from the
+  new version's icons (and the version in their first comment). Then run the verify script again.
 - The Versions table in `README.md`, and `OLD=` in this file.
 - The MudBlazor version in `samples/MudShadcn.Showcase/wwwroot/skill.md` (frontmatter and first
   paragraph) and `wwwroot/llms.txt`.
@@ -258,3 +275,27 @@ git diff 4233ed1 origin/main -- apps/v4/registry/styles/
 
 Then build, run `tools/verify-mudblazor.sh`, and look at the changed styles in the test app, light
 and dark (`CLAUDE.md`, "Styles").
+
+## The icon libraries
+
+`wwwroot/styles/icons-*.css` are generated:
+
+```bash
+node tools/generate-shadcn-icons.mjs       # rewrites the five stylesheets
+tools/verify-mudblazor.sh                  # every selector still matches the icon it names, and no other
+```
+
+The tool's `ICONS` table has one row per icon: the Material icons MudBlazor draws it with, then
+its name in each library. The names were last taken from shadcn at commit `8ab2771`: where
+shadcn's own components have the icon, an `IconPlaceholder` call under `apps/v4/registry` names it
+in all five libraries (`lucide="XIcon" tabler="IconX" hugeicons="Cancel01Icon" …`), and the row
+follows it. The other rows are the library's icon of the same shape, chosen by eye: look at a new
+or changed row in the test app (`?icons=tabler`) in each library.
+
+- **A library's newer version:** change `version` in `LIBRARIES` and run the tool. Read the
+  package's licence file first, and update `THIRD-PARTY-NOTICES.md` with it. Remix Icon stays at
+  4.8.0, its last version under Apache-2.0: from 4.9.0 the package ships the "Remix Icon License",
+  which limits how the icons may be redistributed.
+- **A new library in shadcn/create** (`packages/registry/src/icons/libraries.ts`): add it to
+  `LIBRARIES` and to `ShadcnIconLibrary` (at the end), give every row its icon, and add it to the
+  Theme Generator's list, `README.md`, the agent skill and the notices.

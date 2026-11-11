@@ -263,6 +263,7 @@ var theme = MudShadcnTheme.Create(new ShadcnThemeOptions
     FontFamily = ["Inter", .. MudShadcnTheme.DefaultFontFamily],
     MenuAccent = ShadcnMenuAccent.Bold,   // Subtle, Bold
     MenuColor = ShadcnMenuColor.Inverted, // Default, Inverted, DefaultTranslucent, InvertedTranslucent
+    IconLibrary = ShadcnIconLibrary.Lucide, // null (MudBlazor's Material icons), Lucide, Tabler, HugeIcons, Phosphor, RemixIcon
 });
 ```
 
@@ -282,11 +283,20 @@ on a live preview and writes this code for you.
 | `Radius` | `--radius`, which every rounded corner is derived from. |
 | `FontFamily`, `HeadingFontFamily` | The font stacks. Load a web font in the page, as usual. |
 | `MenuAccent`, `MenuColor` | How menus, selects and autocompletes highlight an item, and whether they are dark on a light page or translucent. |
+| `IconLibrary` | The icon library MudBlazor's built-in icons are drawn with: Lucide, Tabler Icons, HugeIcons, Phosphor Icons or Remix Icon. `null`, the default, leaves MudBlazor's Material icons. |
 
 - **A style is a small stylesheet of its own.** The package ships one per style under
   `_content/MudShadcn/styles/`, and `MudShadcnProvider` links the one the theme names, after
   `MudShadcn.css`. Your page keeps its two `<link>`s and only the style in use is downloaded. The
   menu options work the same way. `NewYork` needs none.
+- **An icon library redraws the icons MudBlazor's components bring themselves:** the close button
+  of a dialog, an alert and a chip, the arrows of a pager, a date picker and a tree view, the icons
+  of an alert and a snackbar, the data grid's filter, the stars of a rating. Some fifty Material
+  icons in all are drawn with the library's icons instead. It is a stylesheet the provider links
+  too (`styles/icons-lucide.css`, …), so no component and no line of your code changes. An icon is
+  recognised by its shape, wherever it is: one of those Material icons in your own markup
+  (`Icons.Material.Filled.Close`) is redrawn as well, in its own colour and size. Any other icon
+  (`Icons.Material.Filled.Delete`) stays Material's.
 - **Switching while the app runs** is passing another theme to the provider:
 
   ```razor
@@ -370,11 +380,17 @@ inline style or a component parameter decides something, MudBlazor's version sta
 
 **General**
 
-- Icons are MudBlazor's Material icons, not Lucide. The exceptions are the default checkbox,
-  radio and select-arrow glyphs, which are recognised and redrawn as shadcn's controls; custom
+- Icons are MudBlazor's Material icons, not Lucide, unless the theme names an `IconLibrary`
+  ("Styles and colour themes" above). Without one, the exceptions are the default checkbox, radio
+  and select-arrow glyphs, which are recognised and redrawn as shadcn's controls; custom
   `CheckedIcon`/`UncheckedIcon` render as given. Other Material shapes you can swap with
   parameters: the nav group arrow (`ExpandIcon`), the breadcrumb ellipsis (`ExpanderIcon`) and
   separator (`Separator`).
+- An `IconLibrary` covers the icons MudBlazor's components use by default, not the whole Material
+  set: an icon you chose yourself stays Material's unless it is one of those, so a page can show
+  both families. The library's check and arrow also replace the ones in the checkbox and the
+  select. Lucide and Remix Icon have no plain exclamation mark, so a step with an error keeps
+  Material's there.
 - `Color.Secondary` is shadcn's light grey surface, not an accent. Where it would be a foreground
   (text, icons, a checked control) the stylesheet uses `secondary-foreground` instead.
 - `Color.Dark` is near-black (`#171717`) in light mode and a mid grey (`#737373`) in dark mode: the
@@ -463,7 +479,8 @@ inline style or a component parameter decides something, MudBlazor's version sta
   have (the time and colour pickers, the stepper, the timeline, the tree view) follow the shadcn
   component they are modelled on.
 - A style does not choose the font or the icons. shadcn's presets pair Lyra with a mono font and
-  Sera with serif headings: set `FontFamily` and `HeadingFontFamily` for that. `MudLink` keeps the
+  Phosphor's icons, Maia and Mira with HugeIcons, and Sera with serif headings: set `FontFamily`,
+  `HeadingFontFamily` and `IconLibrary` for that. `MudLink` keeps the
   size of the text around it, also in the styles whose buttons are smaller or uppercase.
 - A dialog's width is MudBlazor's `MaxWidth`, not the style's. Menus, selects and autocompletes
   open in the same kind of popover, so a style gives them one shape where shadcn's differ slightly

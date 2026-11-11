@@ -5,7 +5,8 @@ namespace MudShadcn;
 /// <summary>
 /// A <see cref="MudTheme"/> made by <see cref="MudShadcnTheme"/>. It is an ordinary MudBlazor theme
 /// (change its palette, typography or layout properties as usual) that also carries what a
-/// <see cref="MudTheme"/> has no place for: shadcn's tokens, the corner radius and the style.
+/// <see cref="MudTheme"/> has no place for: shadcn's tokens, the corner radius, the style and the
+/// icon library.
 /// <see cref="MudShadcnProvider"/> reads those when the theme is passed to it.
 /// </summary>
 public sealed class ShadcnTheme : MudTheme
@@ -16,6 +17,7 @@ public sealed class ShadcnTheme : MudTheme
         Style = options.Style;
         MenuAccent = options.MenuAccent;
         MenuColor = options.MenuColor;
+        IconLibrary = options.IconLibrary;
         Radius = radius;
         TokensLight = ShadcnTokens.Build(options, dark: false);
         TokensDark = ShadcnTokens.Build(options, dark: true);
@@ -43,6 +45,13 @@ public sealed class ShadcnTheme : MudTheme
     /// </summary>
     public ShadcnMenuColor MenuColor { get; set; }
 
+    /// <summary>
+    /// The icon library MudBlazor's built-in icons are drawn with, or <c>null</c> for MudBlazor's
+    /// own Material icons. Each library is a stylesheet of its own (<c>styles/icons-lucide.css</c>,
+    /// …) that <see cref="MudShadcnProvider"/> links.
+    /// </summary>
+    public ShadcnIconLibrary? IconLibrary { get; set; }
+
     /// <summary>shadcn's <c>--radius</c>, emitted as <c>--shadcn-radius</c>. The radius scale is derived from it.</summary>
     public string Radius { get; set; }
 
@@ -65,7 +74,7 @@ public sealed class ShadcnTheme : MudTheme
 
     /// <summary>
     /// The stylesheets the theme needs besides MudShadcn.css, by name and in the order they have to
-    /// load: the style, then the menu options.
+    /// load: the style, then the menu options, then the icon library.
     /// </summary>
     internal IEnumerable<string> StyleSheets(bool dark)
     {
@@ -88,6 +97,11 @@ public sealed class ShadcnTheme : MudTheme
         if (MenuTranslucent)
         {
             yield return "menu-translucent";
+        }
+
+        if (IconLibrary is { } library)
+        {
+            yield return "icons-" + library.ToString().ToLowerInvariant();
         }
     }
 }

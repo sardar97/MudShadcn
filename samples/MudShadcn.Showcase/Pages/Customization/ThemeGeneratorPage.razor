@@ -7,7 +7,7 @@
 
 <PageTitle>Theme Generator - MudShadcn</PageTitle>
 <HeadContent>
-    <meta name="description" content="Pick a style, colours, radius and fonts, see them on real MudBlazor components, and copy the MudShadcn code for them." />
+    <meta name="description" content="Pick a style, colours, fonts, icons and radius, see them on real MudBlazor components, and copy the MudShadcn code for them." />
 </HeadContent>
 
 <MudMainContent Class="docs-main">
@@ -110,6 +110,18 @@
             </div>
 
             <div class="docs-generator-field">
+                <MudSelect T="string" Label="Icon Library" Variant="Variant.Outlined" Value="@IconLibraryName(Design.IconLibrary)"
+                           ValueChanged="@(v => Set(d => d with { IconLibrary = IconLibraries.First(l => l.Name == v).Library }))" ToStringFunc="IconLibraryText">
+                    @foreach (var library in IconLibraries)
+                    {
+                        <MudSelectItem T="string" Value="@library.Name">
+                            <div class="docs-generator-item"><span>@library.Title</span><small>@library.Description</small></div>
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+
+            <div class="docs-generator-field">
                 <MudSelect T="ShadcnRadius" Label="Radius" Variant="Variant.Outlined" Value="Design.Radius"
                            ValueChanged="@(v => Set(d => d with { Radius = v }))" ToStringFunc="@(v => v.ToString())">
                     @foreach (var radius in Enum.GetValues<ShadcnRadius>())
@@ -149,7 +161,7 @@
                 <MudText Typo="Typo.h5" id="gen-code" Class="docs-generator-heading">Code</MudText>
                 <MudText Typo="Typo.body2" Color="Color.Tertiary" Class="mb-4">
                     What to paste into your app for this theme. It updates with every choice, and names only the options that differ from the defaults.
-                    The style's stylesheet needs no line: <CodeInline>MudShadcnProvider</CodeInline> links it.
+                    The stylesheets of the style and of the icon library need no line: <CodeInline>MudShadcnProvider</CodeInline> links them.
                 </MudText>
 
                 @if (FontLink is { } link)
@@ -197,6 +209,18 @@
         [ShadcnRadius.Large] = "0.875rem",
     };
 
+    // MudBlazor's own icons, then shadcn's libraries under shadcn's titles (packages/registry/src/icons/libraries.ts).
+    // A library redraws the icons MudBlazor's components use by default; the name is the one in the address.
+    private static readonly (string Name, ShadcnIconLibrary? Library, string Title, string Description)[] IconLibraries =
+    [
+        ("material", null, "Material", "MudBlazor's own icons"),
+        ("lucide", ShadcnIconLibrary.Lucide, "Lucide", "shadcn/ui's default"),
+        ("tabler", ShadcnIconLibrary.Tabler, "Tabler Icons", "Outlined, 2px strokes"),
+        ("hugeicons", ShadcnIconLibrary.HugeIcons, "HugeIcons", "Rounded, 1.5px strokes"),
+        ("phosphor", ShadcnIconLibrary.Phosphor, "Phosphor Icons", "Light and even"),
+        ("remixicon", ShadcnIconLibrary.RemixIcon, "Remix Icon", "Sharp and solid"),
+    ];
+
     // Swatches come from the themes themselves: one per (base colour, colour), made when first needed.
     private readonly Dictionary<(ShadcnBaseColor, ShadcnColor?), ShadcnTheme> _swatchThemes = [];
 
@@ -226,6 +250,10 @@
     private string PresetText(string name) => name == ShowcasePreset.Custom ? "Custom" : ShowcasePreset.All.First(p => p.Name == name).Title;
 
     private string FontText(string name) => ShowcaseFonts.Find(name)?.Title ?? "Inherit";
+
+    private static string IconLibraryName(ShadcnIconLibrary? library) => IconLibraries.First(l => l.Library == library).Name;
+
+    private static string IconLibraryText(string name) => IconLibraries.First(l => l.Name == name).Title;
 
     private static string MenuColorText(ShadcnMenuColor menu) => menu switch
     {
@@ -278,6 +306,7 @@
             ChartColor = Pick(ChartColors),
             Font = Pick(fonts),
             HeadingFont = random.Next(2) == 0 ? ShowcaseFonts.Inherit : Pick(fonts),
+            IconLibrary = Pick(IconLibraries).Library,
             Radius = Pick(Enum.GetValues<ShadcnRadius>()),
             MenuAccent = Pick(Enum.GetValues<ShadcnMenuAccent>()),
             MenuColor = Pick(Enum.GetValues<ShadcnMenuColor>()),

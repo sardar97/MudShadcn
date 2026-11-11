@@ -58,6 +58,16 @@ public sealed record ShadcnThemeOptions
 
     /// <summary>The surface of menus: the page's own colours, or the opposite mode's, solid or translucent.</summary>
     public ShadcnMenuColor MenuColor { get; init; } = ShadcnMenuColor.Default;
+
+    /// <summary>
+    /// The icon library the icons MudBlazor's components draw by default are drawn with: the close
+    /// button of a dialog, the arrows of a pager and of a date picker, the icons of an alert.
+    /// <c>null</c> (the default) leaves MudBlazor's Material icons. Each library is a stylesheet
+    /// that <see cref="MudShadcnProvider"/> links when the theme is applied. It recognises a
+    /// Material icon by its shape, so the same icon in your own markup is redrawn too; an icon
+    /// MudBlazor's components do not use themselves stays as it is.
+    /// </summary>
+    public ShadcnIconLibrary? IconLibrary { get; init; }
 }
 
 /// <summary>shadcn/ui's styles. The names are shadcn's.</summary>
@@ -144,6 +154,25 @@ public enum ShadcnRadius
 
     /// <summary>0.875rem.</summary>
     Large,
+}
+
+/// <summary>shadcn/create's icon libraries. The names are shadcn's.</summary>
+public enum ShadcnIconLibrary
+{
+    /// <summary><see href="https://lucide.dev">Lucide</see>, shadcn/ui's own default.</summary>
+    Lucide,
+
+    /// <summary><see href="https://tabler.io/icons">Tabler Icons</see>.</summary>
+    Tabler,
+
+    /// <summary><see href="https://hugeicons.com">HugeIcons</see> (the free set).</summary>
+    HugeIcons,
+
+    /// <summary><see href="https://phosphoricons.com">Phosphor Icons</see>.</summary>
+    Phosphor,
+
+    /// <summary><see href="https://remixicon.com">Remix Icon</see>.</summary>
+    RemixIcon,
 }
 
 /// <summary>shadcn/create's menu accent.</summary>

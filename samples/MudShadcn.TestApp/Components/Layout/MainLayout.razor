@@ -95,7 +95,7 @@
     };
 
     // A design in the address, to open (or screenshot) a page in it:
-    // ?style=nova&base=zinc&theme=blue&chart=blue&radius=small&accent=bold&menu=inverted&mode=dark&look=mudblazor
+    // ?style=nova&base=zinc&theme=blue&chart=blue&radius=small&accent=bold&menu=inverted&icons=lucide&mode=dark&look=mudblazor
     protected override void OnInitialized()
     {
         foreach (var pair in new Uri(NavigationManager.Uri).Query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
@@ -111,6 +111,7 @@
                 case "radius" when Value<ShadcnRadius>(value) is { } radius: _options = _options with { Radius = radius }; break;
                 case "accent" when Value<ShadcnMenuAccent>(value) is { } accent: _options = _options with { MenuAccent = accent }; break;
                 case "menu" when Value<ShadcnMenuColor>(value) is { } menu: _options = _options with { MenuColor = menu }; break;
+                case "icons" when Value<ShadcnIconLibrary>(value) is { } icons: _options = _options with { IconLibrary = icons }; break;
                 case "look": _shadcn = value != "mudblazor"; break;
                 case "mode": _isDarkMode = value == "dark"; _followSystem = false; break;
             }

@@ -51,6 +51,10 @@ public static class ThemeCode
 
         Add(nameof(ShadcnThemeOptions.MenuAccent), options.MenuAccent, defaults.MenuAccent);
         Add(nameof(ShadcnThemeOptions.MenuColor), options.MenuColor, defaults.MenuColor);
+        if (options.IconLibrary is { } icons)
+        {
+            lines.Add($"    {nameof(ShadcnThemeOptions.IconLibrary)} = ShadcnIconLibrary.{icons},");
+        }
 
         var code = new StringBuilder();
         code.AppendLine("<MudShadcnProvider Theme=\"_theme\" />");

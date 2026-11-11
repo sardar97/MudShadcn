@@ -10,7 +10,9 @@
 #      the SVG paths its selectors match;
 #   4. the default line width the chart rules match (stroke-width="3") is still MudBlazor's;
 #   5. bar, stacked bar and line charts still render the SVG the chart rules are written for: one
-#      stroked path per bar, stacked segments in stack and series order, data markers without a fill.
+#      stroked path per bar, stacked segments in stack and series order, data markers without a fill;
+#   6. every icon library's stylesheet (styles/icons-*.css) still matches the Material icons it
+#      names, and only those: the path data of every selector is that of MudBlazor's icon.
 #
 # Usage:
 #   tools/verify-mudblazor.sh           # the MudBlazor version MudShadcn references
@@ -69,6 +71,25 @@ var icons = new Dictionary<string, string>
 for (var i = 0; i < palette.Length; i++) Console.WriteLine($"palette\t{i + 1}\t{palette[i]}");
 for (var i = 0; i < heat.Length; i++) Console.WriteLine($"heat\t{i + 1}\t{heat[i]}");
 foreach (var (name, svg) in icons) Console.WriteLine($"icon\t{name}\t{svg}");
+
+// Every icon MudBlazor ships (Icons.Material.Filled.Close, …): the icon libraries' stylesheets
+// recognise an icon by its paths, so a selector has to match the icons it names and no other.
+// (The probe is not trimmed, so reflection over the icon classes is safe; a build warning would
+// land in the output this script reads.)
+#pragma warning disable IL2070, IL2072, IL2075
+void WriteIcons(Type type, string name)
+{
+    foreach (var field in type.GetFields().Where(f => f.IsLiteral && f.FieldType == typeof(string)))
+    {
+        Console.WriteLine($"constant\t{name}.{field.Name}\t{((string)field.GetRawConstantValue()!).ReplaceLineEndings(" ").Replace('\t', ' ')}");
+    }
+    foreach (var nested in type.GetNestedTypes())
+    {
+        WriteIcons(nested, $"{name}.{nested.Name}");
+    }
+}
+#pragma warning restore IL2070, IL2072, IL2075
+WriteIcons(typeof(Icons), "Icons");
 Console.WriteLine(FormattableString.Invariant($"chart\tLineStrokeWidth\t{new LineChartOptions().LineStrokeWidth}"));
 
 // The SVG of a bar, a stacked bar and a line chart with data markers, rendered to a string. Three
@@ -151,7 +172,7 @@ MARKUP_ONLY_CLASSES = {
 # Variables MudThemeProvider writes that MudBlazor's own stylesheet never reads.
 PROVIDER_ONLY_VARIABLES = {"--mud-palette-black"}
 
-defaults = {"palette": {}, "heat": {}, "icon": {}, "chart": {}, "markup": {}}
+defaults = {"palette": {}, "heat": {}, "icon": {}, "constant": {}, "chart": {}, "markup": {}}
 for line in open(defaults_path, encoding="utf-8"):
     kind, key, value = line.rstrip("\n").split("\t", 2)
     defaults[kind][key] = value
@@ -268,6 +289,61 @@ markers = [p for p in points if "fill" not in p]
 check(len(points) == 18 and len(markers) == 9 and all("mud-chart-point" in p.get("class", "") and p.get("stroke") for p in points)
       and all(p.get("opacity") == "0" for p in points if "fill" in p),
       "a data marker is a circle.mud-chart-point with a stroke and no fill, under a transparent hover target")
+
+print("6. Icon libraries")
+def drawing(svg):
+    """What an icon draws: its markup without the empty 24px box some icons start with."""
+    return re.sub(r'<(path|rect)\b(?=[^>]*\bfill="none")[^>]*?/>|</?g>', "", svg).strip()
+def child_paths(svg):
+    """How many <path> elements are children of the icon's <svg>, not inside a <g>."""
+    depth = count = 0
+    for closing, element, self_closing in re.findall(r"<(/?)([a-zA-Z]+)[^>]*?(/?)>", svg):
+        if closing:
+            depth -= 1
+            continue
+        count += element == "path" and depth == 0
+        depth += not self_closing
+    return count
+def matches(svg, paths, limit):
+    """Whether a selector matches an icon: every :has(path[d="…"]) finds its path, and the icon has
+    fewer child paths than the one :not(:has(> path:nth-of-type(n))) rules out."""
+    return all(f'd="{d}"' in svg for d in paths) and child_paths(svg) < limit
+icon_sheets = [path for path in style_paths if os.path.basename(path).startswith("icons-")]
+check(bool(icon_sheets), "the icon libraries' stylesheets are there (styles/icons-*.css)")
+for sheet_path in icon_sheets:
+    # One selector per line; the line before it names the icons that are drawn that way:
+    # /* Icons.Material.Filled.Close, Icons.Material.Filled.Clear */
+    lines = open(sheet_path, encoding="utf-8").read().split("\n")
+    def selector_of(line):
+        return re.sub(r"( > \*)?(,| \{)?$", "", line) if line.startswith("svg.mud-icon-root:has(") else None
+    by_selector = {selector_of(line): re.fullmatch(r"/\* (Icons\..+) \*/", before).group(1).split(", ")
+                   for before, line in zip(lines, lines[1:])
+                   if selector_of(line) and re.fullmatch(r"/\* (Icons\..+) \*/", before)}
+    problems = [f"a selector names no icon: {selector[:60]}…"
+                for selector in sorted({selector_of(line) for line in lines if selector_of(line)} - set(by_selector))]
+    for selector, names in by_selector.items():
+        paths = [d.replace('\\"', '"').replace("\\\\", "\\") for d in re.findall(r'path\[d="((?:[^"\\]|\\.)*)"\]', selector)]
+        limit = re.search(r":not\(:has\(> path:nth-of-type\((\d+)\)\)\)", selector)
+        limit = int(limit.group(1)) if limit else sys.maxsize
+        gone = [n for n in names if n not in defaults["constant"]]
+        changed = [n for n in names if n in defaults["constant"] and not matches(defaults["constant"][n], paths, limit)]
+        # Another icon may be matched too if it is the same drawing, or the icon of the same name in
+        # another of Material's sets (TwoTone.FilterAlt is Outlined.FilterAlt with a tint inside).
+        drawings = {drawing(defaults["constant"][n]) for n in names if n in defaults["constant"]}
+        same_icon = {n.rsplit(".", 1)[1] for n in names}
+        others = sorted(n for n, svg in defaults["constant"].items()
+                        if n not in names and n.rsplit(".", 1)[1] not in same_icon
+                        and matches(svg, paths, limit) and drawing(svg) not in drawings)
+        if gone:
+            problems.append("MudBlazor no longer has " + ", ".join(gone))
+        if changed:
+            problems.append("no longer drawn with the selector's paths: " + ", ".join(changed))
+        if others:
+            problems.append(f"the selector of {names[0]} also matches " + ", ".join(others[:5]))
+    check(not problems and bool(by_selector),
+          f"styles/{os.path.basename(sheet_path)}: its {len(by_selector)} selectors match the Material icons they name, and only those"
+          + ("" if not problems else ": " + "; ".join(problems)
+             + ". Run tools/generate-shadcn-icons.mjs (UPDATING.md)"))
 
 if failures:
     print(f"\n{len(failures)} check(s) failed. See UPDATING.md, step 3.")

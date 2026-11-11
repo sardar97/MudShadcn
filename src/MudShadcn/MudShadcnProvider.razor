@@ -15,10 +15,10 @@
     @* Rendered after MudThemeProvider's own <style>, so MudShadcn.css sees the tokens of the active mode. *@
     <style>@((MarkupString)TokensCss)</style>
 
-    @* The theme's style and menu options, if it has any: small stylesheets that come after
-       MudShadcn.css (which the page links in its <head>) and so win over it rule for rule. Only the
-       ones in use are ever fetched; the key makes a change replace the element instead of patching
-       its href. *@
+    @* The theme's style, menu options and icon library, if it has any: small stylesheets that come
+       after MudShadcn.css (which the page links in its <head>) and so win over it rule for rule.
+       Only the ones in use are ever fetched; the key makes a change replace the element instead of
+       patching its href. *@
     @foreach (var name in StyleSheets)
     {
         var href = string.Format(System.Globalization.CultureInfo.InvariantCulture, StyleHrefFormat, name);
@@ -60,9 +60,10 @@
     public MudTheme? Theme { get; set; }
 
     /// <summary>
-    /// Where the stylesheets of the styles and of the menu options are, with <c>{0}</c> for the
-    /// name in lower case (<c>vega</c>, <c>nova</c>, …, <c>menu-bold</c>, <c>menu-inverted</c>,
-    /// <c>menu-translucent</c>). The default is the minified files the package ships. The address
+    /// Where the stylesheets of the styles, of the menu options and of the icon libraries are,
+    /// with <c>{0}</c> for the name in lower case (<c>vega</c>, <c>nova</c>, …, <c>menu-bold</c>,
+    /// <c>menu-inverted</c>, <c>menu-translucent</c>, <c>icons-lucide</c>, <c>icons-tabler</c>, …).
+    /// The default is the minified files the package ships. The address
     /// is relative to the page's <c>&lt;base href&gt;</c>, like the one of MudShadcn.css.
     /// </summary>
     [Parameter]

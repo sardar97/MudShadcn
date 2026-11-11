@@ -32,6 +32,9 @@ public sealed record ShowcaseDesign
     /// <summary>A font of <see cref="ShowcaseFonts"/>, or <c>inherit</c> for <see cref="Font"/>.</summary>
     public string HeadingFont { get; init; } = ShowcaseFonts.Inherit;
 
+    /// <summary><c>null</c>: MudBlazor's own Material icons.</summary>
+    public ShadcnIconLibrary? IconLibrary { get; init; }
+
     public ShadcnMenuAccent MenuAccent { get; init; } = ShadcnMenuAccent.Subtle;
 
     public ShadcnMenuColor MenuColor { get; init; } = ShadcnMenuColor.Default;
@@ -52,6 +55,7 @@ public sealed record ShowcaseDesign
         HeadingFontFamily = HeadingFont == ShowcaseFonts.Inherit || HeadingFont == Font ? null : ShowcaseFonts.Stack(HeadingFont),
         MenuAccent = MenuAccent,
         MenuColor = MenuColor,
+        IconLibrary = IconLibrary,
     };
 
     /// <summary>The choices that differ from the defaults, as <c>key=value</c> pairs joined by <c>&amp;</c>.</summary>
@@ -75,6 +79,7 @@ public sealed record ShowcaseDesign
         Add("radius", Slug(Radius), Radius == defaults.Radius);
         Add("font", Font, Font == defaults.Font);
         Add("heading", HeadingFont, HeadingFont == defaults.HeadingFont);
+        Add("icons", IconLibrary?.ToString().ToLowerInvariant() ?? "", IconLibrary is null);   // shadcn's names: hugeicons, remixicon
         Add("accent", Slug(MenuAccent), MenuAccent == defaults.MenuAccent);
         Add("menu", Slug(MenuColor), MenuColor == defaults.MenuColor);
         return string.Join('&', parts);
@@ -108,6 +113,8 @@ public sealed record ShowcaseDesign
                 "radius" when Value<ShadcnRadius>(value) is { } radius => design with { Radius = radius },
                 "font" when ShowcaseFonts.Find(value) is not null => design with { Font = value },
                 "heading" when value == ShowcaseFonts.Inherit || ShowcaseFonts.Find(value) is not null => design with { HeadingFont = value },
+                "icons" when value == "material" => design with { IconLibrary = null },
+                "icons" when Value<ShadcnIconLibrary>(value) is { } icons => design with { IconLibrary = icons },
                 "accent" when Value<ShadcnMenuAccent>(value) is { } accent => design with { MenuAccent = accent },
                 "menu" when Value<ShadcnMenuColor>(value) is { } menu => design with { MenuColor = menu },
                 _ => design,

@@ -30,6 +30,14 @@
     --shadcn-radius-3xl: calc(var(--shadcn-radius) * 2.2);
     --shadcn-radius-4xl: calc(var(--shadcn-radius) * 2.6);
 
+    /* The glyphs this file draws itself, as masks: the check and the dash of a checkbox, the check
+       of a selected option, the arrow of a select. Lucide's, as in shadcn; the stylesheet of an
+       icon library (styles/icons-*.css) sets its own. */
+    --shadcn-icon-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+    --shadcn-icon-minus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+    --shadcn-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    --shadcn-icon-chevron-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E");
+
     --shadcn-background: oklch(1 0 0);
     --shadcn-foreground: oklch(0.145 0 0);
     --shadcn-card: oklch(1 0 0);
@@ -1201,13 +1209,13 @@ label.mud-input-label.mud-input-error {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 14px 14px no-repeat;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 14px 14px no-repeat;
+    -webkit-mask: var(--shadcn-icon-check) center / 14px 14px no-repeat;
+    mask: var(--shadcn-icon-check) center / 14px 14px no-repeat;
 }
 
 .mud-checkbox > .mud-icon-button:has(> svg path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"])::after {
-    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
-    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+    -webkit-mask-image: var(--shadcn-icon-minus);
+    mask-image: var(--shadcn-icon-minus);
 }
 
 .mud-checkbox > .mud-icon-button:has(> svg.mud-icon-size-small)::after {
@@ -3699,13 +3707,13 @@ label.mud-input-label.mud-input-error {
     height: 16px;
     opacity: 0.5;
     background-color: currentColor;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+    -webkit-mask: var(--shadcn-icon-chevron-down) center / 16px 16px no-repeat;
+    mask: var(--shadcn-icon-chevron-down) center / 16px 16px no-repeat;
 }
 
 .mud-input-adornment svg.mud-icon-root:has(> path[d="M7 14l5-5 5 5z"]) {
-    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E");
-    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E");
+    -webkit-mask-image: var(--shadcn-icon-chevron-up);
+    mask-image: var(--shadcn-icon-chevron-up);
 }
 
 .mud-input-adornment svg.mud-icon-root:has(> path[d="M7 10l5 5 5-5z"]) > *,
@@ -3744,8 +3752,8 @@ label.mud-input-label.mud-input-error {
     transform: translateY(-50%);
     pointer-events: none;
     background-color: currentColor;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+    -webkit-mask: var(--shadcn-icon-check) center / 16px 16px no-repeat;
+    mask: var(--shadcn-icon-check) center / 16px 16px no-repeat;
 }
 
 /* MultiSelection: the option checkboxes get the Checkbox look (box rules in section 5) */
@@ -3764,13 +3772,13 @@ label.mud-input-label.mud-input-error {
     transform: translateY(-50%);
     pointer-events: none;
     background-color: var(--mud-palette-primary-text);
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 14px 14px no-repeat;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 14px 14px no-repeat;
+    -webkit-mask: var(--shadcn-icon-check) center / 14px 14px no-repeat;
+    mask: var(--shadcn-icon-check) center / 14px 14px no-repeat;
 }
 
 .mud-list[id^="select-listbox"] .mud-list-item-icon:has(> svg path[d^="M19,3H5C3.9,3,3,3.9,3,5v14"])::after {
-    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
-    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+    -webkit-mask-image: var(--shadcn-icon-minus);
+    mask-image: var(--shadcn-icon-minus);
 }
 
 /* Autocomplete: before/after/more/no-items templates read as SelectLabel / CommandEmpty */
