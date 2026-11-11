@@ -122,19 +122,15 @@ public static class ShadcnTokens
         tokens["input-background"] = dark ? OklchColor.WithOpacity(tokens["input"], 0.3) : "transparent";   // dark:bg-input/30
         tokens["destructive-background"] = dark ? OklchColor.WithOpacity(tokens["destructive"], 0.6) : tokens["destructive"];   // dark:bg-destructive/60
 
-        // shadcn/create's bold menu accent: the item under the pointer is painted in the primary colour.
-        if (options.MenuAccent == ShadcnMenuAccent.Bold)
-        {
-            tokens["menu-accent"] = tokens["primary"];
-            tokens["menu-accent-foreground"] = tokens["primary-foreground"];
-        }
-
         return tokens;
     }
 
     internal static string ToCss(bool dark) => ToCss(dark ? Dark : Light, dark, Radius);
 
-    internal static string ToCss(IEnumerable<KeyValuePair<string, string>> tokens, bool dark, string radius)
+    // inverted: the other mode's tokens, emitted as --shadcn-inverted-* for the parts of the page a
+    // theme option draws in that mode (styles/menu-inverted.css), or null.
+    internal static string ToCss(IEnumerable<KeyValuePair<string, string>> tokens, bool dark, string radius,
+        IEnumerable<KeyValuePair<string, string>>? inverted = null)
     {
         // color-scheme as next-themes sets it for shadcn: native scrollbars and form controls, and
         // CSS light-dark(), follow the active mode.
@@ -146,6 +142,10 @@ public static class ShadcnTokens
         foreach (var (name, value) in tokens)
         {
             sb.Append("--shadcn-").Append(name).Append(':').Append(value).Append(';');
+        }
+        foreach (var (name, value) in inverted ?? [])
+        {
+            sb.Append("--shadcn-inverted-").Append(name).Append(':').Append(value).Append(';');
         }
         return sb.Append('}').ToString();
     }

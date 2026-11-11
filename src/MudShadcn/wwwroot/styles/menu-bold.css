@@ -1,0 +1,34 @@
+/*
+ * menu-bold.css — shadcn/create's "bold" menu accent for MudShadcn: the item under the pointer or
+ * the keyboard in a menu, a select or an autocomplete is painted in the primary colour instead of
+ * the muted accent. MudShadcnProvider links it, after MudShadcn.css and the style's stylesheet,
+ * when the theme's MenuAccent is Bold. Written against MudBlazor 9.12.0.
+ *
+ * shadcn does this by setting --accent to --primary. Here that would repaint every hover surface
+ * that reads the accent (ghost buttons, nav links, table rows), so only the menus are addressed.
+ */
+
+/* .cn-dropdown-menu-item, .cn-select-item, .cn-combobox-item: focus:bg-accent focus:text-accent-foreground */
+.mud-popover .mud-list-item-clickable:hover,
+.mud-popover .mud-list-item-clickable:focus:not(.mud-selected-item),
+.mud-popover .mud-list-item-clickable:active,
+.mud-popover .mud-menu-item:hover,
+.mud-popover .mud-menu-item:focus-visible {
+    background-color: var(--mud-palette-primary);
+    color: var(--mud-palette-primary-text);
+}
+
+/* The highlighted option of a select or an autocomplete (MudBlazor marks it as the selected item). */
+.mud-popover .mud-list-item.mud-selected-item,
+.mud-popover .mud-list-item.mud-selected-item:hover,
+.mud-popover .mud-selected-item.mud-list-item-clickable {
+    background-color: var(--mud-palette-primary) !important;
+    color: var(--mud-palette-primary-text) !important;
+}
+
+/* focus:**:text-accent-foreground: icons, shortcuts and secondary text follow the item */
+.mud-popover :is(.mud-list-item-clickable:hover, .mud-list-item-clickable:focus, .mud-list-item-clickable:active, .mud-list-item.mud-selected-item,
+                 .mud-menu-item:hover, .mud-menu-item:focus-visible)
+    :is(.mud-typography, .mud-icon-root, .mud-list-item-icon, .mud-list-item-secondary-text, .mud-menu-item-icon, .mud-menu-submenu-icon) {
+    color: inherit;
+}

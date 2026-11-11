@@ -14,6 +14,8 @@ public sealed class ShadcnTheme : MudTheme
     {
         Options = options;
         Style = options.Style;
+        MenuAccent = options.MenuAccent;
+        MenuColor = options.MenuColor;
         Radius = radius;
         TokensLight = ShadcnTokens.Build(options, dark: false);
         TokensDark = ShadcnTokens.Build(options, dark: true);
@@ -28,6 +30,19 @@ public sealed class ShadcnTheme : MudTheme
     /// </summary>
     public ShadcnStyle Style { get; set; }
 
+    /// <summary>
+    /// How the item under the pointer stands out in menus, selects and autocompletes. Bold is a
+    /// stylesheet of its own (<c>styles/menu-bold.css</c>) that <see cref="MudShadcnProvider"/> links.
+    /// </summary>
+    public ShadcnMenuAccent MenuAccent { get; set; }
+
+    /// <summary>
+    /// The surface of menus, selects and autocompletes. Inverted and translucent are stylesheets of
+    /// their own (<c>styles/menu-inverted.css</c>, <c>styles/menu-translucent.css</c>) that
+    /// <see cref="MudShadcnProvider"/> links.
+    /// </summary>
+    public ShadcnMenuColor MenuColor { get; set; }
+
     /// <summary>shadcn's <c>--radius</c>, emitted as <c>--shadcn-radius</c>. The radius scale is derived from it.</summary>
     public string Radius { get; set; }
 
@@ -40,5 +55,39 @@ public sealed class ShadcnTheme : MudTheme
     /// <summary>The dark mode's shadcn tokens. See <see cref="TokensLight"/>.</summary>
     public IDictionary<string, string> TokensDark { get; }
 
-    internal string ToCss(bool dark) => ShadcnTokens.ToCss(dark ? TokensDark : TokensLight, dark, Radius);
+    internal bool MenuInverted => MenuColor is ShadcnMenuColor.Inverted or ShadcnMenuColor.InvertedTranslucent;
+
+    internal bool MenuTranslucent => MenuColor is ShadcnMenuColor.DefaultTranslucent or ShadcnMenuColor.InvertedTranslucent;
+
+    // An inverted menu is dark on a light page; on a dark page it is what it would be anyway.
+    internal string ToCss(bool dark) =>
+        ShadcnTokens.ToCss(dark ? TokensDark : TokensLight, dark, Radius, MenuInverted && !dark ? TokensDark : null);
+
+    /// <summary>
+    /// The stylesheets the theme needs besides MudShadcn.css, by name and in the order they have to
+    /// load: the style, then the menu options.
+    /// </summary>
+    internal IEnumerable<string> StyleSheets(bool dark)
+    {
+        if (Style != ShadcnStyle.NewYork)
+        {
+            yield return Style.ToString().ToLowerInvariant();   // NewYork is MudShadcn.css itself
+        }
+
+        // A translucent menu has its own highlight (the foreground at 10%), as in shadcn.
+        if (MenuAccent == ShadcnMenuAccent.Bold && !MenuTranslucent)
+        {
+            yield return "menu-bold";
+        }
+
+        if (MenuInverted && !dark)
+        {
+            yield return "menu-inverted";
+        }
+
+        if (MenuTranslucent)
+        {
+            yield return "menu-translucent";
+        }
+    }
 }

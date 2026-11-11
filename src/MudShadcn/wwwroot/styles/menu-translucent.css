@@ -1,0 +1,39 @@
+/*
+ * menu-translucent.css — shadcn/create's "translucent" menu colour for MudShadcn: menus, selects
+ * and autocompletes let the page show through, blurred. MudShadcnProvider links it, after
+ * MudShadcn.css, the style's stylesheet and menu-inverted.css, when the theme's MenuColor is
+ * DefaultTranslucent or InvertedTranslucent. Written against MudBlazor 9.12.0.
+ *
+ * Values are shadcn/ui's .cn-menu-translucent (apps/v4/registry/styles/style-*.css; the rule is the
+ * same in every style).
+ */
+
+/* .cn-menu-translucent: bg-popover/70 before:backdrop-blur-2xl before:backdrop-saturate-150.
+   shadcn blurs a ::before so the blur does not clip its menu's own shadow; MudBlazor's popover has
+   no such problem, so the popover itself carries the filter. */
+.mud-popover.mud-popover-open.mud-paper:has(> .mud-list, > .mud-menu-list-wrapper) {
+    background-color: color-mix(in oklab, var(--mud-palette-surface) 70%, transparent);   /* bg-popover/70 */
+    -webkit-backdrop-filter: blur(40px) saturate(1.5);
+    backdrop-filter: blur(40px) saturate(1.5);        /* backdrop-blur-2xl backdrop-saturate-150 */
+}
+
+/* **:data-[slot$=-item]:focus:bg-foreground/10 */
+.mud-popover .mud-list-item-clickable:hover,
+.mud-popover .mud-list-item-clickable:focus:not(.mud-selected-item),
+.mud-popover .mud-list-item-clickable:active,
+.mud-popover .mud-menu-item:hover,
+.mud-popover .mud-menu-item:focus-visible {
+    background-color: color-mix(in oklab, var(--mud-palette-text-primary) 10%, transparent);
+}
+
+.mud-popover .mud-list-item.mud-selected-item,
+.mud-popover .mud-list-item.mud-selected-item:hover,
+.mud-popover .mud-selected-item.mud-list-item-clickable {
+    background-color: color-mix(in oklab, var(--mud-palette-text-primary) 10%, transparent) !important;
+}
+
+/* **:data-[slot$=-separator]:bg-foreground/5 */
+.mud-popover .mud-menu-list > .mud-divider,
+.mud-popover .mud-list > .mud-divider {
+    border-color: color-mix(in oklab, var(--mud-palette-text-primary) 5%, transparent);
+}

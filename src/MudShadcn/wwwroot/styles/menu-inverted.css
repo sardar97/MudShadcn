@@ -1,0 +1,60 @@
+/*
+ * menu-inverted.css — shadcn/create's "inverted" menu colour for MudShadcn: menus, selects and
+ * autocompletes open dark on a light page. MudShadcnProvider links it, after MudShadcn.css and the
+ * style's stylesheet, when the theme's MenuColor is Inverted or InvertedTranslucent and the page
+ * is in light mode (on a dark page a menu is dark already). Written against MudBlazor 9.12.0.
+ *
+ * shadcn puts its "dark" class on the menu, so every token inside it takes its dark value. Here
+ * the provider emits the dark tokens a second time as --shadcn-inverted-*, and the menu's popover
+ * redefines the tokens, and the palette slots MudShadcnTheme fills from them, for everything
+ * inside it. That is the one place MudShadcn sets --mud-palette-* in a stylesheet: on an element,
+ * not on :root, where MudThemeProvider's own values would win.
+ */
+.mud-popover.mud-popover-open.mud-paper:has(> .mud-list, > .mud-menu-list-wrapper) {
+    color-scheme: dark;                               /* light-dark() and native controls follow */
+
+    --shadcn-background: var(--shadcn-inverted-background);
+    --shadcn-foreground: var(--shadcn-inverted-foreground);
+    --shadcn-card: var(--shadcn-inverted-card);
+    --shadcn-card-foreground: var(--shadcn-inverted-card-foreground);
+    --shadcn-popover: var(--shadcn-inverted-popover);
+    --shadcn-popover-foreground: var(--shadcn-inverted-popover-foreground);
+    --shadcn-primary: var(--shadcn-inverted-primary);
+    --shadcn-primary-foreground: var(--shadcn-inverted-primary-foreground);
+    --shadcn-secondary: var(--shadcn-inverted-secondary);
+    --shadcn-secondary-foreground: var(--shadcn-inverted-secondary-foreground);
+    --shadcn-muted: var(--shadcn-inverted-muted);
+    --shadcn-muted-foreground: var(--shadcn-inverted-muted-foreground);
+    --shadcn-accent: var(--shadcn-inverted-accent);
+    --shadcn-accent-foreground: var(--shadcn-inverted-accent-foreground);
+    --shadcn-destructive: var(--shadcn-inverted-destructive);
+    --shadcn-border: var(--shadcn-inverted-border);
+    --shadcn-input: var(--shadcn-inverted-input);
+    --shadcn-ring: var(--shadcn-inverted-ring);
+    --shadcn-input-background: var(--shadcn-inverted-input-background);
+    --shadcn-destructive-background: var(--shadcn-inverted-destructive-background);
+
+    /* Defined on :root from the accent, where it took the light value. */
+    --shadcn-hover: var(--shadcn-accent);
+
+    /* MudBlazor's palette, as MudShadcnTheme maps the tokens onto it. */
+    --mud-palette-surface: var(--shadcn-popover);
+    --mud-palette-background: var(--shadcn-background);
+    --mud-palette-background-gray: var(--shadcn-muted);
+    --mud-palette-text-primary: var(--shadcn-popover-foreground);
+    --mud-palette-text-secondary: var(--shadcn-muted-foreground);
+    --mud-palette-text-disabled: color-mix(in oklab, var(--shadcn-foreground) 50%, transparent);
+    --mud-palette-action-default: var(--shadcn-muted-foreground);
+    --mud-palette-action-disabled: color-mix(in oklab, var(--shadcn-foreground) 30%, transparent);
+    --mud-palette-lines-default: var(--shadcn-border);
+    --mud-palette-lines-inputs: var(--shadcn-input);
+    --mud-palette-divider: var(--shadcn-border);
+    --mud-palette-divider-light: var(--shadcn-border);
+    --mud-palette-primary: var(--shadcn-primary);
+    --mud-palette-primary-text: var(--shadcn-primary-foreground);
+    --mud-palette-error: var(--shadcn-destructive);
+
+    /* MudBlazor paints the paper from the two slots above; restated so they are read here. */
+    background-color: var(--mud-palette-surface);
+    color: var(--mud-palette-text-primary);
+}
