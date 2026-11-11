@@ -501,6 +501,7 @@ inline style or a component parameter decides something, MudBlazor's version sta
 
 | MudShadcn | Minimum MudBlazor | .NET |
 | --- | --- | --- |
+| 1.2.x | 9.12.0 | 10 (`net10.0`) |
 | 1.1.x | 9.12.0 | 10 (`net10.0`) |
 | 1.0.x | 9.10.0 | 10 (`net10.0`) |
 

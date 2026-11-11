@@ -8,6 +8,10 @@ major version is a new MudShadcn major version.
 
 ## [Unreleased]
 
+## [1.2.0] — 2026-11-11
+
+Written against MudBlazor 9.12.0, for .NET 10.
+
 ### Added
 - **shadcn's styles:** the eight styles of [shadcn/create](https://ui.shadcn.com/create), under
   shadcn's names, next to the original look: `ShadcnThemeOptions.Style` is `NewYork` (the default,
@@ -193,7 +197,8 @@ The first public release. Written against MudBlazor 9.10.0, for .NET 10.
 - **Showcase** at <https://mudshadcn.pages.dev>: every page and example of mudblazor.com's component
   documentation, in the same menu and order, running on MudShadcn, in light and dark mode.
 
-[Unreleased]: https://github.com/sardar97/MudShadcn/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/sardar97/MudShadcn/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/sardar97/MudShadcn/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/sardar97/MudShadcn/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/sardar97/MudShadcn/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/sardar97/MudShadcn/releases/tag/v1.0.0
