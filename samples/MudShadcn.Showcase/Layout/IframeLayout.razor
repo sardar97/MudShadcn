@@ -9,9 +9,7 @@
                        StyleHrefFormat="_content/MudShadcn/styles/{0}.css" />
     @if (ShowcaseFonts.Href(skipLoaded: true, ShowcaseTheme.Design.Font, ShowcaseTheme.Design.HeadingFont) is { } fontsHref)
     {
-        <HeadContent>
-            <link rel="stylesheet" href="@fontsHref" />
-        </HeadContent>
+        <link @key="fontsHref" rel="stylesheet" href="@fontsHref" />
     }
     @Body
 }

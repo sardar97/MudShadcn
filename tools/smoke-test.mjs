@@ -72,7 +72,8 @@ async function check(route) {
     try {
         await page.goto(origin + route, { waitUntil: 'load', timeout: 60_000 });
         // The page's content (the home page has a hero instead) is there once Blazor has rendered.
-        await page.locator('.docs-main :is(#docspage, .docs-hero)').first().waitFor({ state: 'visible', timeout: 45_000 });
+        // A docs page, the home page's hero, or the Theme Generator, which is a tool page with a layout of its own.
+        await page.locator('.docs-main :is(#docspage, .docs-hero, .docs-generator)').first().waitFor({ state: 'visible', timeout: 45_000 });
         await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => { });
         await page.waitForTimeout(300);
         const title = await page.locator('.docs-page-title').first().innerText({ timeout: 1000 }).catch(() => '');

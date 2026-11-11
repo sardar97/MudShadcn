@@ -13,12 +13,11 @@
 <MudShadcnProvider Theme="ShowcaseTheme.Theme" Enabled="Design.Shadcn" IsDarkMode="_isDarkMode" IsDarkModeChanged="OnDarkModeChanged" FollowSystemDarkMode="_followSystem"
                    StyleHrefFormat="_content/MudShadcn/styles/{0}.css" />
 
-@* Only the web fonts the design uses (Geist is in index.html). *@
+@* Only the web fonts the design uses (Geist is in index.html). A link in the body, as the provider's
+   are: a <HeadContent> here would lose to the one of the page, which has its description in it. *@
 @if (ShowcaseFonts.Href(skipLoaded: true, Design.Font, Design.HeadingFont) is { } fontsHref)
 {
-    <HeadContent>
-        <link rel="stylesheet" href="@fontsHref" />
-    </HeadContent>
+    <link @key="fontsHref" rel="stylesheet" href="@fontsHref" />
 }
 
 <MudLayout Class="docs-layout">
