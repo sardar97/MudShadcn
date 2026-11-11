@@ -140,6 +140,25 @@ h1:focus {
     color: var(--mud-palette-text-primary);
 }
 
+/* "New", after the name of a page or tab that came with the current version (NewBadge.razor). The
+   same in every style, so it has its own text settings; only its corners follow the radius scale. */
+.docs-new {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    margin-inline-start: 8px;
+    padding: 0 6px;
+    border-radius: var(--shadcn-radius-4xl, 9999px);
+    background-color: var(--mud-palette-primary);
+    color: var(--mud-palette-primary-text);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    vertical-align: middle;
+}
+
 /* The look dropdown's button: wide enough for the longer name, so it does not move the bar. Below
    1100px the bar has no room for it next to the search box, and an icon opens the dropdown. */
 .docs-look-button.mud-button-root {

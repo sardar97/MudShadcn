@@ -51,6 +51,10 @@ committing is a MudBlazor update, which `UPDATING.md` leaves in the working tree
     names and parameters. A missing parameter only fails at runtime, when the page renders.
   - `wwwroot/css/showcase.css` styles the site's chrome only, never a component inside an example.
   - `Services/Changelog.cs` renders `CHANGELOG.md` (embedded at build time) on `/releases`.
+  - **A page or tab that is new gets a "New" badge** in the nav drawer and the top bar:
+    `<NewBadge AddedAfter="1.1" />` after its name (`Layout/NewBadge.razor`), with the newest
+    released version at the time of adding it. It shows until the version after the one the page
+    ships in, read from the changelog's release headings, so a release needs no step for it.
   - `Services/ShowcaseTheme.cs` holds the visitor's design (`ShowcaseDesign`: the look and every
     Theme Generator choice) for the whole site, saved in localStorage and readable from the address.
     `Pages/Customization/ThemeGeneratorPage.razor` is the Theme Generator: shadcn/create's options,

@@ -1,0 +1,19 @@
+@*
+    "New", next to a page or tab that came with the current version:
+
+        <MudNavLink Href="customization/charts">Charts<NewBadge AddedAfter="1.1" /></MudNavLink>
+
+    AddedAfter is the newest released version (major.minor) at the time the page was added. The badge
+    shows while that page is unreleased and through the version it ships in, whatever number that
+    version gets, and is gone with the version after it (Changelog.IsNewSince reads the releases from
+    CHANGELOG.md). Nothing has to be done at a release; the attribute can be deleted any time later.
+*@
+@if (Changelog.IsNewSince(AddedAfter))
+{
+    <span class="docs-new">New</span>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public string AddedAfter { get; set; }
+}

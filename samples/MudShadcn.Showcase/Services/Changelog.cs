@@ -32,6 +32,20 @@ public static partial class Changelog
 
     public static IReadOnlyList<ChangelogRelease> Releases { get; } = Parse(Read());
 
+    // The versions the changelog has released, newest first, as major.minor: 1.1, 1.0. A patch
+    // release is the same version of the site's pages.
+    private static readonly List<string> ReleasedVersions =
+        [.. Releases.Where(release => !release.IsUnreleased && !release.IsPreRelease).Select(release => MajorMinor(release.Version)).Distinct()];
+
+    /// <summary>
+    /// Whether something added after <paramref name="lastRelease"/> (the newest released version at
+    /// the time, as major.minor) is still new: it is not released yet, or it came with the newest
+    /// release. The next version after that ends it. Used by <c>NewBadge</c>.
+    /// </summary>
+    public static bool IsNewSince(string lastRelease) => ReleasedVersions.IndexOf(MajorMinor(lastRelease)) is 0 or 1;
+
+    private static string MajorMinor(string version) => string.Join('.', version.Split('.').Take(2));
+
     private static string Read()
     {
         using var stream = typeof(Changelog).Assembly.GetManifestResourceStream("CHANGELOG.md");

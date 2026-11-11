@@ -39,6 +39,9 @@ major version is a new MudShadcn major version.
   and stops emitting the `--shadcn-*` tokens; `true` restores the shadcn look. The set-up does not
   change: the stylesheet `<link>` stays where it is. A stylesheet served from another address
   needs `data-mudshadcn` on its link.
+- **Showcase:** the pages and tabs that are new in a version have a "New" badge in the navigation
+  (the Theme Generator, Use Cases and the Charts page in this one). The badge goes away by itself
+  with the version after.
 - **Showcase:** a Theme Generator page (`/customization/theme-generator`, a tab in the top bar) with
   shadcn/create's options (preset, style, base colour, theme, chart colour, heading font, font,
   radius, menu and menu accent), shuffle and reset, a live preview of stock MudBlazor components,
