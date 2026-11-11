@@ -2,8 +2,9 @@
 # Tests the package the way a consumer gets it. The samples reference the MudShadcn project, which
 # cannot show a file missing from the .nupkg or MudBlazor no longer flowing through it. This script
 # points a copy of the test app at the packed MudShadcn (a PackageReference, restored from a local
-# feed), publishes and starts it, and checks that the page renders and that both stylesheets are
-# served: _content/MudBlazor/MudBlazor.min.css and _content/MudShadcn/MudShadcn.min.css.
+# feed), publishes and starts it, and checks that the page renders, that both stylesheets are
+# served (_content/MudBlazor/MudBlazor.min.css and _content/MudShadcn/MudShadcn.min.css) and that a
+# style's stylesheet is served and linked.
 #
 # Usage:
 #   tools/test-package.sh              # packs src/MudShadcn first
@@ -112,6 +113,11 @@ check "the home page renders MudBlazor components" served "" 'class="mud-'
 check "_content/MudBlazor/MudBlazor.min.css is served" served "_content/MudBlazor/MudBlazor.min.css" '\.mud-button-root'
 check "_content/MudShadcn/MudShadcn.min.css is served" served "_content/MudShadcn/MudShadcn.min.css" '--shadcn-radius'
 check "_content/MudShadcn/MudShadcn.css is served" served "_content/MudShadcn/MudShadcn.css" '--shadcn-radius'
+# The styles: the package has to carry them, and the provider has to link the one the theme names
+# (the test app reads the theme from the address).
+check "_content/MudShadcn/styles/nova.min.css is served" served "_content/MudShadcn/styles/nova.min.css" '\.mud-'
+check "_content/MudShadcn/styles/menu-bold.min.css is served" served "_content/MudShadcn/styles/menu-bold.min.css" '\.mud-'
+check "a page in the Nova style links its stylesheet" served "?style=nova" 'styles/nova\.'
 check "_content/MudBlazor/MudBlazor.min.js is served" served "_content/MudBlazor/MudBlazor.min.js" 'mud'
 
 if [ "$FAILED" -ne 0 ]; then

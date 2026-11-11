@@ -5,8 +5,9 @@ description: >-
   plus one stylesheet, light and dark). Covers installing it as the only package, wiring it into a
   Blazor Web App (Server, WebAssembly or Auto) or a standalone WebAssembly app, dark mode, and
   writing ordinary MudBlazor that comes out looking like shadcn/ui: which Variant and Color give
-  shadcn's button, input, badge, card, tabs, sidebar and toast, charts, theming with your own
-  colours, radius and font, and the mistakes that break the styling. Use it whenever a Blazor or
+  shadcn's button, input, badge, card, tabs, sidebar and toast, charts, shadcn/create's styles
+  (Vega, Nova, Maia, Lyra, Mira, Luma, Sera, Rhea), base colours and theme colours, theming with
+  your own colours, radius and font, and the mistakes that break the styling. Use it whenever a Blazor or
   MudBlazor app should look like shadcn/ui, or a project references MudShadcn.
 license: MIT
 metadata:
@@ -234,22 +235,29 @@ and amber (shadcn has none). Leave text uncoloured (or `Color.Default`) to follo
 
 ---
 
-## 4. Theme, radius, fonts
+## 4. Theme: styles, colours, radius, fonts
+
+`MudShadcnTheme.Create` takes what [shadcn/create](https://ui.shadcn.com/create) offers, under
+shadcn's names. Every option has a default; name only what the app wants. The
+[Theme Generator](https://mudshadcn.pages.dev/customization/theme-generator) writes this code.
 
 ```csharp
-// Program.cs or a static class: a theme with your font, colour and radius.
+// A static class or the layout's @code: one theme for the app.
 public static class AppTheme
 {
-    public static readonly MudTheme Theme = Create();
-
-    private static MudTheme Create()
+    public static readonly ShadcnTheme Theme = MudShadcnTheme.Create(new ShadcnThemeOptions
     {
-        var theme = MudShadcnTheme.Create(["Geist", .. MudShadcnTheme.DefaultFontFamily]);
-        theme.PaletteLight.Primary = "#2563eb";
-        theme.PaletteDark.Primary = "#3b82f6";
-        theme.LayoutProperties.DefaultBorderRadius = "0.375rem";
-        return theme;
-    }
+        Style = ShadcnStyle.Nova,             // NewYork (default), Vega, Nova, Maia, Lyra, Mira, Luma, Sera, Rhea
+        BaseColor = ShadcnBaseColor.Zinc,     // Neutral (default), Stone, Zinc, Mauve, Olive, Mist, Taupe
+        Theme = ShadcnColor.Blue,             // Base (default), Amber, Blue, Cyan, Emerald, Fuchsia, Green, Indigo, Lime,
+                                              // Orange, Pink, Purple, Red, Rose, Sky, Teal, Violet, Yellow
+        ChartColor = ShadcnColor.Blue,        // null (default): shadcn's original five chart colours
+        Radius = ShadcnRadius.Small,          // Default, None, Small, Medium, Large
+        FontFamily = ["Inter", .. MudShadcnTheme.DefaultFontFamily],
+        HeadingFontFamily = null,             // null: the same as FontFamily
+        MenuAccent = ShadcnMenuAccent.Subtle, // Subtle, Bold
+        MenuColor = ShadcnMenuColor.Default,  // Default, Inverted, DefaultTranslucent, InvertedTranslucent
+    });
 }
 ```
 
@@ -257,11 +265,23 @@ public static class AppTheme
 <MudShadcnProvider Theme="AppTheme.Theme" @bind-IsDarkMode="_isDarkMode" />
 ```
 
+- **A style is a stylesheet the provider links.** Do not add a `<link>` for
+  `_content/MudShadcn/styles/*.css` yourself: `MudShadcnProvider` links the one the theme names,
+  after `MudShadcn.css`. The menu options work the same way. `NewYork` needs none.
+- **To switch while the app runs,** pass another theme:
+  `_theme = MudShadcnTheme.Create(_theme.Options with { Style = ShadcnStyle.Luma });`.
+- **The result is an ordinary `MudTheme`** (`ShadcnTheme` derives from it), so palette, typography
+  and layout properties can still be changed: `theme.PaletteLight.Primary = "#2563eb";`. shadcn's
+  tokens that MudBlazor has no slot for are in `theme.TokensLight` / `theme.TokensDark`
+  (`theme.TokensLight["ring"] = "oklch(…)"`).
+- **The theme options need `MudShadcnProvider`.** With MudBlazor's own `MudThemeProvider` the
+  palette applies, but the `--shadcn-*` tokens stay the default theme's and no style is linked.
+
 Load the font yourself (a `<link>` to Google Fonts or a self-hosted `@font-face`); the default is the
-system UI font stack. shadcn's radius scale follows one variable:
-`:root { --shadcn-radius: 0.5rem; }` in your own CSS. shadcn's tokens are available to your CSS as
-`--shadcn-*` (`--shadcn-border`, `--shadcn-muted-foreground`, `--shadcn-ring`, `--shadcn-radius-lg`,
-`--shadcn-shadow-md`, …) and to C# as `ShadcnTokens.Light` / `ShadcnTokens.Dark`.
+system UI font stack. A style does not choose a font. For a radius that is not one of shadcn's four,
+set `:root { --shadcn-radius: 0.5rem; }` in your own CSS. shadcn's tokens are available to your CSS
+as `--shadcn-*` (`--shadcn-border`, `--shadcn-muted-foreground`, `--shadcn-ring`,
+`--shadcn-radius-lg`, `--shadcn-shadow-md`, …).
 
 ## 5. Charts
 

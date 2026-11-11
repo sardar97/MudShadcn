@@ -18,7 +18,7 @@
     <Authors>Sardar Qaslany</Authors>
     <Product>MudShadcn</Product>
     <Copyright>Copyright (c) 2026 Sardar Qaslany</Copyright>
-    <Description>The shadcn/ui look for every MudBlazor component, charts included: a MudTheme and one stylesheet, in light and dark mode. No new components and no fork: you keep writing MudBlazor with its full API. MudBlazor comes along as a dependency, so MudShadcn is the only package you reference.</Description>
+    <Description>The shadcn/ui look for every MudBlazor component, charts included: a MudTheme and one stylesheet, in light and dark mode. With the styles (Vega, Nova, Maia, Lyra, Mira, Luma, Sera, Rhea), base colours and theme colours of shadcn/create. No new components and no fork: you keep writing MudBlazor with its full API. MudBlazor comes along as a dependency, so MudShadcn is the only package you reference.</Description>
     <PackageTags>blazor;mudblazor;shadcn;shadcn-ui;theme;dark-mode;css;ui;components;blazor-server;blazor-webassembly;dotnet;csharp</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <!-- The showcase is the package's landing page; the source is RepositoryUrl. -->

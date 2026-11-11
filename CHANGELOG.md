@@ -9,6 +9,19 @@ major version is a new MudShadcn major version.
 ## [Unreleased]
 
 ### Added
+- **shadcn's styles:** the eight styles of [shadcn/create](https://ui.shadcn.com/create), under
+  shadcn's names, next to the original look: `ShadcnThemeOptions.Style` is `NewYork` (the default,
+  MudShadcn's look so far), `Vega`, `Nova`, `Maia`, `Lyra`, `Mira`, `Luma`, `Sera` or `Rhea`. A
+  style changes the shape of every component (sizes, spacing, corners, focus rings, shadows) and is
+  a small stylesheet of its own in the package (`_content/MudShadcn/styles/<name>.min.css`) that
+  `MudShadcnProvider` links after `MudShadcn.css` when the theme names it. The page's set-up does
+  not change, only the style in use is downloaded, and passing the provider another theme switches
+  the style while the app runs. `StyleHrefFormat` on the provider is for stylesheets served from
+  another address.
+- **shadcn's menu options:** `ShadcnThemeOptions.MenuAccent` (`Bold` paints the item under the
+  pointer in menus, selects and autocompletes in the primary colour) and `MenuColor` (`Inverted`
+  makes them dark on a light page, `DefaultTranslucent` and `InvertedTranslucent` let the page show
+  through, blurred). They are stylesheets the provider links too.
 - **shadcn's colour themes:** `MudShadcnTheme.Create(new ShadcnThemeOptions { … })` makes a theme
   from what [shadcn/create](https://ui.shadcn.com/create) lets you choose, under shadcn's names: a
   `BaseColor` (Neutral, Stone, Zinc, Mauve, Olive, Mist, Taupe), a `Theme` colour for primary

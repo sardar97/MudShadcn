@@ -42,6 +42,11 @@ MudBlazor version is still yours to choose: see [Versions](#versions).
   not bundled inside MudShadcn, and you can move to a newer MudBlazor without waiting for MudShadcn.
 - **Light and dark.** Both of shadcn's palettes; the app starts in the operating system's colour
   scheme and follows it, or you bind `IsDarkMode` yourself.
+- **shadcn's styles and colour themes.** The eight styles of
+  [shadcn/create](https://ui.shadcn.com/create) (Vega, Nova, Maia, Lyra, Mira, Luma, Sera and Rhea)
+  next to the original look, its seven base colours and seventeen theme colours, radius, fonts and
+  menu options, all under shadcn's names. Pick a combination in the
+  [Theme Generator](https://mudshadcn.pages.dev/customization/theme-generator) and copy the code.
 - **A switch back to MudBlazor's own look.** `Enabled="false"` on the provider turns MudShadcn off
   while the app runs, so you can offer both looks or compare them.
 - **Charts in shadcn's colours** without any options, in both modes.
@@ -139,6 +144,8 @@ mode too.
 
 You lose one thing: the provider is what re-emits the `--shadcn-*` tokens for dark mode. Without it
 the focus ring, input background and destructive button keep their light-mode values in dark mode.
+A style, a colour theme and the menu options need the provider as well (see
+[Styles and colour themes](#styles-and-colour-themes)).
 
 ### Switching to MudBlazor's own look
 
@@ -240,12 +247,86 @@ Each call returns a new object, so change anything else on it as usual. The show
 [Charts page](https://mudshadcn.pages.dev/customization/charts) shows each preset as one of shadcn's
 chart cards, with its code.
 
+### Styles and colour themes
+
+`MudShadcnTheme.Create` takes what [shadcn/create](https://ui.shadcn.com/create) lets you choose,
+under shadcn's names. Every option has a default, so name only the ones you want:
+
+```csharp
+var theme = MudShadcnTheme.Create(new ShadcnThemeOptions
+{
+    Style = ShadcnStyle.Nova,             // NewYork, Vega, Nova, Maia, Lyra, Mira, Luma, Sera, Rhea
+    BaseColor = ShadcnBaseColor.Zinc,     // Neutral, Stone, Zinc, Mauve, Olive, Mist, Taupe
+    Theme = ShadcnColor.Blue,             // Base (the base colour itself), Amber, Blue, … Yellow
+    ChartColor = ShadcnColor.Blue,        // null keeps shadcn's original five chart colours
+    Radius = ShadcnRadius.Small,          // Default, None, Small, Medium, Large
+    FontFamily = ["Inter", .. MudShadcnTheme.DefaultFontFamily],
+    MenuAccent = ShadcnMenuAccent.Bold,   // Subtle, Bold
+    MenuColor = ShadcnMenuColor.Inverted, // Default, Inverted, DefaultTranslucent, InvertedTranslucent
+});
+```
+
+```razor
+<MudShadcnProvider Theme="theme" />
+```
+
+The [Theme Generator](https://mudshadcn.pages.dev/customization/theme-generator) has every option
+on a live preview and writes this code for you.
+
+| Option | What it sets |
+|---|---|
+| `Style` | The shape of every component: sizes, spacing, corners, focus rings, shadows. `NewYork` is the default, and MudShadcn's look since 1.0. |
+| `BaseColor` | The grey everything is drawn in: backgrounds, borders, muted text. |
+| `Theme` | The colour of primary buttons, selected controls and the sidebar's active item. |
+| `ChartColor` | The colour the five chart colours are shades of. |
+| `Radius` | `--radius`, which every rounded corner is derived from. |
+| `FontFamily`, `HeadingFontFamily` | The font stacks. Load a web font in the page, as usual. |
+| `MenuAccent`, `MenuColor` | How menus, selects and autocompletes highlight an item, and whether they are dark on a light page or translucent. |
+
+- **A style is a small stylesheet of its own.** The package ships one per style under
+  `_content/MudShadcn/styles/`, and `MudShadcnProvider` links the one the theme names, after
+  `MudShadcn.css`. Your page keeps its two `<link>`s and only the style in use is downloaded. The
+  menu options work the same way. `NewYork` needs none.
+- **Switching while the app runs** is passing another theme to the provider:
+
+  ```razor
+  <MudShadcnProvider Theme="_theme" />
+
+  <MudSelect T="ShadcnStyle" Value="_theme.Style" ValueChanged="SetStyle" Label="Style" Variant="Variant.Outlined">
+      @foreach (var style in Enum.GetValues<ShadcnStyle>())
+      {
+          <MudSelectItem Value="style">@style</MudSelectItem>
+      }
+  </MudSelect>
+
+  @code {
+      private ShadcnTheme _theme = MudShadcnTheme.Create();
+
+      private void SetStyle(ShadcnStyle style) =>
+          _theme = MudShadcnTheme.Create(_theme.Options with { Style = style });
+  }
+  ```
+
+- **A style does not choose the font.** shadcn's presets pair some styles with one (Lyra with a mono
+  font, Sera with serif headings): set `FontFamily` and `HeadingFontFamily` for that.
+- **In a WebAssembly app** the provider renders after the app has started, so the style's stylesheet
+  is requested then. To have it ready, preload it in the page's `<head>`:
+  `<link rel="preload" as="style" href="_content/MudShadcn/styles/nova.min.css" />`.
+- **If you serve the stylesheets from another address,** set the provider's `StyleHrefFormat`
+  (default `_content/MudShadcn/styles/{0}.min.css`).
+- **The theme options need `MudShadcnProvider`:** it emits the theme's `--shadcn-*` tokens and
+  links its stylesheets. With MudBlazor's own providers you get the palette, but the tokens stay
+  the default theme's and the style is not linked.
+
 ### Customising
+
+A theme made by `MudShadcnTheme` is an ordinary `MudTheme`, so change it as usual:
 
 ```csharp
 var theme = MudShadcnTheme.Create(["Geist", .. MudShadcnTheme.DefaultFontFamily]);
 theme.PaletteLight.Primary = "#2563eb";
 theme.LayoutProperties.DefaultBorderRadius = "0.375rem";
+theme.TokensLight["ring"] = "oklch(0.623 0.214 259.815)";   // a shadcn token MudBlazor has no slot for
 ```
 
 ```razor
@@ -254,8 +335,10 @@ theme.LayoutProperties.DefaultBorderRadius = "0.375rem";
 
 The stylesheet reads colours from MudBlazor's `--mud-palette-*` variables, so palette changes flow
 through. shadcn's own tokens are available to your CSS as `--shadcn-*` (`--shadcn-border`,
-`--shadcn-muted-foreground`, `--shadcn-ring`, `--shadcn-radius-lg`, `--shadcn-shadow-md`, …) and as
-`ShadcnTokens.Light` / `ShadcnTokens.Dark` in C#. To change the radius scale:
+`--shadcn-muted-foreground`, `--shadcn-ring`, `--shadcn-radius-lg`, `--shadcn-shadow-md`, …) and in
+C# as the theme's `TokensLight` / `TokensDark` (`ShadcnTokens.Light` / `ShadcnTokens.Dark` are the
+default theme's). For a radius that is not one of shadcn's four, set the variable the scale is
+derived from:
 
 ```css
 :root { --shadcn-radius: 0.5rem; }
@@ -372,6 +455,31 @@ inline style or a component parameter decides something, MudBlazor's version sta
 - Labels on pie, donut and rose segments use the background colour, as in shadcn's examples, which
   is low-contrast on light segments.
 
+**Styles and theme options**
+
+- A style restyles the MudBlazor components that have a shadcn counterpart. shadcn components
+  MudBlazor does not have (Command, Menubar, Navigation Menu, Hover Card, Input OTP, Item, Empty,
+  Kbd and the chat components) have nothing to restyle, and MudBlazor components shadcn does not
+  have (the time and colour pickers, the stepper, the timeline, the tree view) follow the shadcn
+  component they are modelled on.
+- A style does not choose the font or the icons. shadcn's presets pair Lyra with a mono font and
+  Sera with serif headings: set `FontFamily` and `HeadingFontFamily` for that. `MudLink` keeps the
+  size of the text around it, also in the styles whose buttons are smaller or uppercase.
+- A dialog's width is MudBlazor's `MaxWidth`, not the style's. Menus, selects and autocompletes
+  open in the same kind of popover, so a style gives them one shape where shadcn's differ slightly
+  between a dropdown, a context menu and a select.
+- The drawer's header and the sizes MudBlazor has and shadcn does not (`Margin.Dense`, `Size.Small`
+  and `Size.Large` of some controls, the filled and text input variants) are stepped from the
+  style's default where shadcn's file has a counterpart, and keep the New York values otherwise.
+- The styles with wider cells or wide letter-spacing (Sera, Maia, Luma) need more room: a data grid
+  that fits its container in New York may scroll sideways in them.
+- `MenuAccent.Bold` paints the item under the pointer in the primary colour, and the selected
+  option of a select with it: MudBlazor marks the selected and the keyboard-highlighted option the
+  same way. In a multi-selection select that is every selected option, and its checked box, also
+  primary, shows only as its check. `MenuColor.Inverted` has no effect on a dark page, where a menu is dark
+  already. A translucent menu has shadcn's own highlight (the foreground at 10%), so the bold accent
+  does not apply to it.
+
 ## Versions
 
 | MudShadcn | Minimum MudBlazor | .NET |
@@ -441,10 +549,11 @@ or save it as `.claude/skills/mudshadcn/SKILL.md` in a repository to scope it to
 
 | Path | What |
 | --- | --- |
-| [`src/MudShadcn`](https://github.com/sardar97/MudShadcn/tree/master/src/MudShadcn) | The package: `MudShadcnTheme`, `ShadcnTokens`, `MudShadcnProvider`, `AddMudShadcn()` and `wwwroot/MudShadcn.css`. |
+| [`src/MudShadcn`](https://github.com/sardar97/MudShadcn/tree/master/src/MudShadcn) | The package: `MudShadcnTheme`, `ShadcnThemeOptions`, `ShadcnTokens`, `MudShadcnProvider`, `AddMudShadcn()`, `wwwroot/MudShadcn.css` and one stylesheet per style in `wwwroot/styles`. |
 | [`samples/MudShadcn.Showcase`](https://github.com/sardar97/MudShadcn/tree/master/samples/MudShadcn.Showcase) | The showcase site (Blazor WebAssembly). |
 | [`samples/MudShadcn.TestApp`](https://github.com/sardar97/MudShadcn/tree/master/samples/MudShadcn.TestApp) | A Blazor Server app with one page per component category, for quick checks. |
 | [`tools/verify-mudblazor.sh`](https://github.com/sardar97/MudShadcn/blob/master/tools/verify-mudblazor.sh) | Checks the stylesheet against MudBlazor (also run by CI). |
+| [`tools/generate-shadcn-themes.mjs`](https://github.com/sardar97/MudShadcn/blob/master/tools/generate-shadcn-themes.mjs) | Regenerates the colour themes from shadcn's registry and Tailwind's palette. |
 | [`tools/test-package.sh`](https://github.com/sardar97/MudShadcn/blob/master/tools/test-package.sh) | Packs MudShadcn and checks that an app referencing only the package starts and serves both stylesheets (also run by CI). |
 | [`tools/smoke-test.mjs`](https://github.com/sardar97/MudShadcn/blob/master/tools/smoke-test.mjs) | Loads every page of the published showcase in a browser and fails on a page that errors (also run by CI). |
 

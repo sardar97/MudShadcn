@@ -7,8 +7,8 @@ Never run `git commit`. Leave the changes in the working tree for review.
 
 MudShadcn depends on three things MudBlazor does not treat as public API, in order of risk:
 
-1. **CSS class names and selector specificity.** `MudShadcn.css` overrides MudBlazor rules by
-   matching their selectors. If MudBlazor renames a class, restructures a component's markup, or
+1. **CSS class names and selector specificity.** `MudShadcn.css`, and each style's stylesheet in
+   `wwwroot/styles`, override MudBlazor rules by matching their selectors. If MudBlazor renames a class, restructures a component's markup, or
    raises a rule's specificity, the override silently stops applying. Nothing fails to build.
    This is the main thing to check every time.
 2. **CSS custom property names** (`--mud-palette-*`, `--mud-default-borderradius`,
@@ -60,7 +60,8 @@ tools/verify-mudblazor.sh $NEW
 It downloads the new MudBlazor and checks that:
 
 - every `--mud-*` variable and `.mud-*` class `MudShadcn.css` uses exists in MudBlazor's
-  stylesheet. Classes MudBlazor renders without styling them are listed in the script
+  stylesheet, and the same for every stylesheet in `wwwroot/styles` (the styles and the menu
+  options), each reported on a line of its own. Classes MudBlazor renders without styling them are listed in the script
   (`MARKUP_ONLY_CLASSES`); a new one must be confirmed in the rendered HTML before it goes on that
   list (`curl -s http://localhost:5152/pickers | grep -o mud-picker-paper` for the test app; the
   showcase renders in the browser, so use the browser's dev tools there);
@@ -81,7 +82,8 @@ It reads the defaults, and renders the charts, through MudBlazor's API with a sm
 API changed: update the probe in the script as well.
 
 A missing class or variable is an override that no longer applies: find its replacement in the new
-stylesheet and update the selector. Existence is not enough, though. Diff the shipped rules too,
+stylesheet and update the selector. A selector that changes in `MudShadcn.css` almost always changes
+in the styles that override the same rule: search `wwwroot/styles` for it and change them together. Existence is not enough, though. Diff the shipped rules too,
 working in the scratchpad, not the repo:
 
 ```bash
@@ -141,7 +143,10 @@ flows through MudShadcn transitively. Keep it that way.
 
 A green build says nothing about the styling. Run the test app and go through every page in both
 light and dark mode, then do the same with the showcase, which has every example MudBlazor
-documents (a missing docs component or parameter shows up there as a page that fails to render):
+documents (a missing docs component or parameter shows up there as a page that fails to render).
+That is the New York look. Then go through the test app's pages once more in each of the eight
+styles (`?style=vega`, `nova`, `maia`, `lyra`, `mira`, `luma`, `sera`, `rhea` in the address, with
+`&mode=dark` for the dark mode), looking at the same fragile places as below at that style's sizes:
 
 ```bash
 dotnet run --project samples/MudShadcn.TestApp --launch-profile http    # http://localhost:5152
@@ -182,15 +187,74 @@ Check in particular, because these have the most fragile overrides:
 
 ### 8. Check shadcn too
 
-If the user asks for it, or it has been a while: compare `ShadcnTokens.cs` and the `:root` block
-of `MudShadcn.css` against the Default Theme CSS in
-<https://raw.githubusercontent.com/shadcn-ui/ui/main/apps/v4/content/docs/(root)/theming.mdx>, and
-the shadow scale against
-<https://raw.githubusercontent.com/tailwindlabs/tailwindcss/main/packages/tailwindcss/theme.css>.
-The token values live in three places that must agree: `ShadcnTokens.cs`, the `:root` block of
-`MudShadcn.css`, and the hex conversions in `MudShadcnTheme.cs`.
+If the user asks for it, or it has been a while, follow "Updating to shadcn's changes" below.
 
 ### 9. Report
 
 Tell the user the old and new versions, which overrides needed changing and why, anything in
 MudBlazor's release notes that affects consumers, and anything that could not be verified.
+
+# Updating to shadcn's changes
+
+shadcn changes its themes and styles without a version number: the sources are files in
+<https://github.com/shadcn-ui/ui>. MudShadcn was last brought up to them on 10 November 2026:
+`apps/v4/registry/themes.ts` at commit `4101ec9` and `apps/v4/registry/styles/` at commit `4233ed1`.
+Update those two lines when you finish. Like a MudBlazor update, this is left in the working tree
+for review: do not commit.
+
+## The colour themes
+
+```bash
+node tools/generate-shadcn-themes.mjs      # rewrites src/MudShadcn/ShadcnThemeData.g.cs
+git diff --stat src/MudShadcn/ShadcnThemeData.g.cs
+```
+
+The script takes the base colours and theme colours from `themes.ts` and each base colour's grey
+scale from Tailwind's `theme.css`. If shadcn added a colour, the build then fails on a missing enum
+member: add it to `ShadcnBaseColor` or `ShadcnColor` in `ShadcnThemeOptions.cs` (at the end, so the
+existing values keep their numbers), and to `BASE_COLORS` in the script if it is a base colour. The
+showcase's Theme Generator lists the enums, so it needs nothing.
+
+The default theme is not generated. Compare `ShadcnTokens.cs` and the `:root` block of
+`MudShadcn.css`, which must agree, against the Default Theme CSS in
+<https://raw.githubusercontent.com/shadcn-ui/ui/main/apps/v4/content/docs/(root)/theming.mdx>, and
+the shadow scale against
+<https://raw.githubusercontent.com/tailwindlabs/tailwindcss/main/packages/tailwindcss/theme.css>.
+Its five chart colours are shadcn's original ones on purpose (`ChartColor = null`); the registry's
+neutral theme now has grey charts, which is `ChartColor = ShadcnColor.Base`.
+
+After any change to the theme code or data, `MudShadcnTheme.Create()` must still give the same
+palettes and tokens as before: dump them before and after and diff.
+
+## The styles
+
+Each `wwwroot/styles/<name>.css` was written from `apps/v4/registry/styles/style-<name>.css`. See
+what changed upstream since the commit named above:
+
+```bash
+# in the scratchpad, not the repo
+git clone --filter=blob:none --no-checkout https://github.com/shadcn-ui/ui shadcn && cd shadcn
+git diff 4233ed1 origin/main -- apps/v4/registry/styles/
+```
+
+- **A changed rule.** The diff names a `.cn-*` class. Search the style's stylesheet for it: every
+  block starts with a comment naming the class it comes from, and every declaration has its
+  Tailwind utility in a trailing comment. Change the declarations the utilities map to (Tailwind's
+  values are in its `theme.css`: the spacing unit is 4px, the text sizes have their line heights).
+  If the rule has no block, the style had the base's value until now: find the base rule in
+  `MudShadcn.css` that stands for the same shadcn element in another style's stylesheet, or by the
+  shadcn component named in the base's comments, and add a block with the same selector. If the new
+  value equals the base's, delete the declaration instead: a style holds only what differs.
+- **A new rule** for a component MudBlazor has: as above. For one it does not have: nothing.
+- **A new style.** Add it to `ShadcnStyle` (at the end) with shadcn's description, copy
+  `wwwroot/styles/vega.css` to the new name and go through shadcn's file for the new style against
+  `style-vega.css`, rule by rule, as above. `MudShadcnProvider` links the file by the enum
+  member's name in lower case, and the samples' look menus and the Theme Generator list the enum.
+  Add the style to the lists in `README.md`, the agent skill and `llms.txt`, and to the styles
+  named in step 7 above.
+- **The menu options.** `.cn-menu-translucent` is the source of `menu-translucent.css`, and
+  `buildRegistryTheme` in `apps/v4/registry/config.ts` is how shadcn puts a theme together
+  (`ShadcnTokens.Build` follows it) and what its bold menu accent does (`menu-bold.css`).
+
+Then build, run `tools/verify-mudblazor.sh`, and look at the changed styles in the test app, light
+and dark (`CLAUDE.md`, "Styles").
