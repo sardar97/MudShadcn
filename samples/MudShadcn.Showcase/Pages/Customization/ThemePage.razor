@@ -1,11 +1,13 @@
 @page "/customization/theme"
+@inject ShowcaseTheme ShowcaseTheme
+@implements IDisposable
 
 <DocsPage>
     <DocsPageHeader Title="Theme" SubTitle="shadcn's tokens as MudShadcnProvider emits them for the active mode, the radius scale and the type scale." />
     <DocsPageContent>
         <DocsPageSection>
             <SectionHeader Title="Colour tokens">
-                <Description>Each swatch is painted with <CodeInline>var(--shadcn-*)</CodeInline>, the original OKLCH value. Toggle dark mode to see the other set.</Description>
+                <Description>Each swatch is painted with <CodeInline>var(--shadcn-*)</CodeInline>, the OKLCH value of the active theme (light / dark). Toggle dark mode to see the other set, or change the theme in the <MudLink Href="customization/theme-generator">Theme Generator</MudLink>.</Description>
             </SectionHeader>
             <MudGrid Spacing="3">
                 @foreach (var (name, value) in _tokens)
@@ -21,7 +23,7 @@
 
         <DocsPageSection>
             <SectionHeader Title="Chart colours">
-                <Description>MudBlazor's default chart palette is mapped onto these five, so charts need no options to look like shadcn's.</Description>
+                <Description>MudBlazor's default chart palette is mapped onto these five, so charts need no options to look like shadcn's. They follow the theme's chart colour.</Description>
             </SectionHeader>
             <div class="d-flex flex-wrap gap-3">
                 @for (var i = 1; i <= 5; i++)
@@ -33,7 +35,7 @@
 
         <DocsPageSection>
             <SectionHeader Title="Radius">
-                <Description>Derived from <CodeInline>--shadcn-radius</CodeInline> (0.625rem): ×0.6, ×0.8, ×1, ×1.4, ×1.8.</Description>
+                <Description>Derived from <CodeInline>--shadcn-radius</CodeInline> (@ShowcaseTheme.Theme.Radius in the active theme): ×0.6, ×0.8, ×1, ×1.4, ×1.8.</Description>
             </SectionHeader>
             <div class="d-flex flex-wrap gap-3">
                 @foreach (var r in new[] { "sm", "md", "lg", "xl", "2xl" })
@@ -63,7 +65,10 @@
 
         <DocsPageSection>
             <SectionHeader Title="Customising">
-                <Description>Start from <CodeInline>MudShadcnTheme.Create()</CodeInline> and change what you need; the stylesheet reads MudBlazor's palette variables, so the change flows everywhere.</Description>
+                <Description>
+                    To pick a style, colours, radius and fonts and copy the code for them, use the <MudLink Href="customization/theme-generator">Theme Generator</MudLink>.
+                    To go further, start from <CodeInline>MudShadcnTheme.Create()</CodeInline> and change what you need; the stylesheet reads MudBlazor's palette variables, so the change flows everywhere.
+                </Description>
             </SectionHeader>
             <CodeBlock Language="csharp" Code="@Customising" />
         </DocsPageSection>
@@ -77,7 +82,14 @@
         theme.LayoutProperties.DefaultBorderRadius = "0.375rem";
         """;
 
-    private readonly IReadOnlyDictionary<string, string> _tokens = ShadcnTokens.Light
+    // The active theme's tokens, so the table follows the Theme Generator's choices.
+    private IEnumerable<(string Name, string Value)> _tokens => ShowcaseTheme.Theme.TokensLight
         .Where(t => !t.Key.StartsWith("chart") && !t.Key.StartsWith("sidebar-") && !t.Key.EndsWith("-background"))
-        .ToDictionary(t => t.Key, t => $"{t.Value} / {ShadcnTokens.Dark[t.Key]}");
+        .Select(t => (t.Key, $"{t.Value} / {ShowcaseTheme.Theme.TokensDark[t.Key]}"));
+
+    protected override void OnInitialized() => ShowcaseTheme.Changed += OnThemeChanged;
+
+    private void OnThemeChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => ShowcaseTheme.Changed -= OnThemeChanged;
 }

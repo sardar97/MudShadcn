@@ -13,10 +13,18 @@
 <MudShadcnProvider Theme="ShowcaseTheme.Theme" Enabled="Design.Shadcn" IsDarkMode="_isDarkMode" IsDarkModeChanged="OnDarkModeChanged" FollowSystemDarkMode="_followSystem"
                    StyleHrefFormat="_content/MudShadcn/styles/{0}.css" />
 
+@* Only the web fonts the design uses (Geist is in index.html). *@
+@if (ShowcaseFonts.Href(skipLoaded: true, Design.Font, Design.HeadingFont) is { } fontsHref)
+{
+    <HeadContent>
+        <link rel="stylesheet" href="@fontsHref" />
+    </HeadContent>
+}
+
 <MudLayout Class="docs-layout">
     <MudAppBar Elevation="0" Class="docs-appbar">
-        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" Class="d-flex d-md-none mr-1"
-                       OnClick="@(() => _drawerOpen = !_drawerOpen)" aria-label="Toggle navigation" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" Class="@(IsGenerator ? "d-flex mr-1" : "d-flex d-md-none mr-1")"
+                       OnClick="@(() => DrawerOpen = !DrawerOpen)" aria-label="Toggle navigation" />
         <a href="" class="docs-brand" aria-label="MudShadcn home">
             <Logo />
             <span>MudShadcn</span>
@@ -24,9 +32,10 @@
         <a href="releases" class="docs-version d-none d-md-flex" title="Release notes"
            aria-label="@($"MudShadcn version {BuildInfo.MudShadcnVersion}, release notes")">v@(BuildInfo.MudShadcnVersion)</a>
         <nav class="docs-topnav d-none d-md-flex" aria-label="Main">
-            <MudButton Href="getting-started/installation" Variant="Variant.Text" Class="@TopLinkClass("getting-started")">Get Started</MudButton>
-            <MudButton Href="docs/overview" Variant="Variant.Text" Class="@TopLinkClass("docs", "components")">Docs</MudButton>
-            <MudButton Href="customization/theme" Variant="Variant.Text" Class="@TopLinkClass("customization")">Theme</MudButton>
+            <MudButton Href="getting-started/installation" Variant="Variant.Text" Class="@TopLinkClass(true, "getting-started")">Get Started</MudButton>
+            <MudButton Href="docs/overview" Variant="Variant.Text" Class="@TopLinkClass(true, "docs", "components")">Docs</MudButton>
+            <MudButton Href="customization/theme" Variant="Variant.Text" Class="@TopLinkClass(!IsGenerator, "customization")">Theme</MudButton>
+            <MudButton Href="customization/theme-generator" Variant="Variant.Text" Class="@TopLinkClass(IsGenerator)">Generator</MudButton>
         </nav>
         <MudSpacer />
         <DocsSearch />
@@ -73,7 +82,8 @@
         </MudTooltip>
     </MudAppBar>
 
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Docked" Breakpoint="Breakpoint.Md" Elevation="0" Class="docs-nav-drawer"
+    @* The Theme Generator needs the width, so there the navigation starts closed (the menu button opens it). *@
+    <MudDrawer Open="DrawerOpen" OpenChanged="@(open => DrawerOpen = open)" ClipMode="DrawerClipMode.Docked" Breakpoint="Breakpoint.Md" Elevation="0" Class="docs-nav-drawer"
                aria-label="Navigation">
         <NavMenu />
     </MudDrawer>
@@ -87,10 +97,12 @@
 
 @code {
     private bool _drawerOpen = true;
+    private bool _generatorDrawerOpen;
     private bool _ready;
     private bool _isDarkMode;
     private bool _followSystem = true;
     private string _section = "";
+    private bool _isGenerator;
 
     // The looks the dropdown offers: every shadcn style, and MudBlazor's own (MudShadcnProvider's Enabled).
     private static readonly ShowcaseDesign[] Looks =
@@ -98,6 +110,24 @@
         .. Enum.GetValues<ShadcnStyle>().Select(style => new ShowcaseDesign { Style = style }),
         new ShowcaseDesign { Shadcn = false },
     ];
+
+    private bool IsGenerator => _isGenerator;
+
+    private bool DrawerOpen
+    {
+        get => _isGenerator ? _generatorDrawerOpen : _drawerOpen;
+        set
+        {
+            if (_isGenerator)
+            {
+                _generatorDrawerOpen = value;
+            }
+            else
+            {
+                _drawerOpen = value;
+            }
+        }
+    }
 
     private ShowcaseDesign Design => ShowcaseTheme.Design;
 
@@ -108,6 +138,7 @@
         NavigationManager.LocationChanged += OnLocationChanged;
         ShowcaseTheme.Changed += OnThemeChanged;
         _section = Section();
+        _isGenerator = IsGeneratorPage();
         await ShowcaseTheme.LoadAsync();
 
         // An explicit choice wins over the OS setting (MudShadcnProvider follows the OS by default).
@@ -135,11 +166,16 @@
 
     private string Section() => NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split('/', '#', '?')[0];
 
-    private string TopLinkClass(params string[] sections) => sections.Contains(_section) ? "docs-topnav-link active" : "docs-topnav-link";
+    private bool IsGeneratorPage() =>
+        NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split('#', '?')[0].TrimEnd('/') == "customization/theme-generator";
+
+    private string TopLinkClass(bool applies, params string[] sections) =>
+        applies && (sections.Length == 0 || sections.Contains(_section)) ? "docs-topnav-link active" : "docs-topnav-link";
 
     private void OnLocationChanged(object sender, LocationChangedEventArgs e)
     {
         _section = Section();
+        _isGenerator = IsGeneratorPage();
         StateHasChanged();
     }
 

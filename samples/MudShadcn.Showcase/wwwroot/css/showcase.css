@@ -923,3 +923,150 @@ h1:focus {
     border: 1px solid var(--mud-palette-lines-default);
     border-radius: var(--shadcn-radius-lg);
 }
+
+/* ---------------------------------------------------------------------------------------------
+   Theme Generator: the page's own layout. Nothing here restyles a component inside the preview.
+   --------------------------------------------------------------------------------------------- */
+.docs-generator {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    padding: 24px 16px 48px;
+    max-width: 120rem;
+    margin: 0 auto;
+}
+
+.docs-generator-intro {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px 24px;
+}
+
+.docs-generator-intro-text {
+    flex: 1 1 24rem;
+    min-width: 0;
+    max-width: 48rem;
+}
+
+.docs-generator-options,
+.docs-generator-stage {
+    min-width: 0;
+}
+
+.docs-generator-options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid var(--mud-palette-lines-default);
+    border-radius: var(--shadcn-radius-xl);
+    background-color: var(--mud-palette-surface);
+}
+
+.docs-generator-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 0.875rem;                              /* text-sm font-medium */
+    font-weight: 500;
+}
+
+.docs-generator-label small {
+    font-weight: 400;
+    color: var(--mud-palette-text-secondary);
+}
+
+.docs-generator-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.docs-generator-swatch {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid var(--mud-palette-lines-default);
+    border-radius: 9999px;
+    background: var(--swatch);
+    cursor: pointer;
+    outline: none;
+}
+
+.docs-generator-swatch[aria-checked="true"] {
+    box-shadow: 0 0 0 2px var(--mud-palette-surface), 0 0 0 4px var(--mud-palette-text-primary);
+}
+
+.docs-generator-swatch:focus-visible {
+    box-shadow: 0 0 0 2px var(--mud-palette-surface), 0 0 0 4px var(--mud-palette-primary);
+}
+
+.docs-generator-item {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+}
+
+.docs-generator-item small {
+    font-size: 0.75rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+.docs-generator-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Cards of the preview flow into as many columns as fit, like shadcn's block grid. */
+.docs-generator-preview {
+    columns: 20rem;
+    column-gap: 16px;
+}
+
+.docs-generator-block {
+    break-inside: avoid;
+    margin-bottom: 16px;
+}
+
+.docs-generator-code {
+    margin-top: 32px;
+}
+
+.docs-generator-heading.mud-typography {
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.docs-generator-code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 16px 0 8px;
+}
+
+@media (min-width: 960px) {
+    .docs-generator {
+        grid-template-columns: 19rem minmax(0, 1fr);
+        grid-template-areas: "intro intro" "options stage";
+        align-items: start;
+        padding: 32px 24px 64px;
+    }
+
+    .docs-generator-intro { grid-area: intro; }
+    .docs-generator-stage { grid-area: stage; }
+
+    .docs-generator-options {
+        grid-area: options;
+        position: sticky;
+        top: 72px;                                    /* below the 56px top bar */
+        max-height: calc(100vh - 88px);
+        overflow-y: auto;
+    }
+}

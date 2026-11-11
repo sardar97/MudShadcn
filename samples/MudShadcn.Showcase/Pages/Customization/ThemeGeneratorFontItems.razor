@@ -1,0 +1,16 @@
+@* shadcn's fonts, grouped sans / mono / serif (the groups are disabled items), as the items of a font MudSelect. *@
+<MudSelectItem T="string" Value="@("group-sans")" Disabled="true">Sans</MudSelectItem>
+@foreach (var font in ShowcaseFonts.All.Where(f => f.Kind == "sans"))
+{
+    <MudSelectItem T="string" Value="@font.Name">@font.Title</MudSelectItem>
+}
+<MudSelectItem T="string" Value="@("group-mono")" Disabled="true">Mono</MudSelectItem>
+@foreach (var font in ShowcaseFonts.All.Where(f => f.Kind == "mono"))
+{
+    <MudSelectItem T="string" Value="@font.Name">@font.Title</MudSelectItem>
+}
+<MudSelectItem T="string" Value="@("group-serif")" Disabled="true">Serif</MudSelectItem>
+@foreach (var font in ShowcaseFonts.All.Where(f => f.Kind == "serif"))
+{
+    <MudSelectItem T="string" Value="@font.Name">@font.Title</MudSelectItem>
+}

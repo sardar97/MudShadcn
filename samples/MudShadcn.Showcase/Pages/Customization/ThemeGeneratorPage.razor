@@ -1,0 +1,313 @@
+@page "/customization/theme-generator"
+@implements IDisposable
+@inject ShowcaseTheme ShowcaseTheme
+@inject NavigationManager Navigation
+@inject IJSRuntime Js
+@inject ISnackbar Snackbar
+
+<PageTitle>Theme Generator - MudShadcn</PageTitle>
+<HeadContent>
+    <meta name="description" content="Pick a style, colours, radius and fonts, see them on real MudBlazor components, and copy the MudShadcn code for them." />
+</HeadContent>
+
+<MudMainContent Class="docs-main">
+    <div class="docs-generator">
+        <header class="docs-generator-intro">
+            <div class="docs-generator-intro-text">
+                <MudText Typo="Typo.h3" Class="docs-page-title">Theme Generator</MudText>
+                <MudText Typo="Typo.subtitle1" Class="docs-page-subtitle">
+                    Build your own look from shadcn's options, then copy the code.
+                    Every choice applies to the whole site at once and stays on the other pages, so you can walk through the component pages in your theme.
+                </MudText>
+            </div>
+            @* Next to the title, as on shadcn's page: always in view, whatever the length of the options. *@
+            <div class="docs-generator-actions">
+                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Shuffle" OnClick="Shuffle">Shuffle</MudButton>
+                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.RestartAlt" OnClick="Reset">Reset</MudButton>
+                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Link" OnClick="CopyLinkAsync">Copy link</MudButton>
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.ContentCopy" OnClick="CopyAllCodeAsync">Copy code</MudButton>
+            </div>
+        </header>
+
+        <aside class="docs-generator-options" aria-label="Theme options">
+            <div class="docs-generator-field">
+                <MudSelect T="string" Label="Preset" Variant="Variant.Outlined" Value="PresetName" ValueChanged="OnPreset" ToStringFunc="PresetText">
+                    @if (PresetName == ShowcasePreset.Custom)
+                    {
+                        <MudSelectItem T="string" Value="@ShowcasePreset.Custom" Disabled="true">Custom</MudSelectItem>
+                    }
+                    @foreach (var preset in ShowcasePreset.All)
+                    {
+                        <MudSelectItem T="string" Value="@preset.Name">
+                            <div class="docs-generator-item"><span>@preset.Title</span><small>@preset.Description</small></div>
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+
+            <div class="docs-generator-field">
+                <MudSelect T="ShadcnStyle" Label="Style" Variant="Variant.Outlined" Value="Design.Style"
+                           ValueChanged="@(v => Set(d => d with { Style = v }))" ToStringFunc="ShowcaseDesign.StyleTitle">
+                    @foreach (var style in Enum.GetValues<ShadcnStyle>())
+                    {
+                        <MudSelectItem T="ShadcnStyle" Value="@style">
+                            <div class="docs-generator-item"><span>@ShowcaseDesign.StyleTitle(style)</span><small>@StyleDescriptions[style]</small></div>
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+
+            <div class="docs-generator-field" role="radiogroup" aria-labelledby="gen-base">
+                <div class="docs-generator-label"><span id="gen-base">Base Color</span><small>@Design.BaseColor</small></div>
+                <div class="docs-generator-swatches">
+                    @foreach (var color in Enum.GetValues<ShadcnBaseColor>())
+                    {
+                        <button type="button" role="radio" aria-checked="@(Design.BaseColor == color ? "true" : "false")" title="@color" aria-label="@color"
+                                class="docs-generator-swatch" style="--swatch:@BaseSwatch(color)"
+                                @onclick="@(() => Set(d => d with { BaseColor = color }))"></button>
+                    }
+                </div>
+            </div>
+
+            <div class="docs-generator-field" role="radiogroup" aria-labelledby="gen-theme">
+                <div class="docs-generator-label"><span id="gen-theme">Theme</span><small>@ThemeName(Design.Theme)</small></div>
+                <div class="docs-generator-swatches">
+                    @foreach (var color in Colors)
+                    {
+                        <button type="button" role="radio" aria-checked="@(Design.Theme == color ? "true" : "false")" title="@ThemeName(color)" aria-label="@ThemeName(color)"
+                                class="docs-generator-swatch" style="--swatch:@ThemeSwatch(color)"
+                                @onclick="@(() => Set(d => d with { Theme = color }))"></button>
+                    }
+                </div>
+            </div>
+
+            <div class="docs-generator-field" role="radiogroup" aria-labelledby="gen-chart">
+                <div class="docs-generator-label"><span id="gen-chart">Chart Color</span><small>@(Design.ChartColor is { } chart ? ThemeName(chart) : "Classic")</small></div>
+                <div class="docs-generator-swatches">
+                    @foreach (var color in ChartColors)
+                    {
+                        <button type="button" role="radio" aria-checked="@(Design.ChartColor == color ? "true" : "false")"
+                                title="@(color is { } c ? ThemeName(c) : "Classic")" aria-label="@(color is { } c2 ? ThemeName(c2) : "Classic")"
+                                class="docs-generator-swatch docs-generator-swatch-chart" style="background:@ChartSwatch(color)"
+                                @onclick="@(() => Set(d => d with { ChartColor = color }))"></button>
+                    }
+                </div>
+            </div>
+
+            <div class="docs-generator-field">
+                <MudSelect T="string" Label="Heading" Variant="Variant.Outlined" Value="Design.HeadingFont"
+                           ValueChanged="@(v => Set(d => d with { HeadingFont = v }))" ToStringFunc="FontText">
+                    <MudSelectItem T="string" Value="@ShowcaseFonts.Inherit">Inherit</MudSelectItem>
+                    <ThemeGeneratorFontItems />
+                </MudSelect>
+            </div>
+
+            <div class="docs-generator-field">
+                <MudSelect T="string" Label="Font" Variant="Variant.Outlined" Value="Design.Font"
+                           ValueChanged="@(v => Set(d => d with { Font = v }))" ToStringFunc="FontText">
+                    <ThemeGeneratorFontItems />
+                </MudSelect>
+            </div>
+
+            <div class="docs-generator-field">
+                <MudSelect T="ShadcnRadius" Label="Radius" Variant="Variant.Outlined" Value="Design.Radius"
+                           ValueChanged="@(v => Set(d => d with { Radius = v }))" ToStringFunc="@(v => v.ToString())">
+                    @foreach (var radius in Enum.GetValues<ShadcnRadius>())
+                    {
+                        <MudSelectItem T="ShadcnRadius" Value="@radius">
+                            <div class="docs-generator-item"><span>@radius</span><small>@RadiusDescriptions[radius]</small></div>
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+
+            <div class="docs-generator-field">
+                <MudSelect T="ShadcnMenuColor" Label="Menu" Variant="Variant.Outlined" Value="Design.MenuColor"
+                           ValueChanged="@(v => Set(d => d with { MenuColor = v }))" ToStringFunc="MenuColorText">
+                    @foreach (var menu in Enum.GetValues<ShadcnMenuColor>())
+                    {
+                        <MudSelectItem T="ShadcnMenuColor" Value="@menu">@MenuColorText(menu)</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+
+            <div class="docs-generator-field">
+                <MudSelect T="ShadcnMenuAccent" Label="Menu Accent" Variant="Variant.Outlined" Value="Design.MenuAccent"
+                           ValueChanged="@(v => Set(d => d with { MenuAccent = v }))" ToStringFunc="@(v => v.ToString())">
+                    @foreach (var accent in Enum.GetValues<ShadcnMenuAccent>())
+                    {
+                        <MudSelectItem T="ShadcnMenuAccent" Value="@accent">@accent</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+        </aside>
+
+        <div class="docs-generator-stage">
+            <ThemeGeneratorPreview />
+
+            <section class="docs-generator-code" aria-labelledby="gen-code">
+                <MudText Typo="Typo.h5" id="gen-code" Class="docs-generator-heading">Code</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Tertiary" Class="mb-4">
+                    What to paste into your app for this theme. It updates with every choice, and names only the options that differ from the defaults.
+                    The style's stylesheet needs no line: <CodeInline>MudShadcnProvider</CodeInline> links it.
+                </MudText>
+
+                @if (FontLink is { } link)
+                {
+                    <div class="docs-generator-code-head">
+                        <MudText Typo="Typo.subtitle2">Load the font in <CodeInline>index.html</CodeInline> (or <CodeInline>App.razor</CodeInline>), inside <CodeInline>&lt;head&gt;</CodeInline></MudText>
+                        <MudButton Variant="Variant.Text" Size="Size.Small" StartIcon="@Icons.Material.Outlined.ContentCopy" OnClick="@(() => CopyAsync(link, "Font link copied"))">Copy</MudButton>
+                    </div>
+                    <CodeBlock Language="html" Code="@link" />
+                }
+
+                <div class="docs-generator-code-head">
+                    <MudText Typo="Typo.subtitle2">Add the provider to your layout, with the theme</MudText>
+                    <MudButton Variant="Variant.Text" Size="Size.Small" StartIcon="@Icons.Material.Outlined.ContentCopy" OnClick="@(() => CopyAsync(ProviderCode, "Code copied"))">Copy</MudButton>
+                </div>
+                <CodeBlock Language="razor" Code="@ProviderCode" />
+            </section>
+        </div>
+    </div>
+</MudMainContent>
+
+@code {
+    private static readonly ShadcnColor[] Colors = Enum.GetValues<ShadcnColor>();
+    private static readonly ShadcnColor?[] ChartColors = [null, .. Enum.GetValues<ShadcnColor>().Select(c => (ShadcnColor?)c)];
+
+    private static readonly IReadOnlyDictionary<ShadcnStyle, string> StyleDescriptions = new Dictionary<ShadcnStyle, string>
+    {
+        [ShadcnStyle.NewYork] = "MudShadcn's original look",
+        [ShadcnStyle.Vega] = "Clean, neutral, and familiar",
+        [ShadcnStyle.Nova] = "Reduced padding and margins",
+        [ShadcnStyle.Maia] = "Rounded, with generous spacing.",
+        [ShadcnStyle.Lyra] = "Boxy and sharp. For mono fonts.",
+        [ShadcnStyle.Mira] = "Made for compact interfaces.",
+        [ShadcnStyle.Luma] = "Fluid, luminous, and soft.",
+        [ShadcnStyle.Sera] = "Editorial and typographic.",
+        [ShadcnStyle.Rhea] = "Like Luma but compact.",
+    };
+
+    private static readonly IReadOnlyDictionary<ShadcnRadius, string> RadiusDescriptions = new Dictionary<ShadcnRadius, string>
+    {
+        [ShadcnRadius.Default] = "0.625rem",
+        [ShadcnRadius.None] = "Square corners",
+        [ShadcnRadius.Small] = "0.45rem",
+        [ShadcnRadius.Medium] = "0.625rem",
+        [ShadcnRadius.Large] = "0.875rem",
+    };
+
+    // Swatches come from the themes themselves: one per (base colour, colour), made when first needed.
+    private readonly Dictionary<(ShadcnBaseColor, ShadcnColor?), ShadcnTheme> _swatchThemes = [];
+
+    private ShowcaseDesign Design => ShowcaseTheme.Design;
+
+    private string PresetName => ShowcasePreset.All.FirstOrDefault(p => p.Design == Design with { Shadcn = true })?.Name ?? ShowcasePreset.Custom;
+
+    private string FontLink => ThemeCode.FontLink(Design);
+
+    private string ProviderCode => ThemeCode.Provider(Design);
+
+    protected override async Task OnInitializedAsync()
+    {
+        ShowcaseTheme.Changed += OnThemeChanged;
+        await ShowcaseTheme.LoadAsync();
+    }
+
+    private void OnThemeChanged() => InvokeAsync(StateHasChanged);
+
+    // Every choice goes to the site, so the whole site (top bar included) takes the theme at once.
+    // Choosing anything also leaves MudBlazor's own look, which would hide the choice.
+    private Task Set(Func<ShowcaseDesign, ShowcaseDesign> change) => ShowcaseTheme.SetAsync(change(Design) with { Shadcn = true });
+
+    private Task OnPreset(string name) =>
+        ShowcasePreset.All.FirstOrDefault(p => p.Name == name) is { } preset ? Set(_ => preset.Design) : Task.CompletedTask;
+
+    private string PresetText(string name) => name == ShowcasePreset.Custom ? "Custom" : ShowcasePreset.All.First(p => p.Name == name).Title;
+
+    private string FontText(string name) => ShowcaseFonts.Find(name)?.Title ?? "Inherit";
+
+    private static string MenuColorText(ShadcnMenuColor menu) => menu switch
+    {
+        ShadcnMenuColor.DefaultTranslucent => "Default Translucent",
+        ShadcnMenuColor.InvertedTranslucent => "Inverted Translucent",
+        _ => menu.ToString(),
+    };
+
+    // The Theme list starts with the base colour's own name, as on shadcn's page.
+    private string ThemeName(ShadcnColor color) => color == ShadcnColor.Base ? Design.BaseColor.ToString() : color.ToString();
+
+    private ShadcnTheme SwatchTheme(ShadcnColor? color)
+    {
+        if (!_swatchThemes.TryGetValue((Design.BaseColor, color), out var theme))
+        {
+            theme = MudShadcnTheme.Create(color is { } c
+                ? new ShadcnThemeOptions { BaseColor = Design.BaseColor, Theme = c, ChartColor = c }
+                : new ShadcnThemeOptions { BaseColor = Design.BaseColor });
+            _swatchThemes[(Design.BaseColor, color)] = theme;
+        }
+
+        return theme;
+    }
+
+    private string BaseSwatch(ShadcnBaseColor color) =>
+        MudShadcnTheme.Create(new ShadcnThemeOptions { BaseColor = color }).TokensLight["muted-foreground"];
+
+    private string ThemeSwatch(ShadcnColor color) =>
+        color == ShadcnColor.Base ? SwatchTheme(color).TokensLight["muted-foreground"] : SwatchTheme(color).TokensLight["primary"];
+
+    // The five chart colours as stripes.
+    private string ChartSwatch(ShadcnColor? color)
+    {
+        var tokens = SwatchTheme(color).TokensLight;
+        var stops = Enumerable.Range(1, 5).Select(i => $"{tokens[$"chart-{i}"]} {(i - 1) * 20}% {i * 20}%");
+        return $"linear-gradient(90deg, {string.Join(", ", stops)})";
+    }
+
+    private Task Shuffle()
+    {
+        var random = Random.Shared;
+        T Pick<T>(IReadOnlyList<T> values) => values[random.Next(values.Count)];
+
+        var fonts = ShowcaseFonts.All.Select(f => f.Name).ToList();
+        return Set(d => d with
+        {
+            Style = Pick(Enum.GetValues<ShadcnStyle>()),
+            BaseColor = Pick(Enum.GetValues<ShadcnBaseColor>()),
+            Theme = Pick(Colors),
+            ChartColor = Pick(ChartColors),
+            Font = Pick(fonts),
+            HeadingFont = random.Next(2) == 0 ? ShowcaseFonts.Inherit : Pick(fonts),
+            Radius = Pick(Enum.GetValues<ShadcnRadius>()),
+            MenuAccent = Pick(Enum.GetValues<ShadcnMenuAccent>()),
+            MenuColor = Pick(Enum.GetValues<ShadcnMenuColor>()),
+        });
+    }
+
+    private Task Reset() => Set(_ => new ShowcaseDesign());
+
+    private async Task CopyLinkAsync()
+    {
+        var query = Design.ToQuery();
+        var link = Navigation.BaseUri + "customization/theme-generator" + (query.Length > 0 ? "?" + query : "");
+        await CopyAsync(link, "Link copied");
+    }
+
+    private Task CopyAllCodeAsync() =>
+        CopyAsync(FontLink is { } link ? $"<!-- index.html, inside <head> -->\n{link}\n\n<!-- your layout -->\n{ProviderCode}" : ProviderCode, "Code copied");
+
+    private async Task CopyAsync(string text, string message)
+    {
+        try
+        {
+            await Js.InvokeVoidAsync("navigator.clipboard.writeText", text);
+            Snackbar.Add(message, Severity.Success);
+        }
+        catch (JSException)
+        {
+            Snackbar.Add("The browser did not allow copying.", Severity.Error);
+        }
+    }
+
+    public void Dispose() => ShowcaseTheme.Changed -= OnThemeChanged;
+}

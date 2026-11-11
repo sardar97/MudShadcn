@@ -7,6 +7,12 @@
 {
     <MudShadcnProvider Theme="ShowcaseTheme.Theme" Enabled="ShowcaseTheme.Design.Shadcn" IsDarkMode="_isDarkMode" FollowSystemDarkMode="_followSystem"
                        StyleHrefFormat="_content/MudShadcn/styles/{0}.css" />
+    @if (ShowcaseFonts.Href(skipLoaded: true, ShowcaseTheme.Design.Font, ShowcaseTheme.Design.HeadingFont) is { } fontsHref)
+    {
+        <HeadContent>
+            <link rel="stylesheet" href="@fontsHref" />
+        </HeadContent>
+    }
     @Body
 }
 

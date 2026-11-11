@@ -1,0 +1,288 @@
+@using MudShadcn.Showcase.Pages.Customization.Examples
+@inject IDialogService DialogService
+
+@* Stock MudBlazor components only: what the package does with the chosen theme is what shows. *@
+<div class="docs-generator-preview" aria-label="Preview">
+    <div class="docs-generator-block">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h4">Headings in your font</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Tertiary">The heading font applies to h1 to h6.</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText Typo="Typo.h1">Heading 1</MudText>
+                <MudText Typo="Typo.h2">Heading 2</MudText>
+                <MudText Typo="Typo.h3">Heading 3</MudText>
+                <MudText Typo="Typo.h4">Heading 4</MudText>
+                <MudText Typo="Typo.h5">Heading 5</MudText>
+                <MudText Typo="Typo.h6">Heading 6</MudText>
+                <MudText Typo="Typo.body1" Class="mt-2">Body text in the body font. The quick brown fox jumps over the lazy dog.</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Tertiary">Muted text, a little smaller.</MudText>
+            </MudCardContent>
+        </MudCard>
+    </div>
+
+    <div class="docs-generator-block">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Buttons</MudText>
+                    <MudText Typo="Typo.body2">Every variant and size.</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <div class="d-flex flex-wrap align-center gap-2 mb-3">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary">Default</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary">Secondary</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Error">Destructive</MudButton>
+                    <MudButton Variant="Variant.Outlined">Outline</MudButton>
+                    <MudButton Variant="Variant.Text">Ghost</MudButton>
+                    <MudLink Href="customization/theme-generator">Link</MudLink>
+                </div>
+                <div class="d-flex flex-wrap align-center gap-2 mb-3">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small">Small</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary">Medium</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large">Large</MudButton>
+                </div>
+                <div class="d-flex flex-wrap align-center gap-2">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Mail">With icon</MudButton>
+                    <MudIconButton Icon="@Icons.Material.Outlined.Add" Variant="Variant.Outlined" aria-label="Add" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Favorite" aria-label="Favourite" />
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="true">Disabled</MudButton>
+                </div>
+            </MudCardContent>
+        </MudCard>
+    </div>
+
+    <div class="docs-generator-block">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Create account</MudText>
+                    <MudText Typo="Typo.body2">Enter your details below to get started.</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack Spacing="3">
+                    <MudTextField T="string" Label="Name" Placeholder="Ada Lovelace" Variant="Variant.Outlined" />
+                    <MudTextField T="string" Label="Email" Placeholder="m@example.com" Variant="Variant.Outlined" />
+                    <MudSelect T="string" Label="Role" Variant="Variant.Outlined" @bind-Value="_role">
+                        <MudSelectItem Value="@("Developer")" />
+                        <MudSelectItem Value="@("Designer")" />
+                        <MudSelectItem Value="@("Product manager")" />
+                    </MudSelect>
+                    <MudAutocomplete T="string" Label="Country" Variant="Variant.Outlined" @bind-Value="_country" SearchFunc="SearchCountries" />
+                    <MudNumericField T="int" Label="Seats" Variant="Variant.Outlined" @bind-Value="_seats" Min="1" Max="50" />
+                    <MudCheckBox T="bool" @bind-Value="_terms" Label="Accept the terms" />
+                    <MudRadioGroup T="string" @bind-Value="_plan">
+                        <MudRadio Value="@("Free")">Free</MudRadio>
+                        <MudRadio Value="@("Pro")">Pro</MudRadio>
+                    </MudRadioGroup>
+                    <MudSwitch T="bool" @bind-Value="_news" Label="Send me the newsletter" Color="Color.Primary" />
+                    <MudSlider T="int" @bind-Value="_volume" Min="0" Max="100" aria-label="Volume">Volume: @_volume</MudSlider>
+                </MudStack>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Outlined">Cancel</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary">Create account</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </div>
+
+    <div class="docs-generator-block">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Recent invoices</MudText>
+                    <MudText Typo="Typo.body2">A table with status chips.</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent Class="pa-0">
+                <MudTable Items="_invoices" Hover="true" Elevation="0" Dense="true">
+                    <HeaderContent>
+                        <MudTh>Invoice</MudTh>
+                        <MudTh>Status</MudTh>
+                        <MudTh Style="text-align:right">Amount</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Invoice">@context.Id</MudTd>
+                        <MudTd DataLabel="Status"><MudChip T="string" Size="Size.Small" Color="@context.Color">@context.Status</MudChip></MudTd>
+                        <MudTd DataLabel="Amount" Style="text-align:right">@context.Amount.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudCardContent>
+        </MudCard>
+    </div>
+
+    <div class="docs-generator-block">
+        <MudCard>
+            <MudCardContent>
+                <MudTabs Elevation="0" Rounded="true" TabPanelsClass="pt-4" MinimumTabWidth="80px">
+                    <MudTabPanel Text="Account">
+                        <MudText Typo="Typo.subtitle1">Account</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Tertiary">Make changes to your account here. Click save when you are done.</MudText>
+                    </MudTabPanel>
+                    <MudTabPanel Text="Password">
+                        <MudText Typo="Typo.subtitle1">Password</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Tertiary">Change your password here. After saving, you will be logged out.</MudText>
+                    </MudTabPanel>
+                    <MudTabPanel Text="Billing">
+                        <MudText Typo="Typo.subtitle1">Billing</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Tertiary">Manage your payment methods.</MudText>
+                    </MudTabPanel>
+                </MudTabs>
+            </MudCardContent>
+        </MudCard>
+    </div>
+
+    <div class="docs-generator-block">
+        <MudCard>
+            <MudCardContent Class="d-flex justify-center">
+                <MudDatePicker PickerVariant="PickerVariant.Static" @bind-Date="_date" Elevation="0" />
+            </MudCardContent>
+        </MudCard>
+    </div>
+
+    <div class="docs-generator-block"><ShadcnBarChartExample /></div>
+    <div class="docs-generator-block"><ShadcnDonutChartExample /></div>
+    <div class="docs-generator-block"><ShadcnAreaChartExample /></div>
+
+    <div class="docs-generator-block">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Chips, badges and avatars</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <div class="d-flex flex-wrap align-center gap-2 mb-3">
+                    <MudChip T="string" Color="Color.Primary">Badge</MudChip>
+                    <MudChip T="string">Secondary</MudChip>
+                    <MudChip T="string" Variant="Variant.Outlined">Outline</MudChip>
+                    <MudChip T="string" Color="Color.Error">Destructive</MudChip>
+                    <MudChip T="string" Color="Color.Success">Success</MudChip>
+                </div>
+                <div class="d-flex flex-wrap align-center gap-4">
+                    <MudBadge Content="3" Color="Color.Primary" Overlap="true"><MudIcon Icon="@Icons.Material.Outlined.Notifications" /></MudBadge>
+                    <MudBadge Content="12" Color="Color.Error" Overlap="true"><MudIcon Icon="@Icons.Material.Outlined.Mail" /></MudBadge>
+                    <MudAvatar Color="Color.Primary">AL</MudAvatar>
+                    <MudAvatar Color="Color.Secondary">GH</MudAvatar>
+                    <MudAvatar Variant="Variant.Outlined">KJ</MudAvatar>
+                    <MudAvatarGroup Max="3">
+                        <MudAvatar>A</MudAvatar>
+                        <MudAvatar>B</MudAvatar>
+                        <MudAvatar>C</MudAvatar>
+                        <MudAvatar>D</MudAvatar>
+                    </MudAvatarGroup>
+                </div>
+            </MudCardContent>
+        </MudCard>
+    </div>
+
+    <div class="docs-generator-block">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Alerts</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack Spacing="2">
+                    <MudAlert Severity="Severity.Normal" Variant="Variant.Outlined">Heads up! You can add components with your own theme.</MudAlert>
+                    <MudAlert Severity="Severity.Info">A new version is available.</MudAlert>
+                    <MudAlert Severity="Severity.Success">Your changes were saved.</MudAlert>
+                    <MudAlert Severity="Severity.Warning">Your session is about to expire.</MudAlert>
+                    <MudAlert Severity="Severity.Error">Your card was declined.</MudAlert>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </div>
+
+    <div class="docs-generator-block">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Progress and skeleton</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudProgressLinear Value="62" Color="Color.Primary" Class="mb-4" aria-label="Progress" />
+                <div class="d-flex align-center gap-4 mb-4">
+                    <MudProgressCircular Value="62" Color="Color.Primary" Size="Size.Medium" />
+                    <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Medium" />
+                </div>
+                <div class="d-flex align-center gap-3">
+                    <MudSkeleton SkeletonType="SkeletonType.Circle" Width="40px" Height="40px" />
+                    <div class="flex-grow-1">
+                        <MudSkeleton Width="80%" />
+                        <MudSkeleton Width="55%" />
+                    </div>
+                </div>
+            </MudCardContent>
+        </MudCard>
+    </div>
+
+    <div class="docs-generator-block">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Menus and overlays</MudText>
+                    <MudText Typo="Typo.body2">Open them to see the Menu and Menu Accent options.</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <div class="d-flex flex-wrap align-center gap-2 mb-4">
+                    <MudMenu Label="Open menu" Variant="Variant.Outlined" EndIcon="@Icons.Material.Filled.ExpandMore">
+                        <MudMenuItem Icon="@Icons.Material.Outlined.Person">Profile</MudMenuItem>
+                        <MudMenuItem Icon="@Icons.Material.Outlined.CreditCard">Billing</MudMenuItem>
+                        <MudMenuItem Icon="@Icons.Material.Outlined.Settings">Settings</MudMenuItem>
+                        <MudDivider />
+                        <MudMenuItem Icon="@Icons.Material.Outlined.Logout">Log out</MudMenuItem>
+                    </MudMenu>
+                    <MudTooltip Text="Add to library">
+                        <MudButton Variant="Variant.Outlined">Hover me</MudButton>
+                    </MudTooltip>
+                    <MudButton Variant="Variant.Outlined" OnClick="OpenDialogAsync">Open dialog</MudButton>
+                </div>
+                <MudSelect T="string" Label="Select" Variant="Variant.Outlined" @bind-Value="_fruit">
+                    <MudSelectItem Value="@("Apple")" />
+                    <MudSelectItem Value="@("Banana")" />
+                    <MudSelectItem Value="@("Blueberry")" />
+                    <MudSelectItem Value="@("Grapes")" />
+                </MudSelect>
+                <MudList T="string" ReadOnly="false" Class="mt-2" Dense="true">
+                    <MudListItem Text="Inbox" Icon="@Icons.Material.Outlined.Inbox" />
+                    <MudListItem Text="Drafts" Icon="@Icons.Material.Outlined.Drafts" />
+                    <MudListItem Text="Sent" Icon="@Icons.Material.Outlined.Send" />
+                </MudList>
+            </MudCardContent>
+        </MudCard>
+    </div>
+</div>
+
+@code {
+    private record Invoice(string Id, string Status, Color Color, int Amount);
+
+    private readonly Invoice[] _invoices =
+    [
+        new("INV001", "Paid", Color.Success, 250),
+        new("INV002", "Pending", Color.Warning, 150),
+        new("INV003", "Unpaid", Color.Error, 350),
+        new("INV004", "Paid", Color.Success, 450),
+    ];
+
+    private static readonly string[] Countries = ["Australia", "Canada", "Germany", "Japan", "Netherlands", "Sweden", "United Kingdom", "United States"];
+
+    private string _role = "Developer", _country = "Sweden", _plan = "Pro", _fruit = "Apple";
+    private int _seats = 3, _volume = 40;
+    private bool _terms = true, _news;
+    private DateTime? _date = DateTime.Today;
+
+    private Task<IEnumerable<string>> SearchCountries(string text, CancellationToken token) =>
+        Task.FromResult(Countries.Where(c => string.IsNullOrEmpty(text) || c.Contains(text, StringComparison.OrdinalIgnoreCase)));
+
+    private Task OpenDialogAsync() =>
+        DialogService.ShowMessageBoxAsync("Are you absolutely sure?", "This action cannot be undone. It will permanently delete your account.", yesText: "Delete", cancelText: "Cancel");
+}

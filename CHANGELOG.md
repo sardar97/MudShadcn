@@ -26,6 +26,12 @@ major version is a new MudShadcn major version.
   and stops emitting the `--shadcn-*` tokens; `true` restores the shadcn look. The set-up does not
   change: the stylesheet `<link>` stays where it is. A stylesheet served from another address
   needs `data-mudshadcn` on its link.
+- **Showcase:** a Theme Generator page (`/customization/theme-generator`, a tab in the top bar) with
+  shadcn/create's options (preset, style, base colour, theme, chart colour, heading font, font,
+  radius, menu and menu accent), shuffle and reset, a live preview of stock MudBlazor components,
+  the code to paste, and a link that opens the site in the same design. A choice applies to the
+  whole site and is remembered, the Theme page prints the active theme's tokens, and the font list
+  has shadcn's 24 fonts, loaded from Google Fonts only when chosen.
 - **Showcase:** a Use Cases page (under Getting Started) with the set-up for each situation: a new
   app, an app that already uses MudBlazor, a newer or older MudBlazor version, the look switch,
   your own providers and each hosting model.
