@@ -2,7 +2,8 @@
 # Checks the assumptions MudShadcn.css makes about MudBlazor, none of which a build would catch:
 #
 #   1. every --mud-* variable and .mud-* class the stylesheet uses exists in MudBlazor's stylesheet,
-#      or is one of the classes MudBlazor puts in its markup without styling them itself;
+#      or is one of the classes MudBlazor puts in its markup without styling them itself. The same
+#      goes for every style's stylesheet (styles/*.css next to it);
 #   2. the chart colours the stylesheet recolours are still MudBlazor's defaults: the 20-colour
 #      ChartOptions.ChartPalette and the five heat-map shades built from it;
 #   3. the default checkbox, radio and select/autocomplete icons the stylesheet redraws still have
@@ -123,12 +124,19 @@ if ! (cd "$WORK/probe" && dotnet run probe.cs) > "$WORK/defaults.tsv" 2> "$WORK/
 fi
 
 python3 - "$CSS" "$WORK/staticwebassets/MudBlazor.min.css" "$WORK/defaults.tsv" <<'EOF'
+import glob
+import os
 import re
 import sys
 
 css_path, mud_css_path, defaults_path = sys.argv[1:]
-css = re.sub(r"/\*.*?\*/", "", open(css_path, encoding="utf-8").read(), flags=re.S)
+def read_css(path):
+    return re.sub(r"/\*.*?\*/", "", open(path, encoding="utf-8").read(), flags=re.S)
+css = read_css(css_path)
 mud_css = open(mud_css_path, encoding="utf-8").read()
+# The styles (vega.css, nova.css, …) override the same MudBlazor rules, so the same check applies.
+style_paths = sorted(path for path in glob.glob(os.path.join(os.path.dirname(css_path), "styles", "*.css"))
+                     if not path.endswith(".min.css"))
 
 # Classes MudBlazor renders in its markup without styling them in MudBlazor.min.css. Each one was
 # confirmed in the rendered HTML; re-confirm any that the check below starts reporting as missing.
@@ -136,7 +144,7 @@ MARKUP_ONLY_CLASSES = {
     ".mud-avatar-filled-default", ".mud-chart-axis-value", ".mud-chart-heat", ".mud-chart-label-value",
     ".mud-chart-point", ".mud-chart-serie", ".mud-chart-serie-hovered", ".mud-charts-bar-series",
     ".mud-charts-gridlines-xaxis-lines", ".mud-charts-gridlines-yaxis", ".mud-checkbox-true",
-    ".mud-chip-color-default", ".mud-fab-filled-default", ".mud-file-upload-filelist",
+    ".mud-chip-color-default", ".mud-fab-filled-default", ".mud-file-upload-filelist", ".mud-message-box",
     ".mud-pagination-text", ".mud-picker-paper", ".mud-picker-popover", ".mud-snackbar-action-button",
     ".mud-step-label-content-secondary-text", ".mud-toggle-item-selected",
 }
@@ -162,6 +170,12 @@ missing_vars = sorted(set(re.findall(r"--mud-[a-zA-Z0-9-]+", css)) - mud_vars - 
 missing_classes = sorted(set(re.findall(r"\.mud-[a-zA-Z0-9_-]+", css)) - mud_classes - MARKUP_ONLY_CLASSES)
 check(not missing_vars, "every --mud-* variable exists" + (": missing " + ", ".join(missing_vars) if missing_vars else ""))
 check(not missing_classes, "every .mud-* class exists" + (": missing " + ", ".join(missing_classes) if missing_classes else ""))
+for style_path in style_paths:
+    style_css = read_css(style_path)
+    missing = sorted((set(re.findall(r"--mud-[a-zA-Z0-9-]+", style_css)) - mud_vars - PROVIDER_ONLY_VARIABLES)
+                     | (set(re.findall(r"\.mud-[a-zA-Z0-9_-]+", style_css)) - mud_classes - MARKUP_ONLY_CLASSES))
+    check(not missing, f"styles/{os.path.basename(style_path)}: every --mud-* variable and .mud-* class exists"
+          + (": missing " + ", ".join(missing) if missing else ""))
 gone = sorted(c for c in MARKUP_ONLY_CLASSES if c in mud_classes)
 if gone:
     print("  note  now styled by MudBlazor too (can leave the markup-only list): " + ", ".join(gone))
