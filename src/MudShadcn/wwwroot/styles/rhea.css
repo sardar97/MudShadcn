@@ -443,6 +443,16 @@
     border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
 }
 
+/* the border element (it carries the focus ring) takes MudBlazor's default radius, not the field's */
+.mud-input.mud-input-outlined .mud-input-outlined-border {
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+/* the filled variant is the same field, rounded-2xl */
+.mud-input.mud-input-filled {
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
 .mud-input.mud-input-outlined .mud-input-outlined-border,
 .mud-input.mud-input-outlined:not(.mud-disabled):not(:focus-within):hover .mud-input-outlined-border,
 .mud-input.mud-input-outlined.mud-disabled .mud-input-outlined-border {
@@ -867,6 +877,14 @@ div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-start {
    --------------------------------------------------------------------------------------------- */
 
 /* .cn-tabs-list: rounded-2xl p-[3px] group-data-horizontal/tabs:h-8 group-data-vertical/tabs:p-1 */
+/* MudBlazor sets the rounded tabs' bar and panels from its default radius (specificity 0,3,0) and
+   the base sets the container to rounded-xl */
+.mud-tabs.mud-tabs-rounded,
+.mud-tabs.mud-tabs-rounded .mud-tabs-tabbar,
+.mud-tabs.mud-tabs-rounded .mud-tabs-panels {
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
 .mud-tabs-tabbar .mud-tabs-tabbar-inner {
     min-height: 32px;                                 /* h-8 */
 }
@@ -1241,6 +1259,24 @@ div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-start {
 .mud-picker-timepicker-toolbar .mud-timepicker-ampm,
 .mud-picker-timepicker-toolbar.mud-picker-timepicker-toolbar-landscape .mud-timepicker-ampm,
 .mud-picker-toolbar.mud-picker-timepicker-toolbar .mud-timepicker-ampm .mud-button-root.mud-timepicker-button {
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+}
+
+/* Data grid filter row and inline editing: the same field as an Input, h-8 rounded-2xl bg-input/50
+   border-transparent, no shadow-xs */
+.mud-data-grid .filter-header-cell .mud-input.mud-input-underline {
+    border-color: transparent;                        /* border-transparent */
+    border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
+    background-color: color-mix(in oklab, var(--shadcn-input) 50%, transparent);   /* bg-input/50 */
+    box-shadow: none;                                 /* no shadow-xs */
+}
+
+.mud-data-grid .filter-header-cell .mud-input.mud-input-underline:focus-within {
+    border-color: var(--shadcn-ring);
+    box-shadow: var(--shadcn-focus-ring);
+}
+
+.mud-data-grid .mud-table-cell.edit-mode-cell .mud-input {
     border-radius: var(--shadcn-radius-2xl);          /* rounded-2xl */
 }
 

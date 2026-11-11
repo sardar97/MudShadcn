@@ -391,6 +391,11 @@
     padding-inline-start: 12px;                       /* px-3 */
 }
 
+/* The filled variant has no shadcn counterpart: it takes the input's corners, so it sits with them. */
+.mud-input.mud-input-filled {
+    border-radius: var(--shadcn-radius-4xl);          /* rounded-4xl, as .cn-input */
+}
+
 /* The spin buttons sit further in from the pill's curved end */
 .mud-input-control.mud-input-number-control .mud-input-outlined .mud-input-numeric-spin,
 .mud-input-control.mud-input-number-control .mud-input-filled .mud-input-numeric-spin {

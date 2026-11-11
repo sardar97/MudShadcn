@@ -26,12 +26,16 @@ grid's width and the two CI checks. What that work left open:
 
 The styles (`wwwroot/styles`) were written from shadcn's files and checked on the test app's six
 pages in light and dark, with the open dialog, menu, select and date pickers, and for sideways
-overflow at 360px in Firefox. Not done:
+overflow at 360px in Firefox. A second pass then went through the showcase pages of the components
+the test app does not have (tree view, stepper, tabs, time and colour pickers, menus, data grid,
+chips, sliders and more) and fixed what it found. That pass was mostly in light mode, and partial
+for Vega and Maia. Not done:
 
-- [ ] The showcase's component pages in each style. The test app has no tree view, stepper,
-      timeline, carousel, FAB, file upload, rating, vertical tabs, data-grid filter row or nested
-      menu; their rules are written in every style but were looked at in few of them. Go through
-      `/components/<name>?style=<style>` for those, light and dark.
+- [ ] Dark mode of those showcase pages in every style, and in every style the pages the second
+      pass skipped most often: `messagebox`, `tooltip`, `popover`, `snackbar`, `drawer`, `appbar`,
+      `navmenu`, `carousel`, `timeline`, `rating`, `fileupload`, the date picker's year and month
+      views, and the data grid's grouping and editing examples
+      (`/components/<name>?style=<style>&mode=dark`).
 - [ ] Hover, pressed and keyboard-focus states of each control in each style (the computed values
       were probed for buttons and inputs, not looked at everywhere).
 - [ ] Safari, and Firefox beyond the overflow check.

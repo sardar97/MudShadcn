@@ -749,6 +749,11 @@
     border-radius: var(--shadcn-radius-xl);           /* rounded-xl */
 }
 
+/* The slider's value label is a tooltip (MudBlazor 2px; the base follows its default radius) */
+.mud-slider .mud-slider-value-label {
+    border-radius: var(--shadcn-radius-xl);           /* rounded-xl */
+}
+
 /* ---------------------------------------------------------------------------------------------
    7. Dialog — rounded-4xl ring-1 p-6 gap-6 shadow-xl, bg-black/30 blurred overlay
    --------------------------------------------------------------------------------------------- */

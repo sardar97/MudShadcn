@@ -1052,6 +1052,11 @@ div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-start {
     box-shadow: var(--shadcn-focus-ring);
 }
 
+.mud-table-pagination-select .mud-input .mud-input-root {
+    font-size: 0.75rem;                               /* text-xs */
+    line-height: 1rem;
+}
+
 .mud-table-pagination-actions .mud-icon-button {
     width: 24px;                                      /* variant="outline" size-6 */
     height: 24px;
@@ -1065,6 +1070,26 @@ div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-start {
 
 .mud-table-pagination-actions .mud-icon-button .mud-icon-root {
     font-size: 0.75rem;                               /* size-3 */
+}
+
+/* Data grid filter row: the h-7 Input of this style (28px, bg-input/20, no shadow-xs) */
+.mud-data-grid .filter-header-cell .mud-input.mud-input-underline {
+    height: 28px;                                     /* h-7 */
+    background-color: var(--mira-field-background);   /* bg-input/20 dark:bg-input/30 */
+    box-shadow: none;                                 /* no shadow-xs */
+}
+
+.mud-data-grid .filter-header-cell .mud-input.mud-input-underline:focus-within {
+    box-shadow: var(--shadcn-focus-ring);
+}
+
+/* Cell and inline editing: the same h-7 field, inside the row's own height */
+.mud-data-grid .mud-table-cell.edit-mode-cell .mud-input-control-input-container {
+    margin-block: -5px;
+}
+
+.mud-data-grid .mud-table-cell.edit-mode-cell .mud-input {
+    height: 28px;                                     /* h-7 */
 }
 
 .mud-table-sort-label .mud-table-sort-label-icon {
@@ -1592,6 +1617,39 @@ div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-start {
 .mud-treeview-item-arrow .mud-icon-root,
 .mud-treeview-item-icon .mud-icon-root {
     font-size: 1rem;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   20. Layout and navigation — stepper
+   --------------------------------------------------------------------------------------------- */
+/* No shadcn counterpart: the base's size-8 indicators and text-sm labels at Mira's scale
+   (size-6, text-xs), with the connector geometry that followed them. */
+.mud-stepper .mud-stepper-nav .mud-step .mud-step-label .mud-step-label-icon {
+    width: 24px;                                      /* size-6 */
+    height: 24px;
+    font-size: 0.75rem;                               /* text-xs */
+}
+
+.mud-stepper .mud-step-label-icon .mud-icon-root {
+    font-size: 0.75rem;                               /* size-3 */
+}
+
+.mud-stepper .mud-step-label-content .mud-typography {
+    font-size: 0.75rem;                               /* text-xs */
+    line-height: 1rem;
+}
+
+.mud-stepper.mud-stepper__horizontal.mud-stepper__center-labels > .mud-stepper-nav > .mud-stepper-nav-connector {
+    margin-top: 35px;                                 /* 24px step padding + 12px - 1px */
+}
+
+.mud-stepper.mud-stepper__vertical > .mud-stepper-nav > .mud-stepper-nav-connector {
+    margin-inline-start: 28px;                        /* 16px step padding + 12px */
+}
+
+.mud-stepper.mud-stepper__vertical > .mud-stepper-nav > .mud-stepper-content {
+    margin-inline-start: 28px;
+    padding-inline-start: 19px;                       /* content lines up with the step title */
 }
 
 /* ---------------------------------------------------------------------------------------------

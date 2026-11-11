@@ -518,6 +518,25 @@
     box-shadow: none;
 }
 
+/* Filled (not shadcn): keeps its bg-muted fill but takes the underlined field's line, border-b-input / border-b-ring / border-b-destructive, without the ring */
+.mud-input.mud-input-filled {
+    box-shadow: inset 0 -1px 0 var(--mud-palette-lines-inputs);   /* border-b-input */
+}
+
+.mud-input.mud-input-filled:hover:not(.mud-disabled) {
+    box-shadow: inset 0 -1px 0 var(--mud-palette-lines-inputs);
+}
+
+.mud-input.mud-input-filled:focus-within {
+    box-shadow: inset 0 -1px 0 var(--shadcn-ring);                /* focus-visible:border-b-ring, no ring box */
+}
+
+.mud-input.mud-input-filled.mud-input-error,
+.mud-input.mud-input-filled.mud-input-error:focus-within {
+    box-shadow: inset 0 -1px 0 light-dark(var(--mud-palette-error),
+                                          color-mix(in oklab, var(--mud-palette-error) 50%, transparent));   /* aria-invalid:border-b-destructive */
+}
+
 /* h-10 px-0 py-1 / textarea px-0 py-3 resize-none */
 .mud-input > input.mud-input-root-outlined,
 div.mud-input-slot.mud-input-root-outlined,
@@ -1279,6 +1298,19 @@ div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-start {
 .mud-chip.mud-chip-size-small .mud-chip-close-button,
 .mud-button-group-root .mud-chip .mud-button-root.mud-chip-close-button {
     border-radius: 0;
+}
+
+/* A chip in a button group (file chips): the group's px-6 / px-4 and its filled colour reach the close button.
+   The chip has no fill here, so the button is a bare icon in the chip's text colour. */
+.mud-button-group-root .mud-chip .mud-button-root.mud-chip-close-button,
+.mud-button-group-root.mud-button-group-override-styles .mud-chip .mud-button-root.mud-chip-close-button,
+.mud-button-group-root:is(.mud-button-group-filled-size-small, .mud-button-group-outlined-size-small, .mud-button-group-text-size-small) .mud-chip .mud-button-root.mud-chip-close-button {
+    width: 14px;
+    min-width: 0;
+    height: 14px;
+    padding: 0;
+    background-color: transparent;
+    color: inherit;
 }
 
 /* ---------------------------------------------------------------------------------------------

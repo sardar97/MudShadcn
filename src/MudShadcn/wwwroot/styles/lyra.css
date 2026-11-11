@@ -1480,3 +1480,22 @@ div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-start {
     background-color: var(--mud-palette-lines-default);   /* bg-border */
     background-image: none;
 }
+
+/* Stepper numbers, timeline dots, badge dots and slider ticks are round in MudBlazor and have no
+   shadcn counterpart; every neighbour here is rounded-none, so they are squares. */
+.mud-stepper .mud-stepper-nav .mud-step .mud-step-label .mud-step-label-icon {
+    border-radius: 0;                                 /* rounded-none */
+}
+
+.mud-timeline-item-dot,
+.mud-timeline-item-dot .mud-timeline-item-dot-inner {
+    border-radius: 0;                                 /* rounded-none */
+}
+
+.mud-badge.mud-badge-dot {
+    border-radius: 0;                                 /* rounded-none */
+}
+
+.mud-slider .mud-slider-track-tick {
+    border-radius: 0;                                 /* rounded-none */
+}
