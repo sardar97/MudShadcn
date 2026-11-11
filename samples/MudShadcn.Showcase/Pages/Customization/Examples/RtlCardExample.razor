@@ -12,7 +12,6 @@
                 <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
             </CardHeaderActions>
         </MudCardHeader>
-        <MudCardMedia Image="images/pilars.jpg" Height="250" />
         <MudCardContent>
             <MudText Typo="Typo.body2">@Localizer("CardDescription")</MudText>
         </MudCardContent>
@@ -27,13 +26,15 @@
 @code {
     private bool _rightToLeft = true;
 
-    // For demonstration only. A real application uses an IStringLocalizer.
+    // Kurdish (Sorani). For demonstration only: a real application uses an IStringLocalizer.
     private string Localizer(string key) => key switch
     {
-        "CardAvatarLetter" => _rightToLeft ? "ا" : "I",
-        "CardHeader" => _rightToLeft ? "استريا كرواتيا" : "Istra Croatia",
-        "CardSubHeader" => _rightToLeft ? "شبه الجزيرة في أوروبا" : "Peninsula in Europe",
-        "CardDescription" => _rightToLeft ? "التقطت هذه الصورة في قرية صغيرة في استرا كرواتيا" : "This photo was taken in a small village in Istra Croatia.",
+        "CardAvatarLetter" => _rightToLeft ? "ک" : "K",
+        "CardHeader" => _rightToLeft ? "کوردستان" : "Kurdistan",
+        "CardSubHeader" => _rightToLeft ? "ھەولێر، پایتەختی ھەرێمی کوردستان" : "Erbil, capital of the Kurdistan Region",
+        "CardDescription" => _rightToLeft
+            ? "قەڵای ھەولێر یەکێکە لە کۆنترین شوێنە ئاوەدانەکانی جیھان و لە لیستی میراتی جیھانیی یونسکۆدایە."
+            : "The Erbil Citadel is one of the oldest continuously inhabited places in the world and is on UNESCO's World Heritage List.",
         _ => "",
     };
 }
