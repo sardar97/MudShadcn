@@ -228,7 +228,9 @@ components; each other style is `wwwroot/styles/<name>.css`, written from shadcn
 
 `ShadcnThemeOptions.IconLibrary` (shadcn/create's Lucide, Tabler Icons, HugeIcons, Phosphor Icons,
 Remix Icon; `null`, the default, is MudBlazor's Material icons) links `styles/icons-<library>.css`
-after the style and the menu options. `?icons=tabler` in either app's address shows one.
+after the style and the menu options. The showcase starts with Lucide (`icons=material` in its
+address for MudBlazor's own icons); the test app starts with none. `?icons=tabler` in either app's
+address shows another.
 
 - **A sheet redraws the Material icons MudBlazor's components use by default,** not the whole
   Material set. In MudBlazor an icon is a string of SVG paths, so a selector matches the `<svg>`

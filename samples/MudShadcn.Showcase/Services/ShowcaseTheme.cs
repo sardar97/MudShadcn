@@ -32,8 +32,11 @@ public sealed record ShowcaseDesign
     /// <summary>A font of <see cref="ShowcaseFonts"/>, or <c>inherit</c> for <see cref="Font"/>.</summary>
     public string HeadingFont { get; init; } = ShowcaseFonts.Inherit;
 
-    /// <summary><c>null</c>: MudBlazor's own Material icons.</summary>
-    public ShadcnIconLibrary? IconLibrary { get; init; }
+    /// <summary>
+    /// The site starts with Lucide, shadcn/ui's own default; the package's default is <c>null</c>,
+    /// MudBlazor's own Material icons, which is <c>icons=material</c> in the address.
+    /// </summary>
+    public ShadcnIconLibrary? IconLibrary { get; init; } = ShadcnIconLibrary.Lucide;
 
     public ShadcnMenuAccent MenuAccent { get; init; } = ShadcnMenuAccent.Subtle;
 
@@ -79,7 +82,7 @@ public sealed record ShowcaseDesign
         Add("radius", Slug(Radius), Radius == defaults.Radius);
         Add("font", Font, Font == defaults.Font);
         Add("heading", HeadingFont, HeadingFont == defaults.HeadingFont);
-        Add("icons", IconLibrary?.ToString().ToLowerInvariant() ?? "", IconLibrary is null);   // shadcn's names: hugeicons, remixicon
+        Add("icons", IconLibrary?.ToString().ToLowerInvariant() ?? "material", IconLibrary == defaults.IconLibrary);   // shadcn's names: hugeicons, remixicon
         Add("accent", Slug(MenuAccent), MenuAccent == defaults.MenuAccent);
         Add("menu", Slug(MenuColor), MenuColor == defaults.MenuColor);
         return string.Join('&', parts);

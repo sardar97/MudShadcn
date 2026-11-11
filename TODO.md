@@ -60,7 +60,7 @@ Everything was checked in Chrome and, for the parts named here, Firefox. Not in 
       showcase's Charts page.
 - [ ] The icon libraries (`styles/icons-*.css`): an icon is a `mask` on the `<svg>` MudIcon
       renders, found with `:has(> path[d="…"])` and `:where(:not(:has(…)))`. Checked in Chrome and
-      Firefox. Check the Alert and Data Grid pages with `?icons=lucide`.
+      Firefox. Check the showcase's Alert and Data Grid pages (it starts with Lucide).
 
 ## 3. Charts
 

@@ -9,7 +9,7 @@ public sealed record ShowcasePreset(string Name, string Title, string Descriptio
     public const string Custom = "custom";
 
     /// <summary>
-    /// MudShadcn's own default, then shadcn's <c>radix-*</c> presets (PRESETS in
+    /// The site's default (MudShadcn's own look, with Lucide's icons), then shadcn's <c>radix-*</c> presets (PRESETS in
     /// apps/v4/registry/config.ts), each with its icon library. Rhea and Sera are not in that list:
     /// they get Lucide, shadcn's default. shadcn's chart colour <c>neutral</c> is "the theme's own",
     /// which is <see cref="ShadcnColor.Base"/> here.
