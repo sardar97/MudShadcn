@@ -3,7 +3,8 @@
 // of ui.shadcn.com/create (Lucide, Tabler Icons, HugeIcons, Phosphor Icons, Remix Icon). A sheet
 // recognises the Material icons MudBlazor's components use by default, by their path data, and
 // draws the library's icon in their place. MudShadcnProvider links the sheet of the theme's
-// IconLibrary.
+// IconLibrary. It also writes the same table as C#, for the showcase's Icons page
+// (samples/MudShadcn.Showcase/Services/IconLibraryData.g.cs).
 //
 //   node tools/generate-shadcn-icons.mjs
 //
@@ -19,6 +20,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const STYLES = join(ROOT, "src/MudShadcn/wwwroot/styles");
+const SHOWCASE_DATA = join(ROOT, "samples/MudShadcn.Showcase/Services/IconLibraryData.g.cs");
 
 // shadcn's icon libraries, by its names and in its order (packages/registry/src/icons/libraries.ts
 // in shadcn-ui/ui). "member" is the library in ShadcnIconLibrary; the stylesheet's name is that in
@@ -55,8 +57,9 @@ const LIBRARIES = [
     },
 ];
 
-// One row per icon: the Material icons MudBlazor draws it with (names under MudBlazor.Icons), then
-// the icon of each library, in the order of LIBRARIES. The comment says where MudBlazor uses it.
+// One row per icon: the Material icons MudBlazor draws it with (names under MudBlazor.Icons), what
+// MudBlazor uses it for (the showcase's Icons page shows that), then the icon of each library, in
+// the order of LIBRARIES.
 //
 // - The names are shadcn's where its own components have the icon (the IconPlaceholder calls under
 //   apps/v4/registry in shadcn-ui/ui name it in all five libraries). The others are the library's
@@ -68,115 +71,129 @@ const LIBRARIES = [
 //
 // The checkbox and radio icons are not here: MudShadcn.css draws those as shadcn's controls.
 const ICONS = [
-    // The close button of a dialog, an alert, a snackbar, a tab and a chip; the clear button of an input.
     [["Material.Filled.Close", "Material.Filled.Clear", "Material.Outlined.Close", "Material.Filled.Cancel"],
+        "The close button of a dialog, an alert, a snackbar, a tab and a chip; the clear button of an input.",
         "x", "x", "Cancel01Icon", "x", "System/close-line"],
-    // A selected chip and toggle item, a finished step, committing an edited table row.
     [["Material.Filled.Check", "Material.Filled.Done", "Material.Outlined.Done"],
+        "A selected chip and toggle item, a finished step, saving an edited table row.",
         "check", "check", "Tick02Icon", "check", "System/check-line"],
-    // Adding a tab, a filter of the data grid; the button of a FAB menu.
     [["Material.Filled.Add", "Material.Outlined.Add"],
+        "Adding a tab or a data grid filter; the button of a FAB menu.",
         "plus", "plus", "PlusSignIcon", "plus", "System/add-line"],
-    // Clearing the data grid's filters.
     [["Material.Filled.Remove"],
+        "Clearing the data grid's filters.",
         "minus", "minus", "MinusSignIcon", "minus", "System/subtract-line"],
-    // The arrow of a select, an autocomplete, a nav group, an expansion panel, a list group, a
-    // grouped row; the down button of a numeric field.
     [["Material.Filled.ArrowDropDown", "Material.Filled.ExpandMore", "Material.Filled.KeyboardArrowDown"],
+        "The arrow of a select, a nav group, an expansion panel and a grouped row; the down button of a numeric field.",
         "chevron-down", "chevron-down", "ArrowDown01Icon", "caret-down", "Arrows/arrow-down-s-line"],
     [["Material.Filled.ArrowDropUp", "Material.Filled.ExpandLess", "Material.Filled.KeyboardArrowUp"],
+        "The arrow of an open select and an open list group; the up button of a numeric field.",
         "chevron-up", "chevron-up", "ArrowUp01Icon", "caret-up", "Arrows/arrow-up-s-line"],
-    // Previous and next: pagers, the date picker, the carousel, scrolling tabs, a nested menu.
     [["Material.Filled.ChevronLeft", "Material.Filled.NavigateBefore", "Material.Filled.ArrowLeft"],
+        "Previous: pagers, the date picker, the carousel, tabs that scroll.",
         "chevron-left", "chevron-left", "ArrowLeft01Icon", "caret-left", "Arrows/arrow-left-s-line"],
-    // Also the arrow of a tree view item and of a row that expands.
     [["Material.Filled.ChevronRight", "Material.Filled.NavigateNext", "Material.Filled.ArrowRight"],
+        "Next; the arrow of a tree view item, of a row that expands and of a nested menu.",
         "chevron-right", "chevron-right", "ArrowRight01Icon", "caret-right", "Arrows/arrow-right-s-line"],
-    // First and last page.
     [["Material.Filled.FirstPage"],
+        "First page; the stepper's reset button.",
         "chevrons-left", "chevrons-left", "ArrowLeftDoubleIcon", "caret-double-left", "Arrows/skip-left-line"],
     [["Material.Filled.LastPage"],
+        "Last page.",
         "chevrons-right", "chevrons-right", "ArrowRightDoubleIcon", "caret-double-right", "Arrows/skip-right-line"],
-    // Between the two dates of a date range picker.
     [["Material.Filled.ArrowRightAlt"],
+        "Between the two dates of a date range picker.",
         "arrow-right", "arrow-right", "ArrowRight02Icon", "arrow-right", "Arrows/arrow-right-line"],
-    // The sort direction of a table and a data grid column.
     [["Material.Filled.ArrowUpward"],
+        "The sort direction of a table or data grid column.",
         "arrow-up", "arrow-up", "ArrowUp02Icon", "arrow-up", "Arrows/arrow-up-line"],
-    // The colour picker's button that switches between RGB and HSL.
-    [["Material.Filled.ImportExport"],
-        "arrow-up-down", "arrows-up-down", "ArrowUpDownIcon", "arrows-down-up", "Arrows/arrow-up-down-line"],
-    // The time picker and the date picker.
     [["Material.Filled.AccessTime"],
+        "The time picker's field.",
         "clock", "clock", "Clock01Icon", "clock", "System/time-line"],
     [["Material.Filled.Event"],
+        "The date picker's field.",
         "calendar", "calendar", "Calendar03Icon", "calendar-blank", "Business/calendar-line"],
-    // An alert and a snackbar of the normal severity.
-    [["Material.Outlined.EventNote"],
-        "calendar-days", "calendar-event", "Calendar02Icon", "calendar-dots", "Business/calendar-event-line"],
-    // The file upload's drop zone.
-    [["Material.Filled.CloudUpload"],
-        "cloud-upload", "cloud-upload", "CloudUploadIcon", "cloud-arrow-up", "System/upload-cloud-line"],
-    [["Material.Filled.Inbox"],
-        "inbox", "inbox", "InboxIcon", "tray", "Business/inbox-line"],
-    // A drag handle.
-    [["Material.Filled.DragIndicator"],
-        "grip-vertical", "grip-vertical", "DragDropVerticalIcon", "dots-six-vertical", "Editor/draggable"],
-    // Alerts and snackbars: error, success, info, warning.
-    [["Material.Filled.ErrorOutline"],
-        "circle-alert", "exclamation-circle", "AlertCircleIcon", "warning-circle", "System/error-warning-line"],
-    [["Custom.Uncategorized.AlertSuccess"],
-        "circle-check", "circle-check", "CheckmarkCircle02Icon", "check-circle", "System/checkbox-circle-line"],
     [["Material.Outlined.Info"],
+        "An info alert or snackbar.",
         "info", "info-circle", "InformationCircleIcon", "info", "System/information-line"],
+    [["Custom.Uncategorized.AlertSuccess"],
+        "A success alert or snackbar.",
+        "circle-check", "circle-check", "CheckmarkCircle02Icon", "check-circle", "System/checkbox-circle-line"],
     [["Material.Outlined.ReportProblem"],
+        "A warning alert or snackbar.",
         "triangle-alert", "alert-triangle", "Alert02Icon", "warning", "System/alert-line"],
-    // A step with an error.
-    [["Material.Outlined.PriorityHigh"],
-        null, "exclamation-mark", "ExclamationMarkIcon", "exclamation-mark", null],
-    // The data grid's column filter: none, set, clear.
-    [["Material.Outlined.FilterAlt"],
-        "funnel", "filter", "FilterIcon", "funnel", "System/filter-line"],
-    [["Material.Filled.FilterAlt"],
-        "funnel:filled", "filled/filter", "FilterIcon:filled", "funnel-fill", "System/filter-fill"],
-    [["Material.Filled.FilterAltOff"],
-        "funnel-x", "filter-x", "FilterRemoveIcon", "funnel-x", "System/filter-off-line"],
-    // A tree view item that is loading.
-    [["Material.Filled.Loop"],
-        "refresh-cw", "refresh", "RefreshIcon", "arrows-clockwise", "System/refresh-line"],
-    // The data grid's column menu, and the collapsed items of a breadcrumb.
-    [["Material.Filled.MoreVert"],
-        "ellipsis-vertical", "dots-vertical", "MoreVerticalCircle01Icon", "dots-three-vertical", "System/more-2-line"],
-    [["Material.Filled.SettingsEthernet"],
-        "ellipsis", "dots", "MoreHorizontalCircle01Icon", "dots-three", "System/more-line"],
-    // The colour picker's buttons: palette, grid, sliders.
-    [["Material.Filled.Palette", "Material.Outlined.Palette"],
-        "palette", "palette", "PaintBoardIcon", "palette", "Design/palette-line"],
-    [["Material.Filled.Apps"],
-        "layout-grid", "layout-grid", "GridViewIcon", "grid-four", "Design/grid-line"],
-    [["Material.Filled.Tune"],
-        "sliders-horizontal", "adjustments-horizontal", "SlidersHorizontalIcon", "sliders-horizontal", "Media/equalizer-line"],
-    // The data grid's search field.
-    [["Material.Filled.Search"],
-        "search", "search", "Search01Icon", "magnifying-glass", "System/search-line"],
-    // A rating: empty and full.
+    [["Material.Filled.ErrorOutline"],
+        "An error alert or snackbar.",
+        "circle-alert", "exclamation-circle", "AlertCircleIcon", "warning-circle", "System/error-warning-line"],
+    [["Material.Outlined.EventNote"],
+        "An alert or snackbar of the normal severity.",
+        "calendar-days", "calendar-event", "Calendar02Icon", "calendar-dots", "Business/calendar-event-line"],
     [["Material.Filled.StarBorder"],
+        "An empty star of a rating.",
         "star", "star", "StarIcon", "star", "System/star-line"],
     [["Material.Filled.Star"],
+        "A full star of a rating.",
         "star:filled", "filled/star", "StarIcon:filled", "star-fill", "System/star-fill"],
-    // The data grid's column panel: grouped and ungrouped, and its menu.
+    [["Material.Filled.Search"],
+        "The data grid's search field.",
+        "search", "search", "Search01Icon", "magnifying-glass", "System/search-line"],
+    [["Material.Outlined.FilterAlt"],
+        "A data grid column without a filter.",
+        "funnel", "filter", "FilterIcon", "funnel", "System/filter-line"],
+    [["Material.Filled.FilterAlt"],
+        "A data grid column with a filter.",
+        "funnel:filled", "filled/filter", "FilterIcon:filled", "funnel-fill", "System/filter-fill"],
+    [["Material.Filled.FilterAltOff"],
+        "Clearing a data grid column's filter.",
+        "funnel-x", "filter-x", "FilterRemoveIcon", "funnel-x", "System/filter-off-line"],
+    [["Material.Filled.MoreVert"],
+        "A data grid column's menu.",
+        "ellipsis-vertical", "dots-vertical", "MoreVerticalCircle01Icon", "dots-three-vertical", "System/more-2-line"],
+    [["Material.Outlined.Settings"],
+        "The data grid's columns menu.",
+        "settings", "settings", "Settings01Icon", "gear", "System/settings-line"],
     [["Material.Filled.AccountTree"],
+        "The data grid's columns panel: group by a column.",
         "network", "sitemap", "HierarchyIcon", "tree-structure", "Editor/organization-chart"],
     [["Material.Filled.TableRows"],
+        "The data grid's columns panel: stop grouping.",
         "rows-3", "layout-rows", "Rows3Icon", "rows", "Design/layout-row-line"],
-    [["Material.Outlined.Settings"],
-        "settings", "settings", "Settings01Icon", "gear", "System/settings-line"],
-    // Editing a table row.
+    [["Material.Filled.DragIndicator"],
+        "A drag handle.",
+        "grip-vertical", "grip-vertical", "DragDropVerticalIcon", "dots-six-vertical", "Editor/draggable"],
     [["Material.Outlined.Edit"],
+        "Editing a table row.",
         "pencil", "pencil", "Edit03Icon", "pencil", "Design/pencil-line"],
-    // Skipping a step.
+    [["Material.Filled.SettingsEthernet"],
+        "The collapsed items of a breadcrumb.",
+        "ellipsis", "dots", "MoreHorizontalCircle01Icon", "dots-three", "System/more-line"],
+    [["Material.Filled.Loop"],
+        "A tree view item that is loading.",
+        "refresh-cw", "refresh", "RefreshIcon", "arrows-clockwise", "System/refresh-line"],
+    [["Material.Filled.CloudUpload"],
+        "The file upload's button.",
+        "cloud-upload", "cloud-upload", "CloudUploadIcon", "cloud-arrow-up", "System/upload-cloud-line"],
+    [["Material.Filled.Inbox"],
+        "The file upload's drop zone.",
+        "inbox", "inbox", "InboxIcon", "tray", "Business/inbox-line"],
+    [["Material.Filled.Palette", "Material.Outlined.Palette"],
+        "The colour picker's field and its palette button.",
+        "palette", "palette", "PaintBoardIcon", "palette", "Design/palette-line"],
+    [["Material.Filled.Apps"],
+        "The colour picker's grid button.",
+        "layout-grid", "layout-grid", "GridViewIcon", "grid-four", "Design/grid-line"],
+    [["Material.Filled.Tune"],
+        "The colour picker's sliders button.",
+        "sliders-horizontal", "adjustments-horizontal", "SlidersHorizontalIcon", "sliders-horizontal", "Media/equalizer-line"],
+    [["Material.Filled.ImportExport"],
+        "The colour picker's button that switches between RGB and HSL.",
+        "arrow-up-down", "arrows-up-down", "ArrowUpDownIcon", "arrows-down-up", "Arrows/arrow-up-down-line"],
     [["Material.Outlined.SkipNext"],
+        "Skipping a step.",
         "skip-forward", "player-skip-forward", "NextIcon", "skip-forward", "Media/skip-forward-line"],
+    [["Material.Outlined.PriorityHigh"],
+        "A step with an error.",
+        null, "exclamation-mark", "ExclamationMarkIcon", "exclamation-mark", null],
 ];
 
 // The glyphs MudShadcn.css draws itself, as --shadcn-icon-<name>: the check and the dash of a
@@ -325,13 +342,13 @@ async function libraryIcon(library, spec) {
 
 // Material icons that are drawn the same way (Close and Clear) share a selector.
 const rows = [];
-for (const [names, ...icons] of ICONS) {
+for (const [names, use, ...icons] of ICONS) {
     const shapes = new Map();
     for (const name of names) {
         const shape = selector(name, await mudIcon(name));
         shapes.set(shape, [...(shapes.get(shape) ?? []), `Icons.${name}`]);
     }
-    rows.push({ shapes, icons });
+    rows.push({ names, use, shapes, icons });
 }
 
 for (const [index, library] of LIBRARIES.entries()) {
@@ -404,3 +421,48 @@ ${shapes.join(",\n")} {
     await writeFile(path, css.join("\n"));
     console.log(`Wrote styles/icons-${library.name}.css: ${drawn.length} icons for ${selectors.length} Material shapes (${library.package} ${library.version})`);
 }
+
+// ---------------------------------------------------------------------------------------------
+// The same table for the showcase's Icons page.
+// ---------------------------------------------------------------------------------------------
+
+// An icon's name as its library's site has it: without this tool's marks and Remix Icon's folder.
+const displayName = (icon) => icon === null ? "null"
+    : `"${icon.replace(/^filled\/(.*)$/, "$1 (filled)").replace(/:filled$/, " (filled)").replace(/^[A-Z][a-z]+\//, "")}"`;
+const csharp = (text) => `"${text.replace(/[\\"]/g, "\\$&")}"`;
+
+await writeFile(SHOWCASE_DATA, `// <auto-generated>
+// Generated by tools/generate-shadcn-icons.mjs, from the table the icon libraries' stylesheets are
+// made of. Do not edit it by hand: change the table in the tool and run it again.
+// </auto-generated>
+#nullable enable
+
+namespace MudShadcn.Showcase.Services;
+
+/// <summary>One of shadcn's icon libraries, as the package it is taken from.</summary>
+public sealed record IconLibraryInfo(ShadcnIconLibrary Library, string Title, string Site, string Package, string Version, string Licence);
+
+/// <summary>
+/// An icon the icon libraries redraw: what MudBlazor uses it for, the Material icons MudBlazor draws
+/// it with (name and SVG), and its name in each library, in the order of
+/// <see cref="ShadcnIconLibrary"/> (<c>null</c> where the library has no such icon).
+/// </summary>
+public sealed record IconLibraryIcon(string Use, IReadOnlyList<(string Name, string Svg)> Material, IReadOnlyList<string?> Names);
+
+/// <summary>What the icon libraries' stylesheets (styles/icons-*.css) are made of, for the Icons page.</summary>
+public static class IconLibraryData
+{
+    public static IReadOnlyList<IconLibraryInfo> Libraries { get; } =
+    [
+${LIBRARIES.map((l) => `        new(ShadcnIconLibrary.${l.member}, ${csharp(l.title)}, ${csharp(l.site)}, ${csharp(l.package)}, ${csharp(l.version)}, ${csharp(l.licence)}),`).join("\n")}
+    ];
+
+    public static IReadOnlyList<IconLibraryIcon> Rows { get; } =
+    [
+${rows.map((row) => `        new(${csharp(row.use)},
+            [${row.names.map((name) => `("Icons.${name}", MudBlazor.Icons.${name})`).join(", ")}],
+            [${row.icons.map(displayName).join(", ")}]),`).join("\n")}
+    ];
+}
+`);
+console.log(`Wrote ${SHOWCASE_DATA.slice(ROOT.length + 1)}: ${rows.length} icons`);

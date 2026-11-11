@@ -1,0 +1,32 @@
+<MudStack Spacing="4">
+    <MudAlert Severity="Severity.Success" ShowCloseIcon="true">Your changes were saved.</MudAlert>
+    <MudAlert Severity="Severity.Warning">Your session is about to expire.</MudAlert>
+
+    <MudStack Row="true" Wrap="Wrap.Wrap" AlignItems="AlignItems.Center" Spacing="4">
+        <MudChip T="string" OnClose="@(_ => { })">A chip you can close</MudChip>
+        <MudRating @bind-SelectedValue="_stars" />
+        <MudCheckBox @bind-Value="_checked" Label="A checkbox" />
+    </MudStack>
+
+    <MudPagination Count="3" ShowFirstButton="true" ShowLastButton="true" />
+
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudSelect @bind-Value="_fruit" Label="A select" Variant="Variant.Outlined" Clearable="true">
+                <MudSelectItem Value="@("Apple")">Apple</MudSelectItem>
+                <MudSelectItem Value="@("Banana")">Banana</MudSelectItem>
+                <MudSelectItem Value="@("Cherry")">Cherry</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudDatePicker @bind-Date="_date" Label="A date picker" Variant="Variant.Outlined" />
+        </MudItem>
+    </MudGrid>
+</MudStack>
+
+@code {
+    private int _stars = 3;
+    private bool _checked = true;
+    private string _fruit = "Apple";
+    private DateTime? _date = new DateTime(2026, 11, 11);
+}

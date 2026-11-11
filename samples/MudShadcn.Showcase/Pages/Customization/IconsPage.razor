@@ -1,0 +1,221 @@
+@page "/customization/icons"
+@using MudShadcn.Showcase.Pages.Customization.Examples
+@inject ShowcaseTheme ShowcaseTheme
+@implements IDisposable
+
+<DocsPage>
+    <DocsPageHeader Title="Icons"
+                    SubTitle="MudBlazor's icons are Material's. One option on the theme draws the ones its components use with a shadcn icon library instead: Lucide, Tabler Icons, HugeIcons, Phosphor Icons or Remix Icon." />
+    <DocsPageContent>
+        <DocsPageSection>
+            <SectionHeader Title="In short">
+                <Description>Three things to know. The rest of the page shows each of them.</Description>
+            </SectionHeader>
+            <ol class="docs-list">
+                <li><b>Name a library in the theme.</b> That is one line, and the only thing you have to do.</li>
+                <li>
+                    <b>The icons MudBlazor's components bring themselves change on their own:</b> the close button of a dialog, the arrows
+                    of a pager, the icons of an alert. You change no component.
+                </li>
+                <li>
+                    <b>An icon you write yourself changes if it is one of those.</b> Any other icon stays as you wrote it, and you can
+                    give it the library's own drawing.
+                </li>
+            </ol>
+            <MudText Typo="Typo.body2" Class="mb-3">
+                Try it here. The choice applies to this page and to the whole site, so you can walk through the component pages with it.
+            </MudText>
+            <div class="docs-icons-picker" role="radiogroup" aria-label="Icon library">
+                @foreach (var (library, title) in Choices)
+                {
+                    <MudButton Variant="@(Library == library ? Variant.Filled : Variant.Outlined)"
+                               Color="@(Library == library ? Color.Primary : Color.Default)" Size="Size.Small"
+                               role="radio" aria-checked="@(Library == library ? "true" : "false")"
+                               OnClick="@(() => SetAsync(library))">@title</MudButton>
+                }
+            </div>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Set the library">
+                <Description>
+                    <CodeInline>IconLibrary</CodeInline> is one of the options of <CodeInline>MudShadcnTheme.Create</CodeInline>. Give the
+                    theme to <CodeInline>MudShadcnProvider</CodeInline> in your layout. The provider links the library's stylesheet
+                    itself: there is no <CodeInline>&lt;link&gt;</CodeInline>, no package and no font to add. Leave the option out for
+                    MudBlazor's Material icons.
+                </Description>
+            </SectionHeader>
+            <SectionContent Code="@nameof(IconLibraryThemeExample)" />
+            <MudSimpleTable Dense="true" Elevation="0" Outlined="true" Class="mt-4">
+                <thead>
+                    <tr><th>Value</th><th>Library</th><th>Icons taken from</th><th>Licence</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var info in IconLibraryData.Libraries)
+                    {
+                        <tr>
+                            <td><CodeInline>ShadcnIconLibrary.@info.Library</CodeInline></td>
+                            <td><MudLink Href="@info.Site" Target="_blank" rel="noopener">@info.Title</MudLink></td>
+                            <td>@info.Package @info.Version</td>
+                            <td>@info.Licence</td>
+                        </tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="What changes by itself">
+                <Description>
+                    None of these components is given an icon in the markup. The close button, the stars, the check, the arrows and the
+                    calendar are the ones MudBlazor brings, and the library draws them. Open the select and the date picker too.
+                </Description>
+            </SectionHeader>
+            <SectionContent Code="@nameof(IconLibraryBuiltInExample)" ShowCode="false" Block="true">
+                <IconLibraryBuiltInExample />
+            </SectionContent>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Icons you write yourself">
+                <Description>
+                    You keep writing <CodeInline>Icons.Material.…</CodeInline>, as in any MudBlazor app. In MudBlazor an icon is a
+                    drawing, not a name, so a library recognises an icon by its shape, wherever it is. An icon that MudBlazor's own
+                    components use is redrawn in your markup too, in its own colour and size. Any other icon stays Material's.
+                    <MudLink Href="customization/icons#the-icons-a-library-redraws">The list</MudLink> at the end of this page has every
+                    icon that is redrawn.
+                </Description>
+            </SectionHeader>
+            <SectionContent Code="@nameof(IconLibraryOwnIconsExample)" ShowCode="false" Block="true">
+                <IconLibraryOwnIconsExample />
+            </SectionContent>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Any other icon of the library">
+                <Description>
+                    Every <CodeInline>Icon</CodeInline> parameter of MudBlazor takes any SVG, not only MudBlazor's own constants. So for
+                    an icon that is not on the list (a bin, a heart, a house), use the library's own:
+                </Description>
+            </SectionHeader>
+            <ol class="docs-list">
+                <li>Find the icon on the library's site and copy its SVG.</li>
+                <li>
+                    Keep what is inside <CodeInline>&lt;svg&gt;…&lt;/svg&gt;</CodeInline> and put it in a <CodeInline>&lt;g&gt;</CodeInline>
+                    that carries the <CodeInline>&lt;svg&gt;</CodeInline>'s own <CodeInline>fill</CodeInline> and
+                    <CodeInline>stroke</CodeInline> attributes.
+                </li>
+                <li>
+                    Use that string wherever you would write <CodeInline>Icons.Material.…</CodeInline>. Keep such strings in one static
+                    class of your app (<CodeInline>AppIcons.Trash</CodeInline>), so your pages read as before.
+                </li>
+            </ol>
+            <SectionContent Code="@nameof(IconLibrarySvgExample)" Block="true">
+                <IconLibrarySvgExample />
+            </SectionContent>
+            <MudText Typo="Typo.body2" Class="mt-4">
+                Lucide, Tabler Icons, HugeIcons and Remix Icon draw on the same 24 by 24 grid as MudBlazor. Phosphor Icons draws on
+                256 by 256: give the <CodeInline>&lt;g&gt;</CodeInline> <CodeInline>transform="scale(0.09375)"</CodeInline> and it fits.
+                Such an icon is yours: it does not change when you choose another library.
+            </MudText>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="The icons a library redraws">
+                <Description>
+                    Every icon MudBlazor's components use by default. The first column is Material's drawing, the second is what this
+                    site shows now@(LibraryInfo is null ? " (Material is chosen: pick a library at the top of the page to see the difference)" : $", with its name in {LibraryInfo.Title}").
+                    The third says what MudBlazor uses the icon for, and how to write it in your own markup to have it redrawn.
+                </Description>
+            </SectionHeader>
+            <MudSimpleTable Dense="true" Elevation="0" Outlined="true" Class="docs-icons-table">
+                <thead>
+                    <tr>
+                        <th>Material</th>
+                        <th>@(LibraryInfo?.Title ?? "No library")</th>
+                        <th>MudBlazor uses it for, and how you write it</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var icon in IconLibraryData.Rows)
+                    {
+                        <tr>
+                            <td>
+                                <div class="docs-icons-drawings">
+                                    @foreach (var svg in icon.Material.Select(m => m.Svg).Distinct())
+                                    {
+                                        @* Outside MudIcon, so the library's stylesheet leaves it as Material drew it. *@
+                                        <svg class="docs-icon-material" viewBox="0 0 24 24" aria-hidden="true" focusable="false">@((MarkupString)svg)</svg>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <div class="docs-icons-drawings">
+                                    <MudIcon Icon="@icon.Material[0].Svg" />
+                                    <MudText Typo="Typo.caption" Color="Color.Tertiary">@NameIn(icon)</MudText>
+                                </div>
+                            </td>
+                            <td>
+                                <div>@icon.Use</div>
+                                <div class="docs-icons-names">
+                                    @foreach (var material in icon.Material)
+                                    {
+                                        <CodeInline>@material.Name</CodeInline>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+            <MudText Typo="Typo.body2" Class="mt-4">
+                The checkbox and the radio button are not in the list: MudShadcn draws those as shadcn's controls, and the check inside
+                the box is the library's. For the whole Material set and the <CodeInline>MudIcon</CodeInline> component, see
+                <MudLink Href="components/icons">MudBlazor's Icons page</MudLink>.
+            </MudText>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Good to know" />
+            <ul class="docs-list">
+                <li><b>Colour and size work as before.</b> <CodeInline>Color</CodeInline>, <CodeInline>Size</CodeInline>, <CodeInline>Class</CodeInline> and <CodeInline>Style</CodeInline> apply to the library's icon as they did to Material's.</li>
+                <li><b>An icon parameter still wins.</b> An icon you pass to a component (<CodeInline>CloseIcon</CodeInline>, <CodeInline>ExpandIcon</CodeInline>, <CodeInline>CheckedIcon</CodeInline>, …) is drawn as you gave it.</li>
+                <li><b>Icon fonts are left alone.</b> A library redraws SVG icons only; an icon given as a font class (<CodeInline>Icon="fas fa-home"</CodeInline>) is not touched.</li>
+                <li><b>Switching while the app runs</b> is passing another theme to the provider: <CodeInline>_theme = MudShadcnTheme.Create(_theme.Options with { IconLibrary = ShadcnIconLibrary.Tabler });</CodeInline></li>
+                <li><b>MudBlazor's own look has MudBlazor's icons.</b> <CodeInline>Enabled="false"</CodeInline> on the provider switches the library off along with the rest of the shadcn look.</li>
+                <li><b>One icon has no counterpart everywhere.</b> Lucide and Remix Icon have no plain exclamation mark, so a step with an error keeps Material's there.</li>
+                <li><b>The icons are the libraries' own work,</b> used under their licences, which are in the package's <CodeInline>THIRD-PARTY-NOTICES.md</CodeInline>.</li>
+            </ul>
+        </DocsPageSection>
+    </DocsPageContent>
+</DocsPage>
+
+@code {
+    // MudBlazor's own icons, then shadcn's libraries.
+    private static readonly (ShadcnIconLibrary? Library, string Title)[] Choices =
+        [(null, "Material"), .. IconLibraryData.Libraries.Select(l => ((ShadcnIconLibrary?)l.Library, l.Title))];
+
+    // No library while the site shows MudBlazor's own look, which has MudBlazor's icons.
+    private ShadcnIconLibrary? Library => ShowcaseTheme.Design.Shadcn ? ShowcaseTheme.Design.IconLibrary : null;
+
+    private IconLibraryInfo LibraryInfo => IconLibraryData.Libraries.FirstOrDefault(l => l.Library == Library);
+
+    protected override async Task OnInitializedAsync()
+    {
+        ShowcaseTheme.Changed += OnThemeChanged;
+        await ShowcaseTheme.LoadAsync();
+    }
+
+    private void OnThemeChanged() => InvokeAsync(StateHasChanged);
+
+    // As in the Theme Generator: the choice goes to the whole site, and leaves MudBlazor's own look.
+    private Task SetAsync(ShadcnIconLibrary? library) =>
+        ShowcaseTheme.SetAsync(ShowcaseTheme.Design with { IconLibrary = library, Shadcn = true });
+
+    // The icon's name in the chosen library, to find it on the library's site.
+    private string NameIn(IconLibraryIcon icon) => Library is { } library
+        ? icon.Names[(int)library] ?? "Material's stays"
+        : "";
+
+    public void Dispose() => ShowcaseTheme.Changed -= OnThemeChanged;
+}

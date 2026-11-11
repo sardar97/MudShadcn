@@ -274,8 +274,10 @@ public static class AppTheme
   icons MudBlazor's components use by default (close, chevrons, pager arrows, alert icons, the
   data grid's filter, rating stars: some fifty) with the library's icons. It recognises an icon by
   its shape, so the same Material icon in the app's own markup is redrawn too, but any other icon
-  (`Icons.Material.Filled.Delete`) stays Material's: do not promise a full icon swap, and do not
-  replace `Icons.Material.*` constants with markup from the library to force one.
+  (`Icons.Material.Filled.Delete`) stays Material's: do not promise a full icon swap. For an icon
+  outside that set, an `Icon` parameter takes the library's own SVG as a string: the inside of its
+  `<svg>`, in a `<g>` with the `<svg>`'s `fill` and `stroke` attributes. The
+  [Icons page](https://mudshadcn.pages.dev/customization/icons) has the list and an example.
 - **To switch while the app runs,** pass another theme:
   `_theme = MudShadcnTheme.Create(_theme.Options with { Style = ShadcnStyle.Luma });`.
 - **The result is an ordinary `MudTheme`** (`ShadcnTheme` derives from it), so palette, typography

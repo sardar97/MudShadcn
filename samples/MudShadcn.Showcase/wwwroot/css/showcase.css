@@ -936,6 +936,41 @@ h1:focus {
     border: 1px solid var(--mud-palette-lines-default);
 }
 
+/* The Icons page. The library buttons wrap on a phone. */
+.docs-icons-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* A Material icon as MudBlazor draws it, outside MudIcon, so an icon library's stylesheet leaves
+   it alone: the "before" of the page's table. */
+.docs-icon-material {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+.docs-icons-drawings {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+/* The Material names an icon can be written with: side by side while there is room. */
+.docs-icons-names {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.docs-icons-names code {
+    white-space: nowrap;
+}
+
 /* The Charts page: shadcn's chart cards are about this wide, whatever the frame's width. */
 .docs-chart-card {
     width: 100%;

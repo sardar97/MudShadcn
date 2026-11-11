@@ -59,6 +59,9 @@ committing is a MudBlazor update, which `UPDATING.md` leaves in the working tree
     ships in, read from the changelog's release headings, so a release needs no step for it.
   - `Services/ShowcaseTheme.cs` holds the visitor's design (`ShowcaseDesign`: the look and every
     Theme Generator choice) for the whole site, saved in localStorage and readable from the address.
+    `Pages/Customization/IconsPage.razor` is the Icons page: how an icon library works, with
+    examples. Its table of icons is `Services/IconLibraryData.g.cs`, which
+    `tools/generate-shadcn-icons.mjs` writes; never edit it by hand.
     `Pages/Customization/ThemeGeneratorPage.razor` is the Theme Generator: shadcn/create's options,
     a preview of stock components and the code to paste (`Services/ThemeCode.cs`).
   - `ShowcaseTheme.RightToLeft` is the site's direction: both layouts wrap everything, the
@@ -79,7 +82,8 @@ committing is a MudBlazor update, which `UPDATING.md` leaves in the working tree
 - `tools/verify-mudblazor.sh` — checks the stylesheets' assumptions about MudBlazor (below).
 - `tools/generate-shadcn-themes.mjs` — writes `ShadcnThemeData.g.cs` from shadcn's `themes.ts` and
   Tailwind's `theme.css`. Run it when shadcn changes a colour theme (`UPDATING.md`).
-- `tools/generate-shadcn-icons.mjs` — writes `wwwroot/styles/icons-*.css` from MudBlazor's icons
+- `tools/generate-shadcn-icons.mjs` — writes `wwwroot/styles/icons-*.css` (and the same table as
+  C# for the showcase's Icons page, `Services/IconLibraryData.g.cs`) from MudBlazor's icons
   (its source on GitHub, at the referenced version) and the five icon libraries' npm packages (on
   jsDelivr, at the versions pinned in the tool). Run it after a MudBlazor update and after changing
   its `ICONS` table (`UPDATING.md`).

@@ -1,0 +1,20 @@
+<MudStack Row="true" Wrap="Wrap.Wrap" AlignItems="AlignItems.Center">
+    <MudButton Variant="Variant.Outlined" StartIcon="@Trash">Delete</MudButton>
+    <MudIconButton Icon="@Trash" Color="Color.Error" aria-label="Delete" />
+    <MudIcon Icon="@Trash" Size="Size.Large" />
+</MudStack>
+
+@code {
+    // lucide.dev, "trash-2", Copy SVG. What is inside the <svg> goes in a <g>
+    // that carries the <svg>'s own fill and stroke attributes.
+    private const string Trash = """
+        <g fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+            <path d="M3 6h18" />
+            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+        </g>
+        """;
+}

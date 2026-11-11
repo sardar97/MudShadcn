@@ -1,0 +1,16 @@
+@inherits LayoutComponentBase
+
+<MudShadcnProvider Theme="_theme" />
+
+<MudLayout>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    // Lucide, Tabler, HugeIcons, Phosphor or RemixIcon.
+    // Leave the option out for MudBlazor's Material icons.
+    private readonly ShadcnTheme _theme = MudShadcnTheme.Create(
+        new ShadcnThemeOptions { IconLibrary = ShadcnIconLibrary.Lucide });
+}

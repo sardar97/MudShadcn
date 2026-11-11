@@ -75,6 +75,10 @@ major version is a new MudShadcn major version.
   square segments, and it assumes values that are not negative.
 - **`--shadcn-chart-bar-radius`** sets the corner radius of chart bars (4px by default) from your
   own CSS or a chart's `Style`; `0` gives square bars.
+- **Showcase:** an Icons page (under Customization) explains the icon libraries: the one line that
+  sets one, the components whose icons change by themselves, what happens to the icons in your own
+  markup, how to use any other icon of a library, and the list of every icon a library redraws,
+  with Material's drawing next to it. Its buttons switch the library for the whole site.
 - **Showcase:** a Charts page (under Customization) shows `MudShadcnChartOptions` as shadcn's chart
   cards (bar, stacked bar, line, line with dots, area and donut) with the code of each.
 

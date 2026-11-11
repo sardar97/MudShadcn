@@ -281,12 +281,12 @@ and dark (`CLAUDE.md`, "Styles").
 `wwwroot/styles/icons-*.css` are generated:
 
 ```bash
-node tools/generate-shadcn-icons.mjs       # rewrites the five stylesheets
+node tools/generate-shadcn-icons.mjs       # rewrites the five stylesheets and the showcase's table of them
 tools/verify-mudblazor.sh                  # every selector still matches the icon it names, and no other
 ```
 
-The tool's `ICONS` table has one row per icon: the Material icons MudBlazor draws it with, then
-its name in each library. The names were last taken from shadcn at commit `8ab2771`: where
+The tool's `ICONS` table has one row per icon: the Material icons MudBlazor draws it with, what
+MudBlazor uses it for (the showcase's Icons page shows that), then its name in each library. The names were last taken from shadcn at commit `8ab2771`: where
 shadcn's own components have the icon, an `IconPlaceholder` call under `apps/v4/registry` names it
 in all five libraries (`lucide="XIcon" tabler="IconX" hugeicons="Cancel01Icon" …`), and the row
 follows it. The other rows are the library's icon of the same shape, chosen by eye: look at a new

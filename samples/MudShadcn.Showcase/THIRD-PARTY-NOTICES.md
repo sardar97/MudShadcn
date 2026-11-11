@@ -33,3 +33,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+The bin icon in `Pages/Customization/Examples/IconLibrarySvgExample.razor` is Lucide's `trash-2`
+(<https://lucide.dev>), used under Lucide's licence, which is in the repository's
+`THIRD-PARTY-NOTICES.md`.
