@@ -105,6 +105,13 @@ h1:focus {
     }
 }
 
+/* Five buttons, not six, on a phone up to 400px wide: the footer has the NuGet link too. */
+@media (max-width: 399.98px) {
+    .docs-appbar .docs-nuget {
+        display: none;
+    }
+}
+
 .docs-brand {
     display: flex;
     align-items: center;
@@ -216,7 +223,7 @@ h1:focus {
 .docs-kbd {
     position: absolute;
     top: 50%;
-    right: 8px;
+    inset-inline-end: 8px;
     transform: translateY(-50%);
     padding: 1px 6px;
     border: 1px solid var(--mud-palette-lines-default);
@@ -706,7 +713,8 @@ h1:focus {
 }
 
 .docs-toc .mud-drawer-content {
-    padding: 32px 16px 32px 8px;
+    padding-block: 32px;
+    padding-inline: 8px 16px;
 }
 
 .docs-toc .mud-navmenu {
@@ -724,9 +732,20 @@ h1:focus {
     min-height: 28px;
     padding: 4px 0 4px 12px;
     border-radius: 0;
-    border-inline-start: 1px solid var(--mud-palette-lines-default);
     font-size: 0.8125rem;
     color: var(--mud-palette-text-secondary);
+}
+
+/* MudBlazor draws the bar beside the links as a border-left, in a right-to-left page too. Here it
+   is on the side the links start from. */
+.docs-toc .page-content-navigation .page-content-navigation-navlink .mud-nav-link {
+    border-left: 0;
+    border-inline-start: 2px solid var(--mud-palette-action-disabled-background);
+}
+
+.docs-toc .page-content-navigation .page-content-navigation-navlink.active .mud-nav-link,
+.docs-toc .page-content-navigation .page-content-navigation-navlink .mud-nav-link.active {
+    border-inline-start-color: var(--mud-palette-primary);
 }
 
 .docs-toc .mud-nav-link:hover {
@@ -735,7 +754,6 @@ h1:focus {
 }
 
 .docs-toc .mud-nav-link.active {
-    border-inline-start-color: var(--mud-palette-text-primary);
     background-color: transparent !important;
     color: var(--mud-palette-text-primary);
     font-weight: 500;

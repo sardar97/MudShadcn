@@ -1,0 +1,39 @@
+<MudRTLProvider RightToLeft="@_rightToLeft">
+    <MudCard Class="mb-2" Style="width: 400px; max-width: 100%">
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar Color="Color.Secondary">@Localizer("CardAvatarLetter")</MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.body1">@Localizer("CardHeader")</MudText>
+                <MudText Typo="Typo.body2">@Localizer("CardSubHeader")</MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardMedia Image="images/pilars.jpg" Height="250" />
+        <MudCardContent>
+            <MudText Typo="Typo.body2">@Localizer("CardDescription")</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Favorite" Color="Color.Default" />
+            <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Default" />
+        </MudCardActions>
+    </MudCard>
+</MudRTLProvider>
+<MudSwitch @bind-Value="_rightToLeft" Label="Toggle Right to Left" Color="Color.Primary" />
+
+@code {
+    private bool _rightToLeft = true;
+
+    // For demonstration only. A real application uses an IStringLocalizer.
+    private string Localizer(string key) => key switch
+    {
+        "CardAvatarLetter" => _rightToLeft ? "ا" : "I",
+        "CardHeader" => _rightToLeft ? "استريا كرواتيا" : "Istra Croatia",
+        "CardSubHeader" => _rightToLeft ? "شبه الجزيرة في أوروبا" : "Peninsula in Europe",
+        "CardDescription" => _rightToLeft ? "التقطت هذه الصورة في قرية صغيرة في استرا كرواتيا" : "This photo was taken in a small village in Istra Croatia.",
+        _ => "",
+    };
+}

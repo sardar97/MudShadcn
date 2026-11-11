@@ -142,7 +142,13 @@ public sealed class ShowcaseTheme(ThemePreference preference, NavigationManager 
     /// <summary><c>mode=dark</c> or <c>mode=light</c> in the address: the mode for this visit.</summary>
     public bool? ModeFromAddress { get; private set; }
 
-    /// <summary>Raised after <see cref="Design"/> and <see cref="Theme"/> changed.</summary>
+    /// <summary>
+    /// Whether the site runs right-to-left (<c>MudRTLProvider.RightToLeft</c>): the top bar's
+    /// switch, or <c>dir=rtl</c> / <c>dir=ltr</c> in the address for this visit.
+    /// </summary>
+    public bool RightToLeft { get; private set; }
+
+    /// <summary>Raised after <see cref="Design"/>, <see cref="Theme"/> or <see cref="RightToLeft"/> changed.</summary>
     public event Action? Changed;
 
     /// <summary>Reads the saved design, then the address. Safe to call from every layout.</summary>
@@ -153,6 +159,7 @@ public sealed class ShowcaseTheme(ThemePreference preference, NavigationManager 
         var saved = ShowcaseDesign.Parse(await preference.GetDesignAsync());
         var query = new Uri(navigation.Uri).Query;
         Apply(ShowcaseDesign.Parse(query, saved));
+        RightToLeft = await preference.GetRightToLeftAsync();
 
         foreach (var pair in query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
         {
@@ -162,7 +169,26 @@ public sealed class ShowcaseTheme(ThemePreference preference, NavigationManager 
                 "mode=light" => false,
                 _ => ModeFromAddress,
             };
+            RightToLeft = pair.ToLowerInvariant() switch
+            {
+                "dir=rtl" => true,
+                "dir=ltr" => false,
+                _ => RightToLeft,
+            };
         }
+    }
+
+    /// <summary>Switches the site's direction and remembers it.</summary>
+    public async Task SetRightToLeftAsync(bool rightToLeft)
+    {
+        if (rightToLeft == RightToLeft)
+        {
+            return;
+        }
+
+        RightToLeft = rightToLeft;
+        Changed?.Invoke();
+        await preference.SetRightToLeftAsync(rightToLeft);
     }
 
     /// <summary>Applies <paramref name="design"/> to the site and remembers it.</summary>

@@ -5,13 +5,15 @@
 @* For the examples mudblazor.com shows in an iframe (a whole MudLayout of their own). *@
 @if (_ready)
 {
-    <MudShadcnProvider Theme="ShowcaseTheme.Theme" Enabled="ShowcaseTheme.Design.Shadcn" IsDarkMode="_isDarkMode" FollowSystemDarkMode="_followSystem"
-                       StyleHrefFormat="_content/MudShadcn/styles/{0}.css" />
-    @if (ShowcaseFonts.Href(skipLoaded: true, ShowcaseTheme.Design.Font, ShowcaseTheme.Design.HeadingFont) is { } fontsHref)
-    {
-        <link @key="fontsHref" rel="stylesheet" href="@fontsHref" />
-    }
-    @Body
+    <MudRTLProvider RightToLeft="ShowcaseTheme.RightToLeft">
+        <MudShadcnProvider Theme="ShowcaseTheme.Theme" Enabled="ShowcaseTheme.Design.Shadcn" IsDarkMode="_isDarkMode" FollowSystemDarkMode="_followSystem"
+                           StyleHrefFormat="_content/MudShadcn/styles/{0}.css" />
+        @if (ShowcaseFonts.Href(skipLoaded: true, ShowcaseTheme.Design.Font, ShowcaseTheme.Design.HeadingFont) is { } fontsHref)
+        {
+            <link @key="fontsHref" rel="stylesheet" href="@fontsHref" />
+        }
+        @Body
+    </MudRTLProvider>
 }
 
 @code {

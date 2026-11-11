@@ -9,90 +9,97 @@
     return;
 }
 
-@* The readable style sheets, like MudShadcn.css in index.html. An app keeps the default (.min.css). *@
-<MudShadcnProvider Theme="ShowcaseTheme.Theme" Enabled="Design.Shadcn" IsDarkMode="_isDarkMode" IsDarkModeChanged="OnDarkModeChanged" FollowSystemDarkMode="_followSystem"
-                   StyleHrefFormat="_content/MudShadcn/styles/{0}.css" />
+@* Around the providers too: the popovers, dialogs and snackbars take their direction from it. *@
+<MudRTLProvider RightToLeft="ShowcaseTheme.RightToLeft">
+    @* The readable style sheets, like MudShadcn.css in index.html. An app keeps the default (.min.css). *@
+    <MudShadcnProvider Theme="ShowcaseTheme.Theme" Enabled="Design.Shadcn" IsDarkMode="_isDarkMode" IsDarkModeChanged="OnDarkModeChanged" FollowSystemDarkMode="_followSystem"
+                       StyleHrefFormat="_content/MudShadcn/styles/{0}.css" />
 
-@* Only the web fonts the design uses (Geist is in index.html). A link in the body, as the provider's
-   are: a <HeadContent> here would lose to the one of the page, which has its description in it. *@
-@if (ShowcaseFonts.Href(skipLoaded: true, Design.Font, Design.HeadingFont) is { } fontsHref)
-{
-    <link @key="fontsHref" rel="stylesheet" href="@fontsHref" />
-}
+    @* Only the web fonts the design uses (Geist is in index.html). A link in the body, as the provider's
+       are: a <HeadContent> here would lose to the one of the page, which has its description in it. *@
+    @if (ShowcaseFonts.Href(skipLoaded: true, Design.Font, Design.HeadingFont) is { } fontsHref)
+    {
+        <link @key="fontsHref" rel="stylesheet" href="@fontsHref" />
+    }
 
-<MudLayout Class="docs-layout">
-    <MudAppBar Elevation="0" Class="docs-appbar">
-        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" Class="@(IsGenerator ? "d-flex mr-1" : "d-flex d-md-none mr-1")"
-                       OnClick="@(() => DrawerOpen = !DrawerOpen)" aria-label="Toggle navigation" />
-        <a href="" class="docs-brand" aria-label="MudShadcn home">
-            <Logo />
-            <span>MudShadcn</span>
-        </a>
-        <a href="releases" class="docs-version d-none d-md-flex" title="Release notes"
-           aria-label="@($"MudShadcn version {BuildInfo.MudShadcnVersion}, release notes")">v@(BuildInfo.MudShadcnVersion)</a>
-        <nav class="docs-topnav d-none d-md-flex" aria-label="Main">
-            <MudButton Href="getting-started/installation" Variant="Variant.Text" Class="@TopLinkClass(true, "getting-started")">Get Started</MudButton>
-            <MudButton Href="docs/overview" Variant="Variant.Text" Class="@TopLinkClass(true, "docs", "components")">Docs</MudButton>
-            <MudButton Href="customization/theme" Variant="Variant.Text" Class="@TopLinkClass(!IsGenerator, "customization")">Theme</MudButton>
-            <MudButton Href="customization/theme-generator" Variant="Variant.Text" Class="@TopLinkClass(IsGenerator)">Generator<NewBadge AddedAfter="1.1" /></MudButton>
-        </nav>
-        <MudSpacer />
-        <DocsSearch />
-        @* The look: a button that names it where there is room, an icon below that. *@
-        <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Dense="true">
-            <ActivatorContent>
-                <MudButton Variant="Variant.Outlined" EndIcon="@Icons.Material.Filled.ExpandMore" Class="docs-look-button" OnClick="@context.ToggleAsync"
-                           aria-label="@LookLabel" aria-haspopup="menu">@Design.LookName</MudButton>
-                <MudIconButton Icon="@Icons.Material.Outlined.Palette" Color="Color.Inherit" Class="docs-look-icon" OnClick="@context.ToggleAsync"
-                               title="@LookLabel" aria-label="@LookLabel" aria-haspopup="menu" />
-            </ActivatorContent>
-            <ChildContent>
-                @* shadcn's styles, by shadcn's names, then MudBlazor's own look. *@
-                @foreach (var look in Looks)
-                {
-                    var current = look.Shadcn == Design.Shadcn && (!look.Shadcn || look.Style == Design.Style);
-                    @if (!look.Shadcn)
+    <MudLayout Class="docs-layout">
+        <MudAppBar Elevation="0" Class="docs-appbar">
+            <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" Class="@(IsGenerator ? "d-flex me-1" : "d-flex d-md-none me-1")"
+                           OnClick="@(() => DrawerOpen = !DrawerOpen)" aria-label="Toggle navigation" />
+            <a href="" class="docs-brand" aria-label="MudShadcn home">
+                <Logo />
+                <span>MudShadcn</span>
+            </a>
+            <a href="releases" class="docs-version d-none d-md-flex" title="Release notes"
+               aria-label="@($"MudShadcn version {BuildInfo.MudShadcnVersion}, release notes")">v@(BuildInfo.MudShadcnVersion)</a>
+            <nav class="docs-topnav d-none d-md-flex" aria-label="Main">
+                <MudButton Href="getting-started/installation" Variant="Variant.Text" Class="@TopLinkClass(true, "getting-started")">Get Started</MudButton>
+                <MudButton Href="docs/overview" Variant="Variant.Text" Class="@TopLinkClass(true, "docs", "components")">Docs</MudButton>
+                <MudButton Href="customization/theme" Variant="Variant.Text" Class="@TopLinkClass(!IsGenerator, "customization")">Theme</MudButton>
+                <MudButton Href="customization/theme-generator" Variant="Variant.Text" Class="@TopLinkClass(IsGenerator)">Generator<NewBadge AddedAfter="1.1" /></MudButton>
+            </nav>
+            <MudSpacer />
+            <DocsSearch />
+            @* The look: a button that names it where there is room, an icon below that. *@
+            <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Dense="true">
+                <ActivatorContent>
+                    <MudButton Variant="Variant.Outlined" EndIcon="@Icons.Material.Filled.ExpandMore" Class="docs-look-button" OnClick="@context.ToggleAsync"
+                               aria-label="@LookLabel" aria-haspopup="menu">@Design.LookName</MudButton>
+                    <MudIconButton Icon="@Icons.Material.Outlined.Palette" Color="Color.Inherit" Class="docs-look-icon" OnClick="@context.ToggleAsync"
+                                   title="@LookLabel" aria-label="@LookLabel" aria-haspopup="menu" />
+                </ActivatorContent>
+                <ChildContent>
+                    @* shadcn's styles, by shadcn's names, then MudBlazor's own look. *@
+                    @foreach (var look in Looks)
                     {
-                        <MudDivider Class="my-1" />
+                        var current = look.Shadcn == Design.Shadcn && (!look.Shadcn || look.Style == Design.Style);
+                        @if (!look.Shadcn)
+                        {
+                            <MudDivider Class="my-1" />
+                        }
+                        <MudMenuItem OnClick="@(() => SetLookAsync(look))" aria-current="@(current ? "true" : null)">
+                            <div class="d-flex align-center justify-space-between gap-6" style="min-width:7rem">
+                                @look.LookName
+                                @if (current)
+                                {
+                                    <MudIcon Icon="@Icons.Material.Filled.Check" Size="Size.Small" />
+                                }
+                            </div>
+                        </MudMenuItem>
                     }
-                    <MudMenuItem OnClick="@(() => SetLookAsync(look))" aria-current="@(current ? "true" : null)">
-                        <div class="d-flex align-center justify-space-between gap-6" style="min-width:7rem">
-                            @look.LookName
-                            @if (current)
-                            {
-                                <MudIcon Icon="@Icons.Material.Filled.Check" Size="Size.Small" />
-                            }
-                        </div>
-                    </MudMenuItem>
-                }
-            </ChildContent>
-        </MudMenu>
-        <MudTooltip Text="@(_isDarkMode ? "Switch to light mode" : "Switch to dark mode")">
-            <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Outlined.LightMode : Icons.Material.Outlined.DarkMode)" Color="Color.Inherit"
-                           OnClick="ToggleDarkModeAsync" aria-label="Toggle dark mode" />
-        </MudTooltip>
-        <MudTooltip Text="NuGet">
-            <MudIconButton Href="https://www.nuget.org/packages/MudShadcn" Target="_blank" Icon="@Icons.Material.Outlined.Inventory2" Color="Color.Inherit"
-                           aria-label="Open the NuGet package" />
-        </MudTooltip>
-        <MudTooltip Text="GitHub">
-            <MudIconButton Href="https://github.com/sardar97/MudShadcn" Target="_blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit"
-                           Edge="Edge.End" aria-label="Open the GitHub repository" />
-        </MudTooltip>
-    </MudAppBar>
+                </ChildContent>
+            </MudMenu>
+            <MudTooltip Text="@DirectionLabel">
+                <MudIconButton Icon="@(ShowcaseTheme.RightToLeft ? Icons.Material.Filled.FormatTextdirectionLToR : Icons.Material.Filled.FormatTextdirectionRToL)"
+                               Color="Color.Inherit" OnClick="@(() => ShowcaseTheme.SetRightToLeftAsync(!ShowcaseTheme.RightToLeft))" aria-label="@DirectionLabel" />
+            </MudTooltip>
+            <MudTooltip Text="@(_isDarkMode ? "Switch to light mode" : "Switch to dark mode")">
+                <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Outlined.LightMode : Icons.Material.Outlined.DarkMode)" Color="Color.Inherit"
+                               OnClick="ToggleDarkModeAsync" aria-label="Toggle dark mode" />
+            </MudTooltip>
+            <MudTooltip Text="NuGet" RootClass="docs-nuget">
+                <MudIconButton Href="https://www.nuget.org/packages/MudShadcn" Target="_blank" Icon="@Icons.Material.Outlined.Inventory2" Color="Color.Inherit"
+                               aria-label="Open the NuGet package" />
+            </MudTooltip>
+            <MudTooltip Text="GitHub">
+                <MudIconButton Href="https://github.com/sardar97/MudShadcn" Target="_blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit"
+                               Edge="Edge.End" aria-label="Open the GitHub repository" />
+            </MudTooltip>
+        </MudAppBar>
 
-    @* The Theme Generator needs the width, so there the navigation starts closed (the menu button opens it). *@
-    <MudDrawer Open="DrawerOpen" OpenChanged="@(open => DrawerOpen = open)" ClipMode="DrawerClipMode.Docked" Breakpoint="Breakpoint.Md" Elevation="0" Class="docs-nav-drawer"
-               aria-label="Navigation">
-        <NavMenu />
-    </MudDrawer>
+        @* The Theme Generator needs the width, so there the navigation starts closed (the menu button opens it). *@
+        <MudDrawer Open="DrawerOpen" OpenChanged="@(open => DrawerOpen = open)" ClipMode="DrawerClipMode.Docked" Breakpoint="Breakpoint.Md" Elevation="0" Class="docs-nav-drawer"
+                   aria-label="Navigation">
+            <NavMenu />
+        </MudDrawer>
 
-    @Body
+        @Body
 
-    <MudScrollToTop TopOffset="400" Style="z-index:2000">
-        <MudFab StartIcon="@Icons.Material.Filled.KeyboardArrowUp" Color="Color.Primary" Size="Size.Small" aria-label="Scroll to top" />
-    </MudScrollToTop>
-</MudLayout>
+        <MudScrollToTop TopOffset="400" Style="z-index:2000">
+            <MudFab StartIcon="@Icons.Material.Filled.KeyboardArrowUp" Color="Color.Primary" Size="Size.Small" aria-label="Scroll to top" />
+        </MudScrollToTop>
+    </MudLayout>
+</MudRTLProvider>
 
 @code {
     private bool _drawerOpen = true;
@@ -131,6 +138,8 @@
     private ShowcaseDesign Design => ShowcaseTheme.Design;
 
     private string LookLabel => $"Look: {Design.LookName}. Choose a shadcn style or MudBlazor's own look";
+
+    private string DirectionLabel => ShowcaseTheme.RightToLeft ? "Switch to left-to-right" : "Switch to right-to-left";
 
     protected override async Task OnInitializedAsync()
     {

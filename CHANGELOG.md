@@ -54,6 +54,10 @@ major version is a new MudShadcn major version.
 - **Showcase:** a dropdown in the top bar switches every page between the shadcn look and
   MudBlazor's own, to compare them, and the package version is shown next to the name (it opens
   the release notes).
+- **Showcase:** a button in the top bar switches the whole site between left-to-right and
+  right-to-left, as mudblazor.com's does, so every component and example can be seen in an RTL
+  layout (remembered, and `?dir=rtl` in the address opens a page that way). A new RTL Languages
+  page (under Customization) shows the set-up: `MudShadcnProvider` inside a `MudRTLProvider`.
 - **Stacked bar charts** have shadcn's rounded stacks: the two ends of each stack are rounded and
   the joins between its segments stay square. The stylesheet tells the series apart by MudBlazor's
   default chart palette, so a palette of your own (or a stack of more than ten series) keeps

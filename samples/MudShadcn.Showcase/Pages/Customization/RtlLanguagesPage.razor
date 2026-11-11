@@ -1,0 +1,80 @@
+@page "/customization/rtl-languages"
+@using MudShadcn.Showcase.Pages.Customization.Examples
+
+<DocsPage>
+    <DocsPageHeader Title="RTL Languages"
+                    SubTitle="Right-to-left layouts, for languages such as Arabic and Hebrew: MudBlazor's MudRTLProvider, in the shadcn look." />
+    <DocsPageContent>
+        <DocsPageSection>
+            <SectionHeader Title="Explanation">
+                <Description>
+                    Right-to-left script is used in languages like Arabic and Hebrew, where writing starts at the right of the page and
+                    continues to the left, so the interface has to be mirrored horizontally. MudBlazor mirrors its components inside a
+                    <CodeInline>MudRTLProvider</CodeInline>, and MudShadcn styles what MudBlazor renders, so nothing else is needed.
+                </Description>
+            </SectionHeader>
+            <MudText Typo="Typo.body2">
+                To see a component that way, use the <MudIcon Icon="@Icons.Material.Filled.FormatTextdirectionRToL" Size="Size.Small" Style="vertical-align:text-bottom" />
+                button in the top bar: it switches every page of this site, and every example on it, between left-to-right and right-to-left.
+            </MudText>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="MudRTLProvider">
+                <Description>
+                    Wrap the layout in a <CodeInline>MudRTLProvider</CodeInline> and put <CodeInline>MudShadcnProvider</CodeInline> inside
+                    it: it holds MudBlazor's theme, popover, dialog and snackbar providers, which take their direction from the
+                    <CodeInline>MudRTLProvider</CodeInline> around them. Your <CodeInline>MainLayout.razor</CodeInline> looks something like this.
+                </Description>
+            </SectionHeader>
+            <SectionContent Code="@nameof(RtlProviderExample)" />
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Example">
+                <Description>
+                    <CodeInline>RightToLeft="true"</CodeInline> changes the layout to right-to-left. It can change while the app runs, and a
+                    <CodeInline>MudRTLProvider</CodeInline> can also wrap a part of a page.
+                </Description>
+            </SectionHeader>
+            <SectionContent DarkenBackground="true" Code="@nameof(RtlCardExample)" ShowCode="false" Block="true">
+                <RtlCardExample />
+            </SectionContent>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Text Fields">
+                <Description>
+                    Text fields with <CodeInline>InputType.Email</CodeInline> or <CodeInline>InputType.Telephone</CodeInline> remain
+                    left-aligned, with the label remaining right-aligned.
+                </Description>
+            </SectionHeader>
+            <SectionContent Code="@nameof(RtlTextFieldExample)" ShowCode="false">
+                <RtlTextFieldExample />
+            </SectionContent>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Border Radius">
+                <Description>
+                    If your application supports both left-to-right and right-to-left languages, use the <CodeInline>start</CodeInline>
+                    and <CodeInline>end</CodeInline> border radius classes instead of <CodeInline>left</CodeInline> and
+                    <CodeInline>right</CodeInline>. Some components, such as <MudLink Href="components/drawer">MudDrawer</MudLink>, have
+                    <CodeInline>Start</CodeInline> and <CodeInline>End</CodeInline> values too.
+                </Description>
+            </SectionHeader>
+            <SectionContent DarkenBackground="true" Code="@nameof(RtlBorderRadiusExample)" ShowCode="false">
+                <RtlBorderRadiusExample />
+            </SectionContent>
+        </DocsPageSection>
+
+        <DocsPageSection>
+            <SectionHeader Title="Other useful CSS classes" />
+            <ul class="docs-list">
+                <li><CodeInline>.mud-flip-x-rtl</CodeInline> flips the element horizontally in right-to-left mode (for icons that should point the other way).</li>
+                <li><CodeInline>.mud-rtl</CodeInline> and <CodeInline>.mud-ltr</CodeInline> give one element right-to-left or left-to-right styling.</li>
+                <li>Margin and padding classes with <CodeInline>s</CodeInline> and <CodeInline>e</CodeInline> (<CodeInline>ms-4</CodeInline>, <CodeInline>pe-2</CodeInline>) follow the direction. See MudBlazor's <MudLink Href="https://mudblazor.com/utilities/spacing" Target="_blank">Spacing</MudLink> page.</li>
+            </ul>
+        </DocsPageSection>
+    </DocsPageContent>
+</DocsPage>

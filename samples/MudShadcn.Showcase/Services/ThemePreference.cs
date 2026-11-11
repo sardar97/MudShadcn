@@ -5,15 +5,16 @@ using Microsoft.JSInterop;
 namespace MudShadcn.Showcase.Services;
 
 /// <summary>
-/// Remembers the light/dark choice and the design (the look and the Theme Generator's choices) in
-/// localStorage, so they survive reloads and reach the examples that mudblazor.com renders in an
-/// iframe (they run as a separate app instance).
+/// Remembers the light/dark choice, the direction and the design (the look and the Theme Generator's
+/// choices) in localStorage, so they survive reloads and reach the examples that mudblazor.com
+/// renders in an iframe (they run as a separate app instance).
 /// </summary>
 public sealed class ThemePreference(IJSRuntime js)
 {
     private const string Key = "mudshadcn-showcase-theme";
     private const string LookKey = "mudshadcn-showcase-look";
     private const string DesignKey = "mudshadcn-showcase-design";
+    private const string DirectionKey = "mudshadcn-showcase-dir";
 
     /// <summary>The saved <see cref="ShowcaseDesign"/> in its query-string form, or <c>null</c>.</summary>
     public async Task<string?> GetDesignAsync()
@@ -70,6 +71,31 @@ public sealed class ThemePreference(IJSRuntime js)
         try
         {
             await js.InvokeVoidAsync("localStorage.setItem", Key, dark ? "dark" : "light");
+        }
+        catch (JSException)
+        {
+            // storage blocked: the choice lasts for this session only
+        }
+    }
+
+    /// <summary><c>true</c> when the visitor switched the site to right-to-left.</summary>
+    public async Task<bool> GetRightToLeftAsync()
+    {
+        try
+        {
+            return await js.InvokeAsync<string?>("localStorage.getItem", DirectionKey) == "rtl";
+        }
+        catch (JSException)
+        {
+            return false; // storage blocked
+        }
+    }
+
+    public async Task SetRightToLeftAsync(bool rightToLeft)
+    {
+        try
+        {
+            await js.InvokeVoidAsync("localStorage.setItem", DirectionKey, rightToLeft ? "rtl" : "ltr");
         }
         catch (JSException)
         {
