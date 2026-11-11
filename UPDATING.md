@@ -121,7 +121,8 @@ inline. An override only wins at equal or higher specificity, because `MudShadcn
 - The `Written against MudBlazor x.y.z` line at the top of `MudShadcn.css`.
 - `node tools/generate-shadcn-icons.mjs`, which rewrites the icon libraries' stylesheets from the
   new version's icons (and the version in their first comment). Then run the verify script again.
-- The Versions table in `README.md`, and `OLD=` in this file.
+- The Versions table in `docs/reference.md`, the MudBlazor version under Install in `README.md`,
+  and `OLD=` in this file.
 - The MudBlazor version in `samples/MudShadcn.Showcase/wwwroot/skill.md` (frontmatter and first
   paragraph) and `wwwroot/llms.txt`.
 - An entry under `## [Unreleased]` in `CHANGELOG.md` naming the new MudBlazor version and anything
@@ -267,8 +268,8 @@ git diff 4233ed1 origin/main -- apps/v4/registry/styles/
   `wwwroot/styles/vega.css` to the new name and go through shadcn's file for the new style against
   `style-vega.css`, rule by rule, as above. `MudShadcnProvider` links the file by the enum
   member's name in lower case, and the samples' look menus and the Theme Generator list the enum.
-  Add the style to the lists in `README.md`, the agent skill and `llms.txt`, and to the styles
-  named in step 7 above.
+  Add the style to the lists in `README.md`, `docs/reference.md`, the agent skill and `llms.txt`,
+  and to the styles named in step 7 above.
 - **The menu options.** `.cn-menu-translucent` is the source of `menu-translucent.css`, and
   `buildRegistryTheme` in `apps/v4/registry/config.ts` is how shadcn puts a theme together
   (`ShadcnTokens.Build` follows it) and what its bold menu accent does (`menu-bold.css`).
@@ -298,4 +299,4 @@ or changed row in the test app (`?icons=tabler`) in each library.
   which limits how the icons may be redistributed.
 - **A new library in shadcn/create** (`packages/registry/src/icons/libraries.ts`): add it to
   `LIBRARIES` and to `ShadcnIconLibrary` (at the end), give every row its icon, and add it to the
-  Theme Generator's list, `README.md`, the agent skill and the notices.
+  Theme Generator's list, `README.md`, `docs/reference.md`, the agent skill and the notices.

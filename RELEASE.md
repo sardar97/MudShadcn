@@ -111,7 +111,7 @@ On the GitHub repository page, the cog next to **About**:
 The site's own address appears in a few files that search engines and AI tools read. If the site
 does not end up at `https://mudshadcn.pages.dev` (a suffixed name or a custom domain), replace it
 in `samples/MudShadcn.Showcase/wwwroot/` (`index.html`, `robots.txt`, `sitemap.xml`, `llms.txt`,
-`skill.md`), in `README.md`, and in `PackageProjectUrl` in `src/MudShadcn/MudShadcn.csproj`:
+`skill.md`), in `README.md` and `docs/reference.md`, and in `PackageProjectUrl` in `src/MudShadcn/MudShadcn.csproj`:
 
 ```bash
 grep -rl 'mudshadcn.pages.dev' --exclude-dir=bin --exclude-dir=obj .

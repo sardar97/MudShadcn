@@ -8,6 +8,13 @@ major version is a new MudShadcn major version.
 
 ## [Unreleased]
 
+### Changed
+- **A shorter README:** what MudShadcn is, the set-up, the theme options in short and where to read
+  more, with a clip of the Theme Generator. The details it had (the provider's parameters, switching
+  looks, charts, the palette mapping, where MudShadcn differs from shadcn/ui, versions) are now in
+  [`docs/reference.md`](https://github.com/sardar97/MudShadcn/blob/master/docs/reference.md), which
+  is also what `/llms-full.txt` serves.
+
 ## [1.2.0] — 2026-11-11
 
 Written against MudBlazor 9.12.0, for .NET 10.

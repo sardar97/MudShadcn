@@ -29,8 +29,8 @@ the app keeps using MudBlazor's components and API, and they render with shadcn'
 flat bordered surfaces, radius scale, focus rings and sizes. Written against MudBlazor 9.12.0, which
 is the minimum MudBlazor version it accepts, for .NET 10.
 
-This file is self-contained. The full documentation is the package README, also served as
-<https://mudshadcn.pages.dev/llms-full.txt>.
+This file is self-contained. The full reference is `docs/reference.md` in the repository, also
+served as <https://mudshadcn.pages.dev/llms-full.txt>.
 
 ---
 

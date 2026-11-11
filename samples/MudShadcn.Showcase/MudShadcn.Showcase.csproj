@@ -43,8 +43,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- The package README, served as /llms-full.txt for AI agents (see wwwroot/llms.txt). -->
-    <Content Include="..\..\README.md" Link="wwwroot\llms-full.txt" Visible="false" />
+    <!-- The reference, served as /llms-full.txt for AI agents (see wwwroot/llms.txt). -->
+    <Content Include="..\..\docs\reference.md" Link="wwwroot\llms-full.txt" Visible="false" />
   </ItemGroup>
 
   <!--
