@@ -925,6 +925,12 @@ h1:focus {
     overflow: hidden;
 }
 
+/* A preview is drawn to the pixel for MudBlazor's paper: the Drop Zone's 2×2 grid is 92px wide in
+   the 93px that pa-8 leaves. An elevated paper has a 1px border here, so the inset gives 1px back. */
+.explore-card > .pa-8 {
+    padding: 31px !important;
+}
+
 @media (max-width: 600px) {
     .explore-card.mud-paper { width: 138px; height: 138px; }
     .explore-mudblazor-items { justify-content: center; }
