@@ -853,6 +853,10 @@
     margin-inline-end: 8px;                           /* gap-2 */
 }
 
+.mud-tab .mud-tab-badge {
+    margin-inline-start: 8px;                         /* gap-2 */
+}
+
 .mud-tabs-tabbar-wrapper.mud-tabs-vertical .mud-tab {
     padding: 5px 12px;                                /* group-data-vertical/tabs:py-1.5 */
     border-radius: var(--shadcn-radius-2xl);          /* group-data-vertical/tabs:rounded-2xl */

@@ -1071,6 +1071,10 @@ div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-start {
     margin-inline-end: 8px;                                   /* gap-2 */
 }
 
+.mud-tab .mud-tab-badge {
+    margin-inline-start: 8px;                                 /* gap-2 */
+}
+
 .mud-dynamic-tabs .mud-tabs-tabbar .mud-tab {
     padding: 6px 16px;
 }

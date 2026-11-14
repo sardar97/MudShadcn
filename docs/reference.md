@@ -364,6 +364,8 @@ inline style or a component parameter decides something, MudBlazor's version sta
 **Layout, navigation and feedback**
 
 - `MudTabs`' `Color` tints only the active label; the tab list stays neutral.
+- A tab's badge (`BadgeData`, `BadgeDot`, `BadgeIcon`) sits in the row after the label, as a
+  `Badge` inside a shadcn tab does, not above the label's corner.
 - Expansion panels are always flat: `Elevation` and `Square` have no visible effect.
 - The carousel's arrows sit inside the slide at the 75% opacity MudBlazor sets inline. Only the
   default bullet icons become dots.

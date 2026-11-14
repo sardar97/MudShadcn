@@ -1853,6 +1853,30 @@ label.mud-input-label.mud-input-error {
     margin-inline-end: 6px;                           /* gap-1.5 */
 }
 
+/*
+ * A tab's badge (BadgeData, BadgeDot, BadgeIcon) goes in the row, after the label, as a Badge
+ * inside a TabsTrigger does. MudBlazor floats it above the label's corner, which fits its 48px tab
+ * but not a 30px trigger: the list's overflow cuts the top off. The negative block margin keeps
+ * the 20px badge from making a tab taller than its label does.
+ */
+.mud-tab .mud-tab-badge {
+    display: inline-flex;
+    flex-shrink: 0;
+    margin: -4px 0;
+    margin-inline-start: 6px;                         /* gap-1.5 */
+}
+
+.mud-tab .mud-tab-badge .mud-badge-wrapper {
+    position: static;
+    width: auto;
+    height: auto;
+    align-items: center;
+}
+
+.mud-tab .mud-tab-badge .mud-badge {
+    position: static;
+}
+
 .mud-tab.mud-disabled {
     color: color-mix(in oklab, var(--mud-palette-text-primary) 60%, transparent);
     color: light-dark(color-mix(in oklab, var(--mud-palette-text-primary) 60%, transparent),

@@ -8,6 +8,12 @@ major version is a new MudShadcn major version.
 
 ## [Unreleased]
 
+### Fixed
+- **Tabs with a badge** (`BadgeData`, `BadgeDot`, `BadgeIcon`): the badge is no longer cut off at
+  the top. MudBlazor floats it above the label's corner, which its 48px tab has room for and a
+  shadcn tab has not, so it now sits in the row after the label, centred, as a `Badge` inside a
+  shadcn tab does. In every style.
+
 ### Changed
 - **A shorter README:** what MudShadcn is, the set-up, the theme options in short and where to read
   more, with a clip of the Theme Generator. The details it had (the provider's parameters, switching
