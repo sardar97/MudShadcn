@@ -8,6 +8,10 @@ major version is a new MudShadcn major version.
 
 ## [Unreleased]
 
+## [1.2.1] — 2026-11-14
+
+Written against MudBlazor 9.12.0, for .NET 10.
+
 ### Fixed
 - **Tabs with a badge** (`BadgeData`, `BadgeDot`, `BadgeIcon`): the badge is no longer cut off at
   the top. MudBlazor floats it above the label's corner, which its 48px tab has room for and a
@@ -210,7 +214,8 @@ The first public release. Written against MudBlazor 9.10.0, for .NET 10.
 - **Showcase** at <https://mudshadcn.pages.dev>: every page and example of mudblazor.com's component
   documentation, in the same menu and order, running on MudShadcn, in light and dark mode.
 
-[Unreleased]: https://github.com/sardar97/MudShadcn/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/sardar97/MudShadcn/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/sardar97/MudShadcn/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/sardar97/MudShadcn/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/sardar97/MudShadcn/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/sardar97/MudShadcn/compare/v1.0.0...v1.1.0
